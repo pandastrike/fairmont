@@ -1,0 +1,20 @@
+{
+  "name": "fairmont",
+  "version": "0.1.0",
+  "description": "A collection of useful functions and utilities.",
+  "main": "index.coffee",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dyoder/fairmont.git"
+  },
+  "keywords": [
+    "coffee",
+    "coffeescript",
+    "utility"
+  ],
+  "author": "Dan Yoder",
+  "license": "BSD"
+}
