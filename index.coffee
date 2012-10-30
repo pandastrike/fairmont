@@ -1,5 +1,26 @@
 $ = {}
 
+
+$.w = w = (string) -> string.trim().split /\s+/
+
+
+# type - reliable, consistent type function. Adapted from:
+# http://coffeescriptcookbook.com/chapters/classes_and_objects/type-function
+# See also, of course: http://javascript.crockford.com/remedial.html
+
+classToType = new Object
+for name in w "Boolean Number String Function Array Date RegExp"
+  classToType["[object " + name + "]"] = name.toLowerCase()
+
+$.type = (object) ->
+  return "undefined" if object is undefined
+  return "null" if object is null
+  myClass = Object.prototype.toString.call object
+  if myClass of classToType
+    return classToType[myClass]
+  else
+    return "object"
+
 $.Catalog = 
   messages: {}
   errors: {}
@@ -14,11 +35,17 @@ $.message = (key) -> $.Catalog.messages[key]
 
 $.error = (string) -> $.Catalog.errors[string] or new Error string
 
-$.read = (path) -> FileSystem.readFileSync(path,'utf-8')
+$.read = (path) -> 
+  FileSystem = require "fs"
+  FileSystem.readFileSync(path,'utf-8')
 
-$.readdir = (path) -> FileSystem.readdirSync(path)
+$.readdir = (path) -> 
+  FileSystem = require "fs"
+  FileSystem.readdirSync(path)
 
-$.stat = (path) -> FileSystem.statSync(path)
+$.stat = (path) -> 
+  FileSystem = require "fs"
+  FileSystem.statSync(path)
 
 $.Catalog.add 
   "requires-node-fibers": (method) -> "Fairmont.#{method} requires node-fibers"
@@ -34,30 +61,32 @@ $.base64 = (string) -> new Buffer(string).toString('base64')
 
 # Attributes  
 
+$.reader = reader = (object,name,fn) ->
+  Object.defineProperty object, name,
+    configurable: true
+    enumerable: true
+    get: fn
+  object
+  
+$.writer = writer = (object,name,fn) ->
+  Object.defineProperty object, name,
+    configurable: true
+    enumerable: true
+    set: fn
+  object
+
 $.Attributes = 
 
   reader: (name, fn=null) ->
-
     fn ?= -> @["_#{name}"]
-
-    Object.defineProperty @::, name,
-      configurable: true
-      enumerable: true
-      get: fn
-
+    reader @::, name, fn
     @
 
   writer: (name, fn=null) ->
-
     fn ?= (value) -> 
       @["_#{name}"] = value
       value
-
-    Object.defineProperty @::, name,
-      configurable: true
-      enumerable: true
-      set: fn
-
+    writer @::, name, fn
     @
 
 $.include = (object, mixins...) ->
@@ -78,11 +107,11 @@ $.abort = -> process.exit -1
 
 # Fibers
 
-requireFibers = (method) ->
-  try
-    require "fiber"
-  catch e
-    throw $.error["requires-node-fibers"] method
+# requireFibers = (method) ->
+#   try
+#     require "fiber"
+#   catch e
+#     throw $.error["requires-node-fibers"] method
   
 assertFiber = (method) ->
   Fiber = requireFibers method
@@ -140,7 +169,5 @@ $.log = (thing) ->
 $.fatalError = (error) ->
   $.log error
   $.abort()
-
-$.w = (string) -> string.trim().split /\s+/
-
+  
 module.exports = $
