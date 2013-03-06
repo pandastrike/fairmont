@@ -21,6 +21,42 @@ $.type = (object) ->
   else
     return "object"
 
+class Signature 
+  
+  constructor: -> 
+    @signatures = {}
+    @failHandler = => false
+  
+  on: (types,processor) ->
+    @signatures[types.join "."] = processor
+    @
+  
+  fail: (handler) =>
+    @failHandler = handler
+    @
+
+  match: (args) -> 
+    types = ($.type arg for arg in args)
+    signature = types.join "."
+    processor = @signatures[signature]
+    if processor?
+      processor
+    else
+      @failHandler
+    
+$.overload = (declarations) ->
+  signature = (declarations new Signature)
+  (args...) ->
+    ((signature.match args) args...)
+
+$.Overloading = 
+  overload: (name,declarations) ->
+    @::[name] = $.overload declarations
+    @
+    
+$.to = (to,from) ->
+  if from instanceof to then from else new to from
+
 $.Catalog = 
   messages: {}
   errors: {}
@@ -33,7 +69,18 @@ $.Catalog =
 
 $.message = (key) -> $.Catalog.messages[key]
 
-$.error = (string) -> $.Catalog.errors[string] or new Error string
+$.toError = (thing,args...) -> 
+  switch ($.type thing)
+    when "string"
+      if errorFunction = $.Catalog.errors[thing]
+        errorFunction args...
+      else
+        new Error thing
+    else
+      $.to Error, thing
+      
+$.throwError = (args...) ->
+  throw ($.toError args...)
 
 $.read = (path) -> 
   FileSystem = require "fs"
@@ -46,6 +93,16 @@ $.readdir = (path) ->
 $.stat = (path) -> 
   FileSystem = require "fs"
   FileSystem.statSync(path)
+  
+$.write = (path,content) ->
+  FileSystem = require "fs"
+  FileSystem.writeFileSync path, content
+
+$.chdir = (dir,fn) ->
+  cwd = process.cwd()
+  process.chdir dir
+  fn()
+  process.chdir cwd
 
 $.Catalog.add 
   "requires-node-fibers": (method) -> "Fairmont.#{method} requires node-fibers"
@@ -102,6 +159,12 @@ $.merge = (objects...) ->
   for object in objects
     destination[k] = v for k, v of object
   destination
+  
+$.delegate = (from,to) ->
+  
+  for name, value of to when ($.type value) is "function"
+    do (value) ->
+      from[name] = (args...) -> value.call to, args...
 
 $.abort = -> process.exit -1
 
@@ -169,5 +232,10 @@ $.log = (thing) ->
 $.fatalError = (error) ->
   $.log error
   $.abort()
+  
+$.memoize = (fn) ->
+  memo = {}
+  (thing) -> 
+    memo[thing] ?= fn(thing)
   
 module.exports = $
