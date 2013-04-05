@@ -42,6 +42,8 @@ class Signature
     if processor?
       processor
     else
+      console.log signature
+      console.log @signatures
       @failHandler
     
 $.overload = (declarations) ->
