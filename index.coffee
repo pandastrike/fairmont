@@ -51,6 +51,16 @@ $.chdir = (dir,fn) ->
   fn()
   process.chdir cwd
 
+$.readStream = (stream) ->
+  return unless stream.fd?
+  {readSync} = require "fs"
+  {fd,bufferSize} = stream
+  result = ""
+  buffer = new Buffer( bufferSize )
+  while ( length = readSync( fd, buffer, 0, bufferSize ) ) > 0
+    result += buffer.toString( "utf-8", 0 , length )
+  result
+
 # Crypto-related
 
 Crypto = require "crypto"
