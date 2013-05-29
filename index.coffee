@@ -20,7 +20,11 @@ $.type = (object) ->
     return "object"
 
 $.remove = (array,element) ->
-  array[index..index] = [] if (index = array.indexOf( element )) > -1
+  if (index = array.indexOf( element )) > -1
+    array[index..index] = []
+    element
+  else
+    null
       
 $.to = (to,from) ->
   if from instanceof to then from else new to from
