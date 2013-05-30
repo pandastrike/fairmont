@@ -112,9 +112,8 @@ $.abort = -> process.exit -1
 # Very simplistic memoize - only works for one argument
 # where toString is a unique value
   
-$.memoize = (fn) ->
+$.memoize = (fn,hash=(object)-> object.toString()) ->
   memo = {}
-  (thing) -> 
-    memo[thing.toString()] ?= fn(thing)
+  (thing) -> memo[ hash( thing ) ] ?= fn(thing)
 
 module.exports = $
