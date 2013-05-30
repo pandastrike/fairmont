@@ -26,6 +26,12 @@ $.remove = (array,element) ->
   else
     null
       
+$.uniq = (array,hash=(object)-> object.toString()) ->
+  uniques = {}
+  for element in array
+    uniques[ hash(element) ] = element
+  uniques[key] for key in Object.keys( uniques )
+
 $.to = (to,from) ->
   if from instanceof to then from else new to from
 
