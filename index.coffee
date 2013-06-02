@@ -58,8 +58,9 @@ $.write = (path,content) ->
 $.chdir = (dir,fn) ->
   cwd = process.cwd()
   process.chdir dir
-  fn()
+  rval = fn()
   process.chdir cwd
+  rval
 
 # Crypto-related
 
