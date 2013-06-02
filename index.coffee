@@ -117,4 +117,8 @@ $.memoize = (fn,hash=(object)-> object.toString()) ->
   memo = {}
   (thing) -> memo[ hash( thing ) ] ?= fn(thing)
 
+$.timer = (wait,action) -> 
+  id = setTimeout(action,wait)
+  -> clearTimeout( id )
+
 module.exports = $

@@ -15,6 +15,11 @@ A collection of useful CoffeeScript/JavaScript functions.
 
     foo() if type( foo ) == "function"
 
+**timer** Set a timer. Takes an interval in microseconds and an action. Returns a function to cancel the timer. Basically, a more convenient way to call `setTimeout` and `clearTimeout`.
+
+    cancel = timer 1000, -> console.log "Done"
+    cancel()
+    
 ## Array Functions
 
 **remove** Destructively remove an element from an array. Returns the element removed.
