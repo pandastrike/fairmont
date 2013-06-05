@@ -62,6 +62,14 @@ All file-system functions are based on Node's `fs` API. This is not `require`d u
 
     chdir "documents", ->
       console.log read( "README" )
+      
+**rm** Removes a file.
+
+    rm "documents/reamde.txt"
+
+**rmdir** Removes a directory.
+
+    rmdir "documents"
 
 ## Hashing/Encoding Functions
 

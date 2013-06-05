@@ -62,6 +62,15 @@ $.chdir = (dir,fn) ->
   process.chdir cwd
   rval
 
+$.rm = (path) ->
+  FileSystem = require "fs"
+  FileSystem.unlinkSync(path)
+  
+$.rmdir = (path) ->
+  FileSystem = require "fs"
+  FileSystem.rmdirSync( path )
+  
+  
 # Crypto-related
 
 Crypto = require "crypto"
