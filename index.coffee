@@ -2,6 +2,38 @@ $ = {}
 
 $.w = w = (string) -> string.trim().split /\s+/
 
+$.capitalize = (string) ->
+  string[0].toUpperCase() + string[1..]
+  
+$.titleCase = (string) ->
+  string.toLowerCase().replace(/^(\w)|\s(\w)/g, (char) -> char.toUpperCase())
+  
+$.snakeCase = (string) ->
+  string.toLowerCase().replace(/\W/g, "_")
+  
+$.camelCase = (string) ->
+  string.toLowerCase().replace(/(\W+\w)/g, (string) -> 
+    string.trim().toUpperCase())
+    
+$.corsetCase = (string) ->
+  string.toLowerCase().replace(/\W/g, "-")
+  
+# Adapted from Mustache.js
+$.htmlEscape = do ->
+  
+  map =
+    "&": "&amp;"
+    "<": "&lt;"
+    ">": "&gt;"
+    '"': '&quot;'
+    "'": '&#39;'
+    "/": '&#x2F;'
+
+  entities = Object.keys( map )
+  re = new RegExp( "#{entities.join('|')}", "g" )
+  (string) -> string.replace( re, (s) -> map[s] )
+
+
 # type - reliable, consistent type function. Adapted from:
 # http://coffeescriptcookbook.com/chapters/classes_and_objects/type-function
 # See also, of course: http://javascript.crockford.com/remedial.html
@@ -128,6 +160,6 @@ $.memoize = (fn,hash=(object)-> object.toString()) ->
 
 $.timer = (wait,action) -> 
   id = setTimeout(action,wait)
-  -> clearTimeout( id )
+  -> clearTimeout( id )  
 
 module.exports = $

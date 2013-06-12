@@ -1,6 +1,6 @@
 {
   "name": "fairmont",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "A collection of useful functions and utilities.",
   "main": "index.coffee",
   "scripts": {
@@ -16,5 +16,8 @@
     "utility"
   ],
   "author": "Dan Yoder",
-  "license": "BSD"
+  "license": "BSD",
+  "devDependencies": {
+    "testify": "~0.2.4"
+  }
 }
