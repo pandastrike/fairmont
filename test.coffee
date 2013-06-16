@@ -8,15 +8,18 @@ Testify.test "String functions", (context) ->
   context.test "titleCase", ->
     {titleCase} = require "./index"
     assert.equal titleCase( "hello woRld" ), "Hello World"
-  context.test "snakeCase", ->
-    {snakeCase} = require "./index"
-    assert.equal snakeCase( "Hello World" ), "hello_world"
+  context.test "snakeText", ->
+    {snakeText} = require "./index"
+    assert.equal snakeText( "Hello World" ), "hello_world"
   context.test "camelCase", ->
     {camelCase} = require "./index"
     assert.equal camelCase( "Hello World" ), "helloWorld"
-  context.test "corsetCase", ->
-    {corsetCase} = require "./index"
-    assert.equal corsetCase( "Hello World" ), "hello-world"
+  context.test "corsetText", ->
+    {corsetText} = require "./index"
+    assert.equal corsetText( "Hello World" ), "hello-world"
+  context.test "plainText", ->
+    {plainText} = require "./index"
+    assert.equal plainText("hello-world"), "hello world"
   context.test "htmlEscape", ->
     {htmlEscape} = require "./index"
     assert.equal htmlEscape( "<a href='foo'>bar & baz</a>" ), 

@@ -6,17 +6,20 @@ $.capitalize = (string) ->
   string[0].toUpperCase() + string[1..]
   
 $.titleCase = (string) ->
-  string.toLowerCase().replace(/^(\w)|\s(\w)/g, (char) -> char.toUpperCase())
-  
-$.snakeCase = (string) ->
-  string.toLowerCase().replace(/\W/g, "_")
-  
+  string.toLowerCase().replace(/^(\w)|\W(\w)/g, (char) -> char.toUpperCase())
+
 $.camelCase = (string) ->
   string.toLowerCase().replace(/(\W+\w)/g, (string) -> 
     string.trim().toUpperCase())
-    
-$.corsetCase = (string) ->
+
+$.snakeText = (string) ->
+  string.toLowerCase().replace(/\W/g, "_")
+  
+$.corsetText = (string) ->
   string.toLowerCase().replace(/\W/g, "-")
+  
+$.plainText = (string) ->
+  string.replace(/\W/g, " ")
   
 # Adapted from Mustache.js
 $.htmlEscape = do ->
