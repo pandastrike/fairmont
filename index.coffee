@@ -12,15 +12,18 @@ $.camelCase = (string) ->
   string.toLowerCase().replace(/(\W+\w)/g, (string) -> 
     string.trim().toUpperCase())
 
-$.snakeText = (string) ->
-  string.toLowerCase().replace(/\W/g, "_")
+$.underscored = (string) ->
+  $.plainText(string).replace(/\W+/g, "_")
   
-$.corsetText = (string) ->
-  string.toLowerCase().replace(/\W/g, "-")
+$.dashed = (string) ->
+  $.plainText(string).replace(/\W+/g, "-")
   
 $.plainText = (string) ->
-  string.replace(/\W/g, " ")
-  
+  string
+    .replace( /^[A-Z]/g, (c) -> c.toLowerCase() )
+    .replace( /[A-Z]/g, (c) -> " #{c.toLowerCase()}" )  
+    .replace( /\W+/g, " " )
+    
 # Adapted from Mustache.js
 $.htmlEscape = do ->
   
