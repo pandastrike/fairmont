@@ -1,7 +1,12 @@
 {
   "name": "fairmont",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "A collection of useful functions and utilities.",
+  "files": [
+    "index.coffee",
+    "src/",
+    "README.md"
+  ],
   "main": "index.coffee",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
