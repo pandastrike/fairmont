@@ -31,7 +31,12 @@ A collection of useful CoffeeScript/JavaScript functions.
 
     uniq [1,2,3,1,2,3,4,5,6,3,6,2,4]
     # returns [1,2,3,4,5,6]
-    
+
+**shuffle** Takes an array and returns a new array with all values shuffled randomly.
+
+    shuffle ["a", "b", "c", "d", "e", "f"]
+    # for e.g.: returns ["b", "c", "d", "e", "f", "a"]
+
 ## File System Functions
 
 All file-system functions are based on Node's `fs` API. This is not `require`d unless the function is actually invoked.
