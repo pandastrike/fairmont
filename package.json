@@ -1,6 +1,6 @@
 {
   "name": "fairmont",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "A collection of useful functions and utilities.",
   "files": [
     "index.coffee",
