@@ -21,7 +21,7 @@ $.include = include = (object, mixins...) ->
   object
 
 #
-# ### Property ###
+# ### property ###
 #
 # Add a `property` method to a class, making it easier to define getters and setters on its prototype.
 #

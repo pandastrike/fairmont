@@ -10,6 +10,6 @@ for filename in readdir(dirname)
   lines = content.match /^#.*$/gm
   if lines?
     for line in lines
-      comment = line.replace(/^#\s*/, "")
+      comment = line.replace(/^# /, "")
       unless comment.match(/^--/)?
         console.log comment
