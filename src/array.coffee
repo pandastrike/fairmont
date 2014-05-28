@@ -1,6 +1,8 @@
 $ = {}
 
+#
 # ## Array Functions ##
+#
 
 # ### remove ###
 #
@@ -27,13 +29,11 @@ $.remove = (array, element) ->
 # # returns [1,2,3,4,5,6]
 # ```
 
-
 $.uniq = (array, hash=(object)-> object.toString()) ->
   uniques = {}
   for element in array
     uniques[ hash(element) ] = element
   uniques[key] for key in Object.keys( uniques )
-
 
 # ### shuffle ###
 #

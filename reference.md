@@ -1,4 +1,9 @@
+# Fairmont
+
+A collection of useful CoffeeScript/JavaScript functions.
+
 ## Array Functions ##
+
 ### remove ###
 
 Destructively remove an element from an array. Returns the element removed.
@@ -30,30 +35,116 @@ Adapted from the [CoffeeScript Cookbook][shuffle-2].
 [shuffle-1]:http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
 [shuffle-2]:http://coffeescriptcookbook.com/chapters/arrays/shuffling-array-elements
 
+# File System Functions
 
+All file-system functions are based on Node's `fs` API. This is not `require`d unless the function is actually invoked.
 
+## exists ##
 
+Check to see if a file exists.
 
+```coffee-script
+source = read( sourcePath ) if exists( sourcePath )
+```
 
+## read ##
 
+Read a file synchronously and return a UTF-8 string of the contents.
 
+```coffee-script
+source = read( sourcePath ) if exists( sourcePath )
+```
 
+## readdir ##
 
+Synchronously get the contents of a directory as an array.
 
+```coffee-script
+for file in readdir("documents")
+console.log read( file ) if stat( file ).isFile()
+```
+
+## stat ##
+
+Synchronously get the stat object for a file.
+
+```coffee-script
+for file in readdir("documents")
+console.log read( file ) if stat( file ).isFile()
+```
+
+## write ##
+
+Synchronously write a UTF-8 string to a file.
+
+```coffee-script
+write( file.replace( /foo/g, 'bar' ) )
+```
+
+## chdir ##
+
+Change directories, execute a function, and then restore the original working directory.
+
+```coffee-script
+chdir "documents", ->
+console.log read( "README" )
+```
+
+## rm ##
+
+Removes a file.
+
+```coffee-script
+rm "documents/reamde.txt"
+```
+
+## rmdir ##
+
+Removes a directory.
+
+```coffee-script
+rmdir "documents"
+```
 
 ## General Purpose Functions ##
-## w ###
-Mixins
-Direct requires
-$.type = require "./src/type"
-$.assert = require "./src/assert"
 
-Direct definitions
-Very simplistic memoize - only works for one argument
-where toString is a unique value
+### w ###
 
+Split a string on whitespace. Useful for concisely creating arrays of strings.
 
+```coffee-script
+console.log word for word in w "foo bar baz"
+```
+### to ###
 
+Hoist a value to a given type if it isn't already. Useful when you want to wrap a value without having to check to see if it's already wrapped.
+
+For example, to hoist an error message into an error, you would use:
+
+```coffee-script
+to(error, Error)
+```
+### abort ###
+
+Simple wrapper around `process.exit(-1)`.
+### memoize ###
+
+A very simple way to cache results of functions that take a single argument. Also takes an optional hash function that defaults to calling `toString` on the function's argument.
+
+```coffee-script
+nickname = (email) ->
+expensiveLookupToGetNickname( email )
+
+memoize( nickname )
+```
+## timer ###
+
+Set a timer. Takes an interval in microseconds and an action. Returns a function to cancel the timer. Basically, a more convenient way to call `setTimeout` and `clearTimeout`.
+
+```coffee-script
+cancel = timer 1000, -> console.log "Done"
+cancel()
+```
 Convenient way to define properties
 
 class Foo
@@ -63,16 +154,16 @@ include @, Property
 property foo: get: -> "foo"
 
 Shallow merge
-
-
-
 Adapted from Mustache.js
 
+# Type Functions ##
 
+## type ##
 
-type - reliable, consistent type function. Adapted from:
-http://coffeescriptcookbook.com/chapters/classes_and_objects/type-function
-See also, of course: http://javascript.crockford.com/remedial.html
+Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `data`, `regexp`, `function`, `array`, `object`, `null`, `undefined`. Adapted from [The CoffeeScript Cookbook][type-0] and based on Douglas Crockford's [remedial JavaScript blog post][type-1].
+[type-0]:http://coffeescriptcookbook.com/chapters/classes_and_objects/type-function
+[type-1]:http://javascript.crockford.com/remedial.html
 
-
-
+```coffee-script
+foo() if type( foo ) == "function"
+```
