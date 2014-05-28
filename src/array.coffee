@@ -1,5 +1,7 @@
 $ = {}
 
+# ## Array Functions ##
+
 # ### remove ###
 #
 # Destructively remove an element from an array. Returns the element removed.
@@ -39,7 +41,7 @@ $.uniq = (array, hash=(object)-> object.toString()) ->
 # ```coffee-script
 # shuffle ["a", "b", "c", "d", "e", "f"]
 # # for e.g.: returns ["b", "c", "d", "e", "f", "a"]
-# ``` coffee-script
+# ```
 #
 # Use the [Fisher-Yates algorithm][shuffle-1].
 #

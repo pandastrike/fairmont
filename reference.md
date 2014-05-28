@@ -1,4 +1,4 @@
-## array Functions
+## Array Functions ##
 ### remove ###
 
 Destructively remove an element from an array. Returns the element removed.
@@ -21,7 +21,7 @@ Takes an array and returns a new array with all values shuffled randomly.
 ```coffee-script
 shuffle ["a", "b", "c", "d", "e", "f"]
 # for e.g.: returns ["b", "c", "d", "e", "f", "a"]
-``` coffee-script
+```
 
 Use the [Fisher-Yates algorithm][shuffle-1].
 
@@ -41,9 +41,8 @@ Adapted from the [CoffeeScript Cookbook][shuffle-2].
 
 
 
-## index Functions
-Given a string, return an array containing the substrings
-found separated by whitespace. Like Ruby's %w[] syntax.
+## General Purpose Functions ##
+## w ###
 Mixins
 Direct requires
 $.type = require "./src/type"
@@ -55,7 +54,6 @@ where toString is a unique value
 
 
 
-## object Functions
 Convenient way to define properties
 
 class Foo
@@ -68,12 +66,10 @@ Shallow merge
 
 
 
-## string Functions
 Adapted from Mustache.js
 
 
 
-## type Functions
 type - reliable, consistent type function. Adapted from:
 http://coffeescriptcookbook.com/chapters/classes_and_objects/type-function
 See also, of course: http://javascript.crockford.com/remedial.html

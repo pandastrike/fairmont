@@ -1,7 +1,15 @@
 $ = {}
 
-# Given a string, return an array containing the substrings
-# found separated by whitespace. Like Ruby's %w[] syntax.
+# ## General Purpose Functions ##
+
+### w ###
+
+Split a string on whitespace. Useful for concisely creating arrays of strings.
+
+```coffee-script
+console.log word for word in w "foo bar baz"
+```
+
 $.w = w = (string) -> string.trim().split /\s+/
 
 # Mixins
