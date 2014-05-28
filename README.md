@@ -225,14 +225,48 @@ Capitalize the first letter of a string.
 #
 Capitalize the first letter of each word in a string.
 #
-### camelCase ###
+### camel_case ###
 #
 Convert a sequence of words into a camel-cased string.
 #
 ```coffee-script
 # yields fooBarBaz
 camel_case "foo bar baz"
-Adapted from Mustache.js
+```
+#
+### underscored ###
+#
+Convert a sequence of words into an underscore-separated string.
+#
+```coffee-script
+# yields foo_bar_baz
+underscored "foo bar baz"
+```
+#
+### dashed ###
+#
+Convert a sequence of words into a dash-separated string.
+#
+```coffee-script
+# yields foo-bar-baz
+dashed "foo bar baz"
+```
+#
+### plain_test ###
+#
+Convert an camel-case or underscore- or dash-separated string into a
+whitespace separated string.
+#
+```coffee-script
+# all of the following yield foo bar baz
+plain_text "fooBarBaz"
+plain_text "foo-bar-baz"
+plain_text "foo_bar_baz"
+```
+#
+### htmlEscape ###
+#
+Escape a string so that it can be embedded into HTML. Adapted from Mustache.js.
 #
 ## Type Functions ##
 #
