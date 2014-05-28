@@ -1,14 +1,38 @@
 $ = {}
 
+#
+# ## String Functions ##
+#
+
+#
+# ### capitalize ###
+#
+# Capitalize the first letter of a string.
+
 $.capitalize = (string) ->
   string[0].toUpperCase() + string[1..]
+
+#
+# ### titleCase ###
+#
+# Capitalize the first letter of each word in a string.
 
 $.titleCase = (string) ->
   string.toLowerCase().replace(/^(\w)|\W(\w)/g, (char) -> char.toUpperCase())
 
-$.camelCase = (string) ->
+#
+# ### camelCase ###
+#
+# Convert a sequence of words into a camel-cased string.
+#
+# ```coffee-script
+# # yields fooBarBaz
+# camel_case "foo bar baz"
+
+$.camelCase = $.camel_case = (string) ->
   string.toLowerCase().replace(/(\W+\w)/g, (string) ->
     string.trim().toUpperCase())
+
 
 $.underscored = (string) ->
   $.plainText(string).replace(/\W+/g, "_")
@@ -38,4 +62,3 @@ $.htmlEscape = do ->
   (string) -> string.replace( re, (s) -> map[s] )
 
 module.exports = $
-

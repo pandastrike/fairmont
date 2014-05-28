@@ -213,6 +213,25 @@ Perform a deep clone on an object. Taken from [The CoffeeScript Cookboox][clone-
 ```coffee-script
 copy = clone original
 ```
+#
+## String Functions ##
+#
+#
+### capitalize ###
+#
+Capitalize the first letter of a string.
+#
+### titleCase ###
+#
+Capitalize the first letter of each word in a string.
+#
+### camelCase ###
+#
+Convert a sequence of words into a camel-cased string.
+#
+```coffee-script
+# yields fooBarBaz
+camel_case "foo bar baz"
 Adapted from Mustache.js
 #
 ## Type Functions ##
