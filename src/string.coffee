@@ -61,7 +61,7 @@ $.dashed = (string) ->
   $.plainText(string).replace(/\W+/g, "-")
 
 #
-# ### plain_test ###
+# ### plain_text ###
 #
 # Convert an camel-case or underscore- or dash-separated string into a
 # whitespace separated string.
@@ -73,7 +73,7 @@ $.dashed = (string) ->
 # plain_text "foo_bar_baz"
 # ```
 
-$.plainText = (string) ->
+$.plainText = $.plain_text = (string) ->
   string
     .replace( /^[A-Z]/g, (c) -> c.toLowerCase() )
     .replace( /[A-Z]/g, (c) -> " #{c.toLowerCase()}" )
@@ -84,7 +84,7 @@ $.plainText = (string) ->
 #
 # Escape a string so that it can be embedded into HTML. Adapted from Mustache.js.
 
-$.htmlEscape = do ->
+$.htmlEscape = $.html_escape = do ->
 
   map =
     "&": "&amp;"

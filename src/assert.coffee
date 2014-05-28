@@ -18,4 +18,4 @@ assert.partialEqual = (actual, expected) ->
   for key, val of expected
     assert.deepEqual(actual[key], val)
 
-module.exports = assert
+module.exports = {}

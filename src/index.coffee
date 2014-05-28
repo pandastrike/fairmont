@@ -12,7 +12,7 @@ $ = {}
 # console.log word for word in w "foo bar baz"
 # ```
 
-$.w = w = (string) -> string.trim().split /\s+/
+$.w = (string) -> string.trim().split /\s+/
 
 # ### to ###
 #
@@ -33,6 +33,7 @@ $.to = (to, from) ->
 
 $.abort = -> process.exit -1
 
+#
 # ### memoize ###
 #
 # A very simple way to cache results of functions that take a single argument. Also takes an optional hash function that defaults to calling `toString` on the function's argument.
@@ -48,6 +49,7 @@ $.memoize = (fn, hash=(object)-> object.toString()) ->
   memo = {}
   (thing) -> memo[ hash( thing ) ] ?= fn(thing)
 
+#
 ### timer ###
 #
 # Set a timer. Takes an interval in microseconds and an action. Returns a function to cancel the timer. Basically, a more convenient way to call `setTimeout` and `clearTimeout`.
@@ -61,7 +63,6 @@ $.timer = (wait, action) ->
   id = setTimeout(action, wait)
   -> clearTimeout( id )
 
-
 # -- load the rest of the functions
 
 {basename} = require "path"
@@ -69,8 +70,8 @@ $.timer = (wait, action) ->
 {include} = require "./object"
 
 for filename in readdir(__dirname)
-  module = basename(filename, ".coffee")
-  if module != "index"
-    include $, require("./#{module}")
+  _module = basename(filename, ".coffee")
+  if _module != "index"
+    include $, require("./#{_module}")
 
 module.exports = $

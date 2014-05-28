@@ -1,7 +1,7 @@
 assert = require "assert"
 Testify = require "testify"
 
-Fairmont = require "./index"
+Fairmont = require "./src/index"
 
 Testify.test "String functions", (context) ->
   context.test "capitalize", ->
@@ -31,7 +31,7 @@ Testify.test "String functions", (context) ->
 
   context.test "htmlEscape", ->
     {htmlEscape} = Fairmont
-    assert.equal htmlEscape( "<a href='foo'>bar & baz</a>" ), 
+    assert.equal htmlEscape( "<a href='foo'>bar & baz</a>" ),
       "&lt;a href=&#39;foo&#39;&gt;bar &amp; baz&lt;&#x2F;a&gt;"
 
   context.test "shuffle", ->
