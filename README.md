@@ -2,121 +2,227 @@
 
 A collection of useful CoffeeScript/JavaScript functions.
 
-## General Purpose Functions
+## Array Functions ##
 
-**w** Split a string on whitespace. Useful for concisely creating arrays of strings.
+### remove ###
 
-    console.log word for word in w "foo bar baz"
+Destructively remove an element from an array. Returns the element removed.
 
-**type** Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `data`, `regexp`, `function`, `array`, `object`, `null`, `undefined`. Adapted from [The CoffeeScript Cookbook][0] and based on Douglas Crockford's [remedial JavaScript blog post][1].
+```coffee-script
+a = w "foo bar baz"
+remove( a, "bar" )
+```
+### uniq ###
 
-[0]:http://coffeescriptcookbook.com/chapters/classes_and_objects/type-function
-[1]:http://javascript.crockford.com/remedial.html
+Takes an array and returns a new array with all duplicate values from the original array removed. Also takes an optional hash function that defaults to calling `toString` on the elements.
 
-    foo() if type( foo ) == "function"
+```coffee-script
+uniq [1,2,3,1,2,3,4,5,6,3,6,2,4]
+# returns [1,2,3,4,5,6]
+```
+### shuffle ###
 
-**timer** Set a timer. Takes an interval in microseconds and an action. Returns a function to cancel the timer. Basically, a more convenient way to call `setTimeout` and `clearTimeout`.
+Takes an array and returns a new array with all values shuffled randomly.
+```coffee-script
+shuffle ["a", "b", "c", "d", "e", "f"]
+# for e.g.: returns ["b", "c", "d", "e", "f", "a"]
+```
 
-    cancel = timer 1000, -> console.log "Done"
-    cancel()
+Use the [Fisher-Yates algorithm][shuffle-1].
 
-## Array Functions
+Adapted from the [CoffeeScript Cookbook][shuffle-2].
 
-**remove** Destructively remove an element from an array. Returns the element removed.
-
-    a = w "foo bar baz"
-    remove( a, "bar" )
-
-**uniq** Takes an array and returns a new array with all duplicate values from the original array removed. Also takes an optional hash function that defaults to calling `toString` on the elements.
-
-    uniq [1,2,3,1,2,3,4,5,6,3,6,2,4]
-    # returns [1,2,3,4,5,6]
-
-**shuffle** Takes an array and returns a new array with all values shuffled randomly.
-
-    shuffle ["a", "b", "c", "d", "e", "f"]
-    # for e.g.: returns ["b", "c", "d", "e", "f", "a"]
-
-## File System Functions
-
-All file-system functions are based on Node's `fs` API. This is not `require`d unless the function is actually invoked.
-
-**exists** Check to see if a file exists.
-
-    source = read( sourcePath ) if exists( sourcePath )
-
-**read** Read a file synchronously and return a UTF-8 string of the contents.
-
-    source = read( sourcePath ) if exists( sourcePath )
-
-**write** Synchronously write a UTF-8 string to a file.
-
-    write( file.replace( /foo/g, 'bar' ) )
-
-**readdir** Synchronously get the contents of a directory as an array.
-
-    for file in readdir("documents")
-      console.log read( file ) if stat( file ).isFile()
-
-**stat** Synchronously get the stat object for a file.
-
-    for file in readdir("documents")
-      console.log read( file ) if stat( file ).isFile()
-
-**chdir** Change directories, execute a function, and then restore the original working directory.
-
-    chdir "documents", ->
-      console.log read( "README" )
-
-**rm** Removes a file.
-
-    rm "documents/reamde.txt"
-
-**rmdir** Removes a directory.
-
-    rmdir "documents"
+[shuffle-1]:http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+[shuffle-2]:http://coffeescriptcookbook.com/chapters/arrays/shuffling-array-elements
 
 ## Hashing/Encoding Functions
 
-**md5** Return the MD5 hash of a string.
 
-    nutshell = md5( myLifeStory )
+### md5 ###
 
-**base64** Base64 encode a string. (Not URL safe.)
+Return the MD5 hash of a string.
 
-    image = data: base64( imageData )
+```coffee-script
+nutshell = md5( myLifeStory )
+```
+
+### base64 ###
+
+Base64 encode a string. (Not URL safe.)
+
+```coffee-script
+image = data: base64( imageData )
+```
+
+# File System Functions
+
+All file-system functions are based on Node's `fs` API. This is not `require`d unless the function is actually invoked.
+
+### exists ###
+
+Check to see if a file exists.
+
+```coffee-script
+source = read( sourcePath ) if exists( sourcePath )
+```
+
+### read ###
+
+Read a file synchronously and return a UTF-8 string of the contents.
+
+```coffee-script
+source = read( sourcePath ) if exists( sourcePath )
+```
+
+### readdir ###
+
+Synchronously get the contents of a directory as an array.
+
+```coffee-script
+for file in readdir("documents")
+console.log read( file ) if stat( file ).isFile()
+```
+
+### stat ###
+
+Synchronously get the stat object for a file.
+
+```coffee-script
+for file in readdir("documents")
+console.log read( file ) if stat( file ).isFile()
+```
+
+### write ###
+
+Synchronously write a UTF-8 string to a file.
+
+```coffee-script
+write( file.replace( /foo/g, 'bar' ) )
+```
+
+### chdir ###
+
+Change directories, execute a function, and then restore the original working directory.
+
+```coffee-script
+chdir "documents", ->
+console.log read( "README" )
+```
+
+### rm ###
+
+Removes a file.
+
+```coffee-script
+rm "documents/reamde.txt"
+```
+
+### rmdir ###
+
+Removes a directory.
+
+```coffee-script
+rmdir "documents"
+```
+
+## General Purpose Functions ##
+
+### w ###
+
+Split a string on whitespace. Useful for concisely creating arrays of strings.
+
+```coffee-script
+console.log word for word in w "foo bar baz"
+```
+### to ###
+
+Hoist a value to a given type if it isn't already. Useful when you want to wrap a value without having to check to see if it's already wrapped.
+
+For example, to hoist an error message into an error, you would use:
+
+```coffee-script
+to(error, Error)
+```
+### abort ###
+
+Simple wrapper around `process.exit(-1)`.
+### memoize ###
+
+A very simple way to cache results of functions that take a single argument. Also takes an optional hash function that defaults to calling `toString` on the function's argument.
+
+```coffee-script
+nickname = (email) ->
+expensiveLookupToGetNickname( email )
+
+memoize( nickname )
+```
+## timer ###
+
+Set a timer. Takes an interval in microseconds and an action. Returns a function to cancel the timer. Basically, a more convenient way to call `setTimeout` and `clearTimeout`.
+
+```coffee-script
+cancel = timer 1000, -> console.log "Done"
+cancel()
+```
 
 ## Object Functions
 
-**include** Adds the properties of one or more objects to another.
 
-    include( @, ScrollbarMixin, SidebarMixin )
+### include ###
 
-**merge** Creates new object by progressively adding the properties of each given object.
+Adds the properties of one or more objects to another.
 
-    options = merge( defaults, globalOptions, localOptions )
+```coffee-script
+include( @, ScrollbarMixin, SidebarMixin )
+```
 
-**delegate** Delegates from one object to another by creating functions in the first object that call the second.
+### Property ###
 
-    delegate( aProxy, aServer )
+Add a `property` method to a class, making it easier to define getters and setters on its prototype.
 
-## Object Mixins
-
-Mixins are objects that you can `include` into another, typically adding features to an object in the process.
-
-**Property** Add a `property` method to a class, making it easier to define getters and setters on its prototype.
-
-    class Foo
-      include @, Property
-      property "foo", get: -> @_foo, set: (v) -> @_foo = v
+```coffee-script
+class Foo
+include @, Property
+property "foo", get: -> @_foo, set: (v) -> @_foo = v
+```
 
 Properties defined using `property` are enumerable.
 
-## Function Functions
+### delegate ###
 
-**memoize** A very simple way to cache results of functions that take a single argument. Also takes an optional hash function that defaults to calling `toString` on the function's argument.
+Delegates from one object to another by creating functions in the first object that call the second.
 
-    nickname = (email) ->
-      expensiveLookupToGetNickname( email )
+```coffee-script
+delegate( aProxy, aServer )
+```
 
-    memoize( nickname )
+### merge ###
+
+Creates new object by progressively adding the properties of each given object.
+
+```coffee-script
+options = merge( defaults, globalOptions, localOptions )
+```
+
+### clone ###
+
+Perform a deep clone on an object. Taken from [The CoffeeScript Cookboox][clone-1].
+
+[clone-1]:http://coffeescriptcookbook.com/chapters/classes_and_objects/cloning
+
+```coffee-script
+copy = clone original
+```
+Adapted from Mustache.js
+
+# Type Functions ##
+
+## type ##
+
+Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `data`, `regexp`, `function`, `array`, `object`, `null`, `undefined`. Adapted from [The CoffeeScript Cookbook][type-0] and based on Douglas Crockford's [remedial JavaScript blog post][type-1].
+[type-0]:http://coffeescriptcookbook.com/chapters/classes_and_objects/type-function
+[type-1]:http://javascript.crockford.com/remedial.html
+
+```coffee-script
+foo() if type( foo ) == "function"
+```

@@ -6,7 +6,7 @@ $ = {}
 # All file-system functions are based on Node's `fs` API. This is not `require`d unless the function is actually invoked.
 
 #
-# ## exists ##
+# ### exists ###
 #
 # Check to see if a file exists.
 #
@@ -19,7 +19,7 @@ $.exists = (path) ->
   FileSystem.existsSync(path)
 
 #
-# ## read ##
+# ### read ###
 #
 # Read a file synchronously and return a UTF-8 string of the contents.
 #
@@ -33,7 +33,7 @@ $.read = (path) ->
 
 
 #
-# ## readdir ##
+# ### readdir ###
 #
 # Synchronously get the contents of a directory as an array.
 #
@@ -47,7 +47,7 @@ $.readdir = (path) ->
   FileSystem.readdirSync(path)
 
 #
-# ## stat ##
+# ### stat ###
 #
 # Synchronously get the stat object for a file.
 #
@@ -61,7 +61,7 @@ $.stat = (path) ->
   FileSystem.statSync(path)
 
 #
-# ## write ##
+# ### write ###
 #
 # Synchronously write a UTF-8 string to a file.
 #
@@ -74,7 +74,7 @@ $.write = (path, content) ->
   FileSystem.writeFileSync path, content
 
 #
-# ## chdir ##
+# ### chdir ###
 #
 # Change directories, execute a function, and then restore the original working directory.
 #
@@ -91,7 +91,7 @@ $.chdir = (dir, fn) ->
   rval
 
 #
-# ## rm ##
+# ### rm ###
 #
 # Removes a file.
 #
@@ -104,7 +104,7 @@ $.rm = (path) ->
   FileSystem.unlinkSync(path)
 
 #
-# ## rmdir ##
+# ### rmdir ###
 #
 # Removes a directory.
 #
