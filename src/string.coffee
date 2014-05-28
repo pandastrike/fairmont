@@ -13,7 +13,7 @@ $.capitalize = (string) ->
   string[0].toUpperCase() + string[1..]
 
 #
-# ### titleCase ###
+# ### title_case ###
 #
 # Capitalize the first letter of each word in a string.
 
@@ -80,7 +80,7 @@ $.plainText = $.plain_text = (string) ->
     .replace( /\W+/g, " " )
 
 #
-# ### htmlEscape ###
+# ### html_escape ###
 #
 # Escape a string so that it can be embedded into HTML. Adapted from Mustache.js.
 

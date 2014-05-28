@@ -146,6 +146,7 @@ to(error, Error)
 ### abort ###
 #
 Simple wrapper around `process.exit(-1)`.
+#
 ### memoize ###
 #
 A very simple way to cache results of functions that take a single argument. Also takes an optional hash function that defaults to calling `toString` on the function's argument.
@@ -156,6 +157,7 @@ nickname = (email) ->
 #
 memoize( nickname )
 ```
+#
 ### timer ###
 #
 Set a timer. Takes an interval in microseconds and an action. Returns a function to cancel the timer. Basically, a more convenient way to call `setTimeout` and `clearTimeout`.
@@ -221,7 +223,7 @@ copy = clone original
 #
 Capitalize the first letter of a string.
 #
-### titleCase ###
+### title_case ###
 #
 Capitalize the first letter of each word in a string.
 #
@@ -252,7 +254,7 @@ Convert a sequence of words into a dash-separated string.
 dashed "foo bar baz"
 ```
 #
-### plain_test ###
+### plain_text ###
 #
 Convert an camel-case or underscore- or dash-separated string into a
 whitespace separated string.
@@ -264,7 +266,7 @@ plain_text "foo-bar-baz"
 plain_text "foo_bar_baz"
 ```
 #
-### htmlEscape ###
+### html_escape ###
 #
 Escape a string so that it can be embedded into HTML. Adapted from Mustache.js.
 #
