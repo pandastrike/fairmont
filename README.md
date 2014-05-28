@@ -7,7 +7,7 @@ A collection of useful CoffeeScript/JavaScript functions.
 **w** Split a string on whitespace. Useful for concisely creating arrays of strings.
 
     console.log word for word in w "foo bar baz"
-    
+
 **type** Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `data`, `regexp`, `function`, `array`, `object`, `null`, `undefined`. Adapted from [The CoffeeScript Cookbook][0] and based on Douglas Crockford's [remedial JavaScript blog post][1].
 
 [0]:http://coffeescriptcookbook.com/chapters/classes_and_objects/type-function
@@ -19,7 +19,7 @@ A collection of useful CoffeeScript/JavaScript functions.
 
     cancel = timer 1000, -> console.log "Done"
     cancel()
-    
+
 ## Array Functions
 
 **remove** Destructively remove an element from an array. Returns the element removed.
@@ -27,7 +27,7 @@ A collection of useful CoffeeScript/JavaScript functions.
     a = w "foo bar baz"
     remove( a, "bar" )
 
-**uniq** Takes an array and returns a new array with all duplicate values from the original array removed. Also takes an optional hash function that defaults to calling `toString` on the elements. 
+**uniq** Takes an array and returns a new array with all duplicate values from the original array removed. Also takes an optional hash function that defaults to calling `toString` on the elements.
 
     uniq [1,2,3,1,2,3,4,5,6,3,6,2,4]
     # returns [1,2,3,4,5,6]
@@ -67,7 +67,7 @@ All file-system functions are based on Node's `fs` API. This is not `require`d u
 
     chdir "documents", ->
       console.log read( "README" )
-      
+
 **rm** Removes a file.
 
     rm "documents/reamde.txt"
@@ -118,5 +118,5 @@ Properties defined using `property` are enumerable.
 
     nickname = (email) ->
       expensiveLookupToGetNickname( email )
-      
+
     memoize( nickname )

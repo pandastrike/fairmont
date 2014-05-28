@@ -5,18 +5,20 @@ $ = {}
 $.w = w = (string) -> string.trim().split /\s+/
 
 # Mixins
+{basename} = require "path"
+{readdir} = require "./fs"
+{include} = require "./object"
 
-for m in $.w "string array fs crypto object"
-  exports = require "./src/#{m}"
-  for key, fn of exports
-    $[key] = fn
-
+for filename in readdir(__dirname)
+  module = basename(filename, ".coffee")
+  if module != "index"
+    include $, require("./#{module}")
 
 # Direct requires
 
-$.type = require "./src/type"
-$.assert = require "./src/assert"
-
+# $.type = require "./src/type"
+# $.assert = require "./src/assert"
+#
 
 # Direct definitions
 

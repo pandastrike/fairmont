@@ -14,4 +14,3 @@ module.exports = (object) ->
     return classToType[myClass]
   else
     return "object"
-

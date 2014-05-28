@@ -1,15 +1,16 @@
 {
   "name": "fairmont",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "description": "A collection of useful functions and utilities.",
   "files": [
     "index.coffee",
     "src/",
     "README.md"
   ],
-  "main": "index.coffee",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublish": "coffee -o lib/ -c src/*.coffee",
+    "test": "coffee test/shred.coffee"
   },
   "repository": {
     "type": "git",
@@ -20,8 +21,11 @@
     "coffeescript",
     "utility"
   ],
-  "author": "Dan Yoder",
-  "license": "BSD",
+  "authors": [
+    "Dan Yoder",
+    "Matthew King"
+  ],
+  "license": "MIT",
   "devDependencies": {
     "testify": "~0.2.4"
   }
