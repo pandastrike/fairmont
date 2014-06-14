@@ -1,15 +1,17 @@
 {
   "name": "fairmont",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "description": "A collection of useful functions and utilities.",
   "files": [
-    "index.coffee",
     "src/",
+    "lib/",
+    "docs.coffee",
+    "test.coffee",
     "README.md"
   ],
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "prepublish": "coffee -o lib/ -c src/*.coffee",
+    "prepublish": "coffee -o lib/ -c src/*.coffee && npm run docs",
     "docs": "coffee doc.coffee > README.md",
     "test": "coffee test/shred.coffee"
   },

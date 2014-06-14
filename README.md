@@ -272,7 +272,7 @@ Escape a string so that it can be embedded into HTML. Adapted from Mustache.js.
 #
 ## Type Functions ##
 #
-## type ##
+### type ###
 #
 Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `data`, `regexp`, `function`, `array`, `object`, `null`, `undefined`. Adapted from [The CoffeeScript Cookbook][type-0] and based on Douglas Crockford's [remedial JavaScript blog post][type-1].
 [type-0]:http://coffeescriptcookbook.com/chapters/classes_and_objects/type-function
