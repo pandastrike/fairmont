@@ -72,6 +72,9 @@ $.timer = (wait, action) ->
 for filename in readdir(__dirname)
   _module = basename(filename, ".coffee")
   if _module != "index"
-    include $, require("./#{_module}")
+    try
+      include $, require("./#{_module}")
+    catch error
+
 
 module.exports = $

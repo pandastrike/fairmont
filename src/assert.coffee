@@ -1,5 +1,5 @@
 assert = require "assert"
-type = require "./type"
+{type} = require "./type"
 
 assert.type = (value, string) ->
   assert.equal type(value), string
