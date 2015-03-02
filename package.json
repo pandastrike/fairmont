@@ -1,6 +1,6 @@
 {
   "name": "fairmont",
-  "version": "0.8.2",
+  "version": "1.0.0-alpha-01",
   "description": "A collection of useful functions and utilities.",
   "files": [
     "src/",
@@ -30,6 +30,11 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "amen": "^1.0.0-alpha-03",
     "testify": "~0.2.4"
+  },
+  "dependencies": {
+    "essentialjs": "^1.1.13",
+    "when": "^3.7.2"
   }
 }

@@ -1,4 +1,4 @@
-$ = {}
+    $ = {}
 
 #
 # ## General Purpose Functions ##
@@ -45,7 +45,7 @@ $.abort = -> process.exit -1
 # memoize( nickname )
 # ```
 
-$.memoize = (fn, hash=(object)-> object.toString()) ->
+memoize = (fn, hash=(object)-> object.toString()) ->
   memo = {}
   (thing) -> memo[ hash( thing ) ] ?= fn(thing)
 
@@ -63,18 +63,17 @@ $.timer = (wait, action) ->
   id = setTimeout(action, wait)
   -> clearTimeout( id )
 
-# -- load the rest of the functions
+Load the rest of the functions.
 
-{basename} = require "path"
-{readdir} = require "./fs"
-{include} = require "./object"
+    {include} = require "./object"
+    include $, require "./array"
+    include $, require "./assert"
+    include $, require "./crypto"
+    include $, require "./fs"
+    include $, require "./object"
+    include $, require "./string"
+    include $, require "./type"
+    include $, require "./core"
 
-for filename in readdir(__dirname)
-  _module = basename(filename, ".coffee")
-  if _module != "index"
-    try
-      include $, require("./#{_module}")
-    catch error
 
-
-module.exports = $
+    module.exports = $

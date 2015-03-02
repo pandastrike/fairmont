@@ -1,9 +1,15 @@
-$ = {}
-type = require "./type"
+# Object Functions
+
+
 
 #
-# ## Object Functions
+# ## liberate
 #
+# Liberate a prototype function so that it can be used as a standalone function whose first argument is an instance of a prototype constructor.
+
+    liberate = do (f=(->)) -> f.bind.bind f.call
+
+
 
 #
 # ### include ###
@@ -14,11 +20,11 @@ type = require "./type"
 # include( @, ScrollbarMixin, SidebarMixin )
 # ```
 
-$.include = include = (object, mixins...) ->
-  for mixin in mixins
-    for key, value of mixin
-      object[key] = value
-  object
+    include = include = (object, mixins...) ->
+      for mixin in mixins
+        for key, value of mixin
+          object[key] = value
+      object
 
 #
 # ### property ###
@@ -107,4 +113,4 @@ $.clone = (object) ->
 
   return clone
 
-module.exports = $
+    module.exports = {include, liberate}
