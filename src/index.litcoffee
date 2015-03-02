@@ -1,79 +1,59 @@
-    $ = {}
+# General Purpose Functions
 
-#
-# ## General Purpose Functions ##
-#
+    {describe, assert} = require "./helpers"
 
-# ### w ###
-#
-# Split a string on whitespace. Useful for concisely creating arrays of strings.
-#
-# ```coffee-script
-# console.log word for word in w "foo bar baz"
-# ```
+    describe "General functions", (context) ->
 
-$.w = (string) -> string.trim().split /\s+/
+## abort
 
-# ### to ###
-#
-# Hoist a value to a given type if it isn't already. Useful when you want to wrap a value without having to check to see if it's already wrapped.
-#
-# For example, to hoist an error message into an error, you would use:
-#
-# ```coffee-script
-# to(error, Error)
-# ```
+Simple wrapper around `process.exit(-1)`.
 
-$.to = (to, from) ->
-  if from instanceof to then from else new to from
+      abort = -> process.exit -1
 
-# ### abort ###
-#
-# Simple wrapper around `process.exit(-1)`.
+      context.test "abort"
 
-$.abort = -> process.exit -1
+## memoize
 
-#
-# ### memoize ###
-#
-# A very simple way to cache results of functions that take a single argument. Also takes an optional hash function that defaults to calling `toString` on the function's argument.
-#
-# ```coffee-script
-# nickname = (email) ->
-#   expensiveLookupToGetNickname( email )
-#
-# memoize( nickname )
-# ```
+A very simple way to cache results of functions that take a single argument. Also takes an optional hash function that defaults to calling `toString` on the function's argument.
 
-memoize = (fn, hash=(object)-> object.toString()) ->
-  memo = {}
-  (thing) -> memo[ hash( thing ) ] ?= fn(thing)
+      memoize = do (_hash = undefined) ->
+        _hash = (x) -> x.toString()
+        (fn, hash = _hash, memo = {}) ->
+          (x) -> memo[hash x] ?= fn x
 
-#
-### timer ###
-#
-# Set a timer. Takes an interval in microseconds and an action. Returns a function to cancel the timer. Basically, a more convenient way to call `setTimeout` and `clearTimeout`.
-#
-# ```coffee-script
-# cancel = timer 1000, -> console.log "Done"
-# cancel()
-# ```
+      context.test "memoize"
 
-$.timer = (wait, action) ->
-  id = setTimeout(action, wait)
-  -> clearTimeout( id )
+## timer
+
+Set a timer. Takes an interval in microseconds and an action. Returns a function to cancel the timer. Basically, a more convenient way to call `setTimeout` and `clearTimeout`.
+
+      timer = (wait, action) ->
+        id = setTimeout(action, wait)
+        -> clearTimeout( id )
+      context.test "timer"
+
+## sleep
+
+Returns a promise that yields after a given interval.
+
+      sleep = (interval) ->
+        {promise} = require "when"
+        promise (resolve, reject) ->
+          timer interval, -> resolve()
+
+      context.test "sleep"
+
+---
 
 Load the rest of the functions.
 
     {include} = require "./object"
-    include $, require "./array"
-    include $, require "./assert"
-    include $, require "./crypto"
-    include $, require "./fs"
-    include $, require "./object"
-    include $, require "./string"
-    include $, require "./type"
-    include $, require "./core"
-
-
-    module.exports = $
+    include module.exports, require "./core"
+    include module.exports, require "./logical"
+    include module.exports, require "./numeric"
+    include module.exports, require "./type"
+    include module.exports, require "./array"
+    include module.exports, require "./crypto"
+    include module.exports, require "./fs"
+    include module.exports, require "./object"
+    include module.exports, require "./string"

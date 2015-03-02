@@ -5,93 +5,98 @@ All file-system functions are based on Node's `fs` API. This is not `require`d u
     fs = (f) ->
       {liftAll} = require "when/node"
       {call} = (require "when/generator")
-      f (liftAll require "fs"), call
+      async = (require "when/generator").lift
+      f (liftAll require "fs"), {call, async}
 
-## exists
+    {describe, assert} = require "./helpers"
 
-Check to see if a file exists.
-
-    exists = (path) -> fs (FS) -> FS.exists path
-
-## read
-
-Read a file and return a UTF-8 string of the contents.
-
-    read = (path) ->
-      fs (FS, call) ->
-        call -> (yield FS.readFile path).toString()
-
-
-## readdir
-
-Synchronously get the contents of a directory as an array.
-
-    readdir = (path) -> fs (FS) -> FS.readdir path
-
-
+    describe "File System Functions", (context) ->
 
 ## stat
 
 Synchronously get the stat object for a file.
 
-    stat = (path) -> fs (FS) -> FS.stat path
+      stat = (path) -> fs ({stat}) -> stat path
 
-#
-# ### write ###
-#
-# Synchronously write a UTF-8 string to a file.
-#
-# ```coffee-script
-# write( file.replace( /foo/g, 'bar' ) )
-# ```
+      context.test "stat", ->
+        assert (yield stat "test/test.json").size?
 
-$.write = (path, content) ->
-  FileSystem = require "fs"
-  FileSystem.writeFileSync path, content
+## exists
 
-#
-# ### chdir ###
-#
-# Change directories, execute a function, and then restore the original working directory.
-#
-# ```coffee-script
-# chdir "documents", ->
-#   console.log read( "README" )
-# ```
+Check to see if a file exists.
 
-$.chdir = (dir, fn) ->
-  cwd = process.cwd()
-  process.chdir dir
-  rval = fn()
-  process.chdir cwd
-  rval
+      exists = stat
 
-#
-# ### rm ###
-#
-# Removes a file.
-#
-# ```coffee-script
-# rm "documents/reamde.txt"
-# ```
+      context.test "exists", ->
+        (yield exists "test/test.json")
+        assert (yield exists "test/test.json")
 
-$.rm = (path) ->
-  FileSystem = require "fs"
-  FileSystem.unlinkSync(path)
 
-#
-# ### rmdir ###
-#
-# Removes a directory.
-#
-# ```coffee-script
-# rmdir "documents"
-# ```
+## read
 
-$.rmdir = (path) ->
-  FileSystem = require "fs"
-  FileSystem.rmdirSync( path )
+Read a file and return a UTF-8 string of the contents.
+
+      read = (path) ->
+        fs ({readFile}, {call}) ->
+          call -> (yield readFile path).toString()
+
+
+      context.test "read", ->
+        assert (JSON.parse (yield read "test/test.json")).name == "fairmont"
+
+## readdir
+
+Synchronously get the contents of a directory as an array.
+
+      readdir = (path) -> fs ({readdir}) -> readdir path
+
+      context.test "readdir", ->
+        assert "test.json" in (yield readdir "test")
+
+## write
+
+Synchronously write a UTF-8 string to a file.
+
+      write = (path, content) -> fs ({writeFile}) -> writeFile path, content
+
+      context.test "write", ->
+        write "test/test.json", (yield read "test/test.json")
+
+## chdir
+
+Change directories, execute a function, and then restore the original working directory. The function must return a Promise.
+
+      chdir = (dir, fn) ->
+        fs ({}, {async}) ->
+          cwd = process.cwd()
+          process.chdir dir
+          rval = yield fn()
+          process.chdir cwd
+          rval
+
+      fs ({}, {async}) ->
+        context.test "chdir", ->
+          yield chdir "test", async ->
+            assert (yield exists "test.json")
+          assert ! (process.cwd().match /test$/)?
+
+## rm
+
+Removes a file.
+
+      rm = (path) -> fs({unlink}) -> unlink path
+
+      context.test "rm"
+
+## rmdir
+
+Removes a directory.
+
+      rmdir = (path) -> fs({rmdir}) -> rmdir path
+
+      context.test "rmdir"
 
 ---
 
-    module.exports = {exists, read, readdir, stat}
+
+      module.exports = {exists, read, readdir, stat, write, chdir, rm, rmdir}

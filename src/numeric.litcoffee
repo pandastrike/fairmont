@@ -3,34 +3,36 @@
     {curry, partial} = require "./core"
     {f_not} = require "./logical"
 
-    assert = require "assert"
+    {describe, assert} = require "./helpers"
+
+    describe "Numeric functions", (context) ->
 
 ## gt, lt, gte, lte
 
-    gte = curry (x, y) -> y >= x
-    lte = curry (x, y) -> y <= x
-    gt = curry (x, y) -> y > x
-    lt = curry (x, y) -> y < x
+      gte = curry (x, y) -> y >= x
+      lte = curry (x, y) -> y <= x
+      gt = curry (x, y) -> y > x
+      lt = curry (x, y) -> y < x
 
-    assert lt 6, 5
+      assert lt 6, 5
 
-    add = curry (x, y) -> x + y
-    sub = curry (x, y) -> y - x
-    mul = curry (x, y) -> x * y
-    div = curry (x, y) -> y / x
-    mod = curry (x, y) -> y % x == 0
+      add = curry (x, y) -> x + y
+      sub = curry (x, y) -> y - x
+      mul = curry (x, y) -> x * y
+      div = curry (x, y) -> y / x
+      mod = curry (x, y) -> y % x == 0
 
 ## odd, even
 
-    even = mod 2
-    odd = f_not even
+      even = mod 2
+      odd = f_not even
 
-    assert odd 5
+      context.test "odd", -> assert odd 5
 
 
-    {min, max} = Math
+      {min, max} = Math
 
 ---
 
-    module.exports = {gt, lt, gte, lte, add, sub, mul, div, mod,
-      even, odd, min, max}
+      module.exports = {gt, lt, gte, lte, add, sub, mul, div, mod,
+        even, odd, min, max}
