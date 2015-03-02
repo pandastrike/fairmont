@@ -5,15 +5,12 @@
   "files": [
     "src/",
     "lib/",
-    "docs.coffee",
-    "test.coffee",
     "README.md"
   ],
   "main": "lib/index.js",
   "scripts": {
-    "prepublish": "coffee -o lib/ -c src/*.coffee && npm run docs",
-    "docs": "coffee doc.coffee > README.md",
-    "test": "coffee test/shred.coffee"
+    "prepublish": "coffee -o lib/ -c src/*.coffee",
+    "test": "coffee ./test.coffee"
   },
   "repository": {
     "type": "git",
@@ -31,10 +28,8 @@
   "license": "MIT",
   "devDependencies": {
     "amen": "^1.0.0-alpha-03",
-    "testify": "~0.2.4"
   },
   "dependencies": {
-    "essentialjs": "^1.1.13",
     "when": "^3.7.2"
   }
 }
