@@ -74,7 +74,7 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 * [API Reference][object]
 
 
-    include, merge, clone, property, delegate, liberate
+    include/extend, merge, clone, pluck, property, delegate, liberate
 
 [object]:src/object.litcoffee
 
@@ -85,5 +85,5 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 
     capitalize, title_case, camel_case, underscored,
     dashed, plain_text, html_escape, w
-    
+
 [string]:src/string.litcoffee
