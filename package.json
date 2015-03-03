@@ -1,19 +1,16 @@
 {
   "name": "fairmont",
-  "version": "0.8.2",
+  "version": "1.0.0-alpha-01",
   "description": "A collection of useful functions and utilities.",
   "files": [
     "src/",
     "lib/",
-    "docs.coffee",
-    "test.coffee",
     "README.md"
   ],
   "main": "lib/index.js",
   "scripts": {
-    "prepublish": "coffee -o lib/ -c src/*.coffee && npm run docs",
-    "docs": "coffee doc.coffee > README.md",
-    "test": "coffee test/shred.coffee"
+    "prepublish": "coffee -o lib/ -c src/*.coffee",
+    "test": "coffee ./test.coffee"
   },
   "repository": {
     "type": "git",
@@ -30,6 +27,9 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "testify": "~0.2.4"
+    "amen": "^1.0.0-alpha-03"
+  },
+  "dependencies": {
+    "when": "^3.7.2"
   }
 }
