@@ -1,8 +1,40 @@
 # Fairmont
 
-A collection of useful CoffeeScript/JavaScript functions. These include functions to help with functional programming, arrays, objects, and more. It's intended as an alternative to Underscore.
+A collection of useful CoffeeScript/JavaScript functions. These include functions to help with functional programming, arrays, objects, and more. Fairmont is inspired by [Underscore][100], [EssentialJS][110], and [prelude.coffee][120].
 
-## Core Functions
+[100]:http://underscorejs.org/
+[110]:https://github.com/elclanrs/essential.js
+[120]:http://xixixao.github.io/prelude-ls/
+
+## Why Fairmont?
+
+Fairmont offers a combination of features we couldn't find in existing libraries:
+
+* Functional programming friendly
+* ES6 aware (in particular, uses promises and generators for async operations)
+* Comprehensive
+
+Fairmont is also a literate programming project—the documentation, code, examples, and tests are together, making it easy to see what a function does, how it does it, and why it does it that particular way.
+
+### Functional Programming Friendly
+
+Fairmont is built on a functional programming foundation, including implementations for currying, partial application, and composition. Most functions are curried by default and designed with composition in mind.
+
+### ES6 Aware
+
+Fairmont wraps common asynchronous operations so they can be used in `yield` expressions. For example, here's how you can read a file using Fairmont.
+
+```coffee
+content = yield read "war-and-peace.txt"
+```
+
+### Comprehensive
+
+One of the nice things about Underscore is that it offers a lot of useful functions. Many common tasks can be written entirely using Underscore functions. Fairmont has a similar ambition. While there's nothing wrong with specialized libraries, there are times when you just want a good Swiss Army Knife.
+
+## List of Functions
+
+### Core Functions
 
 * [API Reference][core]
 
@@ -12,7 +44,7 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 
 [core]:src/core.litcoffee
 
-## Logical Functions
+### Logical Functions
 
 * [API Reference][logical]
 
@@ -21,7 +53,7 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 
 [logical]:src/logical.litcoffee
 
-## Numeric Functions
+### Numeric Functions
 
 * [API Reference][numeric]
 
@@ -31,7 +63,7 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 
 [numeric]:src/numeric.litcoffee
 
-## Type Functions
+### Type Functions
 
 * [API Reference][core]
 
@@ -40,7 +72,7 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 
 [type]:src/type.litcoffee
 
-## Array functions
+### Array functions
 
 * [API Reference][array]
 
@@ -51,7 +83,7 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 
 [array]:src/array.litcoffee
 
-## Crypto Functions
+### Crypto Functions
 
 * [API Reference][crypto]
 
@@ -60,7 +92,7 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 
 [crypto]:src/crypto.litcoffee
 
-## File System Functions
+### File System Functions
 
 * [API Reference][fs]
 
@@ -69,7 +101,7 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 
 [fs]:src/fs.litcoffee
 
-## Object Functions
+### Object Functions
 
 * [API Reference][object]
 
@@ -78,7 +110,7 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 
 [object]:src/object.litcoffee
 
-## String Functions
+### String Functions
 
 * [API Reference][string]
 
@@ -88,7 +120,7 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 
 [string]:src/string.litcoffee
 
-## Miscellaneous Functions
+### Miscellaneous Functions
 
 * [API Reference][misc]
 
@@ -96,3 +128,23 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
     shell, sleep, timer, memoize, abort
 
 [misc]:src/index.litcoffee
+
+## Status
+
+Fairmont is still under heavy development and is `alpha` quality, meaning you should probably not use it in your production code.
+
+## Roadmap
+
+You can get an idea of what we're planning by looking at the [issues list][200]. If you want something that isn't there, and you think it would be a good addition, please open a ticket.
+
+[200]:https://github.com/pandastrike/fairmont/issues
+
+Our overarching goals for the project include:
+
+* Making the library more comprehensive
+
+* Improving the tests and documentation
+
+* Ensuring that we can use an FP style in real-world scenarios
+
+* Introducing an idiom for supporting lazy evaluation
