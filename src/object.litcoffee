@@ -88,15 +88,25 @@ Delegates from one object to another by creating functions in the first object t
 
       context.test "delegate"
 
-## liberate
+## bind
 
-Liberate a prototype function so that it can be used as a standalone function whose first argument is an instance of a prototype constructor.
+Define a function based on a prototype function and an instance of the prototype. **Important** In the past, this did not always work for some natively implemented functions. That is hopefully no longer the case.
 
-      liberate = do (f=(->)) -> f.bind.bind f.call
+      bind = curry (f, x) -> f.bind x
 
-      context.test "liberate", ->
-        reverse = liberate Array::reverse
-        assert deep_equal (reverse [1,2,3]), [3, 2, 1]
+      context.test "bind", ->
+        trim = bind String::trim, "foo "
+        assert (trim()), "foo"
+
+## detach
+
+Define a function based on a prototype function, taking as its first argument an instance of prototype. **Important** In the past, this did not always work for some natively implemented functions. That is hopefully no longer the case.
+
+      detach = (f) -> curry (x, args...) -> f.apply x, args
+
+      context.test "detach", ->
+        trim = detach String::trim
+        assert (trim "foo "), "foo"
 
 ## properties
 
@@ -127,4 +137,4 @@ Properties defined using `properties` are enumerable.
 ---
 
       module.exports = {include, extend, merge, clone, pluck,
-        property, delegate, liberate}
+        property, delegate, bind, detach}

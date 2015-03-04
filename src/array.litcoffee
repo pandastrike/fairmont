@@ -3,7 +3,7 @@
     {curry, flip, compose, partial, _, identity,
       unary, binary, ternary} = require "./core"
 
-    {liberate} = require "./object"
+    {detach} = require "./object"
     {deep_equal} = require "./type"
 
     {odd, lt} = require "./numeric"
@@ -14,14 +14,14 @@
 
 ## fold and foldr
 
-      fold = curry flip ternary liberate Array::reduce
+      fold = curry flip ternary detach Array::reduce
 
       context.test "fold", ->
         data = [1..5]
         fn = fold 1, (acc, x) -> acc += x
         assert deep_equal (fn data), 16
 
-      foldr = curry flip ternary liberate Array::reduce
+      foldr = curry flip ternary detach Array::reduce
 
       context.test "foldr", ->
         data = [1..5]
@@ -30,7 +30,7 @@
 
 ## map
 
-      map = curry flip binary liberate Array::map
+      map = curry flip binary detach Array::map
 
       context.test "map", ->
         data = [1..5]
@@ -38,7 +38,7 @@
 
 ## filter
 
-      filter = curry flip binary liberate Array::filter
+      filter = curry flip binary detach Array::filter
 
       context.test "filter", ->
         data = [1..5]
@@ -46,7 +46,7 @@
 
 ## any
 
-      any = curry flip binary liberate Array::some
+      any = curry flip binary detach Array::some
 
       context.test "any", ->
         data = [1..5]
@@ -54,7 +54,7 @@
 
 ## all
 
-      all = curry flip binary liberate Array::every
+      all = curry flip binary detach Array::every
 
       context.test "all", ->
         data = [1..5]
@@ -62,7 +62,7 @@
 
 ## each
 
-      each = curry flip binary liberate Array::forEach
+      each = curry flip binary detach Array::forEach
 
       context.test "each", ->
         do (ax = [], data = [1..5]) ->
@@ -71,7 +71,7 @@
 
 ## cat
 
-      cat = liberate Array::concat
+      cat = detach Array::concat
 
       context.test "cat", ->
         data = [1..5]
