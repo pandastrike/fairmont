@@ -9,8 +9,9 @@
   ],
   "main": "lib/index.js",
   "scripts": {
-    "prepublish": "coffee -o lib/ -c src/*.coffee",
-    "test": "coffee ./test.coffee"
+    "prepublish": "coffee -o lib/ -c src/*.*coffee",
+    "test": "coffee ./test.coffee",
+    "watch": "coffee --nodejs --harmony -o lib/ -cw src/*.*coffee"
   },
   "repository": {
     "type": "git",
@@ -31,5 +32,6 @@
   },
   "dependencies": {
     "when": "^3.7.2"
-  }
+  },
+  "engine": "node >= 0.11.x"
 }
