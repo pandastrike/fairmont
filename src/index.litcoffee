@@ -62,6 +62,8 @@ Execute a shell command.
         assert (yield shell "ls ./test").stdout.trim().split("\n").length == 4
 ---
 
+    module.exports = {shell, sleep, timer, memoize, abort}
+
 Load the rest of the functions.
 
     {include} = require "./object"

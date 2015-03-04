@@ -74,7 +74,7 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 * [API Reference][object]
 
 
-    include/extend, merge, clone, pluck, property, delegate, liberate
+    include/extend, merge, clone, pluck, property, delegate, bind, detach
 
 [object]:src/object.litcoffee
 
@@ -87,3 +87,12 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
     dashed, plain_text, html_escape, w
 
 [string]:src/string.litcoffee
+
+## Miscellaneous Functions
+
+* [API Reference][misc]
+
+
+    shell, sleep, timer, memoize, abort
+
+[misc]:src/index.litcoffee
