@@ -230,6 +230,13 @@ Takes an array and returns a new array with all values shuffled randomly. Use th
         do (data = [1..5]) ->
           assert !deep_equal (shuffle data), data
 
+## range
+
+Generates an array of integers based on the given range.
+
+      range = (start, finish) -> [start..finish]
+
+      context.test "range", -> assert deep_equal (range 1, 5), [1..5]
 
 ---
 
