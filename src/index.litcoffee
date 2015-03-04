@@ -43,6 +43,23 @@ Returns a promise that yields after a given interval.
 
       context.test "sleep"
 
+
+## shell
+
+Execute a shell command.
+
+      shell = (command) ->
+        {promise} = require "when"
+        {exec} = require "child_process"
+        promise (resolve, reject) ->
+          exec command, (error, stdout, stderr) ->
+            if error
+              reject error
+            else
+              resolve {stdout, stderr}
+
+      context.test "shell", ->
+        assert (yield shell "ls ./test").stdout.trim().split("\n").length == 4
 ---
 
 Load the rest of the functions.
