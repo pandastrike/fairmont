@@ -62,17 +62,17 @@ Execute a shell command. Returns a promise that resolves to an object with prope
         assert (yield shell "ls ./test").stdout.trim().split("\n").length == 4
 ---
 
-    module.exports = {shell, sleep, timer, memoize, abort}
+      module.exports = {shell, sleep, timer, memoize, abort}
 
 Load the rest of the functions.
 
-    {include} = require "./object"
-    include module.exports, require "./core"
-    include module.exports, require "./logical"
-    include module.exports, require "./numeric"
-    include module.exports, require "./type"
-    include module.exports, require "./array"
-    include module.exports, require "./crypto"
-    include module.exports, require "./fs"
-    include module.exports, require "./object"
-    include module.exports, require "./string"
+      {include} = require "./object"
+      include module.exports, require "./core"
+      include module.exports, require "./logical"
+      include module.exports, require "./numeric"
+      include module.exports, require "./type"
+      include module.exports, require "./array"
+      include module.exports, require "./crypto"
+      include module.exports, require "./fs"
+      include module.exports, require "./object"
+      include module.exports, require "./string"
