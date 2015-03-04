@@ -10,7 +10,7 @@ All file-system functions are based on Node's `fs` API. This is not `require`d u
 
     {describe, assert} = require "./helpers"
 
-    describe "File System Functions", (context) ->
+    describe "File system functions", (context) ->
 
 ## stat
 
@@ -52,6 +52,28 @@ Synchronously get the contents of a directory as an array.
 
       context.test "readdir", ->
         assert "test.json" in (yield readdir "test")
+
+## read_stream
+
+Read a stream, in its entirety, without blocking.
+
+      read_stream = do ({promise} = require "when") ->
+        (stream) ->
+          buffer = ""
+          promise (resolve, reject) ->
+            stream.on "data", (data) -> buffer += data.toString()
+            stream.on "end", -> resolve buffer
+            stream.on "error", (error) -> reject error
+
+      context.test "read_stream", ->
+        {createReadStream} = require "fs"
+        lines = (yield read_stream createReadStream "test/lines.txt")
+          .trim()
+          .split("\n")
+        assert lines.length == 3
+        assert lines[0] == "one"
+
+
 
 ## write
 
@@ -99,4 +121,5 @@ Removes a directory.
 ---
 
 
-      module.exports = {exists, read, readdir, stat, write, chdir, rm, rmdir}
+      module.exports = {exists, read, read_stream, readdir, stat,
+        write, chdir, rm, rmdir}

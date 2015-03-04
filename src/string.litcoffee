@@ -106,4 +106,4 @@ Split a string on whitespace. Useful for concisely creating arrays of strings.
 ---
 
       module.exports = {capitalize, title_case, camel_case, underscored,
-        dashed, plain_text, html_escape}
+        dashed, plain_text, html_escape, w}

@@ -8,7 +8,7 @@ Support for currying, partial application, and composition of functions, along w
 
 ## deep_equal
 
-      deep_equal = (a,b) ->
+      deep_equal = (a, b) ->
         assert = require "assert"
         try
           assert.deepEqual a, b
@@ -139,5 +139,5 @@ These are helper functions for establishing the number of arguments.
 
 ---
 
-      module.exports = {deep_equal, identity, wrap, curry, _, partial,
+      module.exports = {deep_equal, no_op, identity, wrap, curry, _, partial,
         flip, compose, pipe, variadic, unary, binary, ternary}
