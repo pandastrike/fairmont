@@ -46,7 +46,7 @@ Returns a promise that yields after a given interval.
 
 ## shell
 
-Execute a shell command.
+Execute a shell command. Returns a promise that resolves to an object with properties `stdout` and `stdin`, or is rejected with an error.
 
       shell = (command) ->
         {promise} = require "when"
