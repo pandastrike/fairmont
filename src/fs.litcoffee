@@ -57,23 +57,80 @@ Synchronously get the contents of a directory as an array.
 
 Read a stream, in its entirety, without blocking.
 
-      read_stream = do ({promise} = require "when") ->
-        (stream) ->
-          buffer = ""
-          promise (resolve, reject) ->
-            stream.on "data", (data) -> buffer += data.toString()
-            stream.on "end", -> resolve buffer
-            stream.on "error", (error) -> reject error
+      read_stream = (stream) ->
+        {promise} = require "when"
+        buffer = ""
+        promise (resolve, reject) ->
+          stream.on "data", (data) -> buffer += data.toString()
+          stream.on "end", -> resolve buffer
+          stream.on "error", (error) -> reject error
 
       context.test "read_stream", ->
-        {createReadStream} = require "fs"
-        lines = (yield read_stream createReadStream "test/lines.txt")
-          .trim()
-          .split("\n")
-        assert lines.length == 3
-        assert lines[0] == "one"
+        do (lines) ->
+          {Readable} = require "stream"
+          stream = new Readable
+          promise = read stream
+          stream.push "one\n"
+          stream.push "two\n"
+          stream.push "three\n"
+          stream.push null
+          lines = (yield promise).split("\n")
+          assert lines.length == 3
+          assert lines[0] == "one"
+
+## lines
+
+Convert a stream into a line-by-line stream.
+
+      lines = (stream) -> ((require "byline") stream)
 
 
+> We might be able to provide a more general solution here based on [EventStreams][100].
+
+[100]:https://github.com/dominictarr/event-stream
+
+
+## read_block
+
+Read a chunk of data from a stream without blocking. Returns a function that will return a promise for the next block and can be called repeatedly. **Important** This should probably be generator function, except that I haven't quite decided how to integrate the object-oriented nature of Iterators with the FP approach we're trying to use here. **Also** I'd ideally like to simplify this function somehow.
+
+      read_block = do ({promise, reject, resolve} = require "when") ->
+        (stream) ->
+          do (pending = [], resolved = [], _resolve=null, _reject=null) ->
+            _resolve = (x) ->
+              if pending.length == 0
+                resolved.push resolve x
+              else
+                pending.shift().resolve x
+            _reject = (x) ->
+              if pending.length == 0
+                resolved.push reject x
+              else
+                pending.shift().reject x
+
+            stream.on "data", (data) -> _resolve data.toString()
+            stream.on "end", -> _resolve null
+            stream.on "error", -> _reject error
+
+            ->
+              if resolved.length == 0
+                promise (resolve, reject) ->
+                  pending.push {resolve, reject}
+              else
+                resolved.shift()
+
+
+
+      context.test "read_block", ->
+        {Readable} = require "stream"
+        do (stream = new Readable) ->
+          stream.push "one\n"
+          stream.push "two\n"
+          stream.push "three\n"
+          _stream = lines stream
+          assert (yield read_block _stream) == "one"
+          assert (yield read_block _stream) == "two"
+          assert (yield read_block _stream) == "three"
 
 ## write
 
@@ -121,5 +178,5 @@ Removes a directory.
 ---
 
 
-      module.exports = {exists, read, read_stream, readdir, stat,
-        write, chdir, rm, rmdir}
+      module.exports = {exists, read, read_stream, lines, read_block,
+        readdir, stat, write, chdir, rm, rmdir}

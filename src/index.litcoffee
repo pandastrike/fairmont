@@ -59,10 +59,22 @@ Execute a shell command. Returns a promise that resolves to an object with prope
               resolve {stdout, stderr}
 
       context.test "shell", ->
-        assert (yield shell "ls ./test").stdout.trim().split("\n").length == 4
+        assert (yield shell "ls ./test").stdout.trim().split("\n").length == 5
+
+## times
+
+Run a function N number of times.
+
+      {curry} = require "./core"
+      times = curry (fn, n) -> fn() until n-- == 0
+
+      context.test "times", ->
+        do (n = 0) ->
+          assert (times (-> ++n), 3).length == 3
+
 ---
 
-      module.exports = {shell, sleep, timer, memoize, abort}
+      module.exports = {times, shell, sleep, timer, memoize, abort}
 
 Load the rest of the functions.
 

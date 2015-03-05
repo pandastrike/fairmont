@@ -1,6 +1,6 @@
 {
   "name": "fairmont",
-  "version": "1.0.0-alpha-03",
+  "version": "1.0.0-alpha-04",
   "description": "A collection of useful functions and utilities.",
   "files": [
     "src/",
@@ -31,6 +31,7 @@
     "amen": "^1.0.0-alpha-03"
   },
   "dependencies": {
+    "byline": "^4.2.1",
     "when": "^3.7.2"
   },
   "engine": "node >= 0.11.x"
