@@ -104,7 +104,8 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 >
 
-    exists, stat, read, readdir, write, chdir, rm, rmdir
+    exists, stat, read, readdir, read_stream, read_block, lines,
+    write, chdir, rm, rmdir
 
 [fs]:src/fs.litcoffee
 
@@ -135,7 +136,7 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 >
 
-    shell, sleep, timer, memoize, abort
+    times, shell, sleep, timer, memoize, abort
 
 [misc]:src/index.litcoffee
 
