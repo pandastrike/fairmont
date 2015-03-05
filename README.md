@@ -38,6 +38,7 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 * [API Reference][core]
 
+>
 
     identity, wrap, curry, _, partial, flip,
     compose, pipe, variadic, unary, binary, ternary
@@ -48,6 +49,7 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 * [API Reference][logical]
 
+>
 
     f_and, f_or, f_not, f_eq, f_neq
 
@@ -57,6 +59,7 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 * [API Reference][numeric]
 
+>
 
     gt, lt, gte, lte, add, sub, mul, div, mod,
     even, odd, min, max
@@ -67,6 +70,7 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 * [API Reference][core]
 
+>
 
     deep_equal, type, is_type, instance_of
 
@@ -76,6 +80,7 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 * [API Reference][array]
 
+>
 
     fold, foldr, map, filter, any, all, each, cat, slice,
     first, last, rest, take, leave, drop, includes, unique_by,
@@ -87,6 +92,7 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 * [API Reference][crypto]
 
+>
 
     md5, base64, base64url
 
@@ -96,6 +102,7 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 * [API Reference][fs]
 
+>
 
     exists, stat, read, readdir, write, chdir, rm, rmdir
 
@@ -105,6 +112,7 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 * [API Reference][object]
 
+>
 
     include/extend, merge, clone, pluck, property, delegate, bind, detach
 
@@ -114,6 +122,7 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 * [API Reference][string]
 
+>
 
     capitalize, title_case, camel_case, underscored,
     dashed, plain_text, html_escape, w
@@ -124,6 +133,7 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 * [API Reference][misc]
 
+>
 
     shell, sleep, timer, memoize, abort
 
