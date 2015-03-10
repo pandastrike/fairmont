@@ -59,7 +59,7 @@ Execute a shell command. Returns a promise that resolves to an object with prope
               resolve {stdout, stderr}
 
       context.test "shell", ->
-        assert (yield shell "ls ./test").stdout.trim().split("\n").length == 5
+        assert (yield shell "ls ./test").stdout.trim?
 
 ## times
 
@@ -84,6 +84,7 @@ Load the rest of the functions.
       include module.exports, require "./numeric"
       include module.exports, require "./type"
       include module.exports, require "./array"
+      include module.exports, require "./iterator"
       include module.exports, require "./crypto"
       include module.exports, require "./fs"
       include module.exports, require "./object"

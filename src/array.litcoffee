@@ -12,63 +12,6 @@
 
     describe "Array functions", (context) ->
 
-## fold and foldr
-
-      fold = curry flip ternary detach Array::reduce
-
-      context.test "fold", ->
-        data = [1..5]
-        fn = fold 1, (acc, x) -> acc += x
-        assert deep_equal (fn data), 16
-
-      foldr = curry flip ternary detach Array::reduce
-
-      context.test "foldr", ->
-        data = [1..5]
-        fn = foldr 1, (acc, x) -> acc += x
-        assert deep_equal (fn data), 16
-
-## map
-
-      map = curry flip binary detach Array::map
-
-      context.test "map", ->
-        data = [1..5]
-        assert deep_equal (map ((x) -> x * 2), data), [2,4,6,8,10]
-
-## filter
-
-      filter = curry flip binary detach Array::filter
-
-      context.test "filter", ->
-        data = [1..5]
-        assert deep_equal (filter odd, data), [1,3,5]
-
-## any
-
-      any = curry flip binary detach Array::some
-
-      context.test "any", ->
-        data = [1..5]
-        assert any odd, data
-
-## all
-
-      all = curry flip binary detach Array::every
-
-      context.test "all", ->
-        data = [1..5]
-        assert all (lt 6), data
-
-## each
-
-      each = curry flip binary detach Array::forEach
-
-      context.test "each", ->
-        do (ax = [], data = [1..5]) ->
-          each ((x) -> ax.push x), data
-          assert deep_equal ax, data
-
 ## cat
 
       cat = detach Array::concat
@@ -107,31 +50,6 @@
       context.test "rest", ->
         do (data = [1..5]) -> assert deep_equal (rest data), [2..5]
 
-## take
-
-      take = slice 0
-
-      context.test "take", ->
-        do (data = [1..5]) ->
-          assert deep_equal (take 3, data), [1,2,3]
-
-## leave
-
-      leave = curry (n, ax) -> slice 0, -n, ax
-
-      context.test "leave", ->
-        do (data = [1..5]) ->
-          assert deep_equal (leave 3, data), [1,2]
-
-
-## drop
-
-      drop = curry partial slice, _, undefined, _
-
-      context.test "drop", ->
-        do (data = [1..5]) ->
-          assert deep_equal (drop 3, data), [4,5]
-
 ## includes
 
       includes = (x, ax) -> x in ax
@@ -158,20 +76,6 @@
       context.test "unique", ->
         do (data = [1, 2, 1, 3, 5, 3, 6]) ->
           assert deep_equal (unique data), [1, 2, 3, 5, 6]
-
-## flatten
-
-      flatten = (ax) ->
-        fold [], ((r, a) ->
-          if a.forEach?
-            r.push (flatten a)...
-          else
-            r.push a
-          r), ax
-
-      context.test "flatten", ->
-        do (data = [1, [2, 3], 4, [5, [6, 7]]]) ->
-          assert deep_equal (flatten data), [1..7]
 
 ## difference
 
@@ -245,7 +149,6 @@ Generates an array of integers based on the given range.
 ---
 
 
-      module.exports = {fold, foldr, map, filter, any, all, each, cat, slice,
-        first, second, third, last, rest, take, leave, drop, includes,
-        unique_by, unique, uniq, flatten, dupes, union, intersection,
+      module.exports = {cat, slice, first, second, third, last, rest,
+        includes, unique_by, unique, uniq, dupes, union, intersection,
         remove, shuffle}

@@ -1,0 +1,339 @@
+# Iterator Functions
+
+Iterator functions can operate on iteratables, iterators, or iterator functions. Many builtin JavaScript types are iterable, such as Arrays, Strings, Maps, and so on. Thus, functions that take iterators will work on any of these types.
+
+Using iterator functions is often more efficient than operating directly on objects, since values are only obtained when the iterator function is called.
+
+Some functions _collect_ an iterator into another value. For example, `assoc` takes an iterator that returns pairs and creates an object whose properties are the first element of the pair and whose values are the second element.
+
+Any iterable can be turned into an array via `collect`. Thus, any array function can be applied to an iterable. In some cases, a function is an iterator function when, in fact, it must first collect the iterator. That is, when it is effectively an Array function. These are included here when they complement another iterator function that operate directly on an iterable (and thus take advantage of lazy evaluation.)
+
+For example, `any` collects an iterator into a true or false value. It does not necessarily need to traverse an entire iterable to do so. However, `all`, by definition, must traverse the entire iterable to return a value. Arguably, it consequently belongs with the Array functions. We include it here since it complements `any`.
+
+    {assert, describe} = require "./helpers"
+
+    {curry} = require "./core"
+
+    promise = require "when"
+    {call, async} = do ->
+      {lift, call} = require "when/generator"
+      {async: lift, call}
+
+    describe "Iterator functions", (context) ->
+
+
+## is_iteraable
+
+      is_iterable = (x) -> x[Symbol.iterator]?
+
+      context.test "is_iterable", ->
+        assert is_iterable [1, 2, 3]
+
+## iteratar
+
+      iterator = (x) ->
+        if is_iterable x
+          x[Symbol.iterator]()
+        else if is_iterator x
+          x
+        else
+          throw new TypeError "Value is not an iterable or an iterator"
+
+      context.test "iterator", ->
+        {is_function} = require "../src/index"
+        assert is_function (iterator [1, 2, 3]).next
+
+## is_iterator
+
+      is_iterator = (x) -> x.next?
+
+      context.test "is_iterator", ->
+        assert is_iterator (iterator [1, 2, 3])
+
+
+## iterate
+
+The `maybe_iterator_f` function is not exported because it's really only useful to the `iterate` function. There is no way to be sure a function is an iterator function with the current design. The intent is to make `iterate` idempotent, so we don't have to worry if it gets called twice on an iterable.
+
+      {is_function} = require "./type"
+
+      maybe_iterator_f = (x) ->
+        (is_function x) && (x.length == 0) &&
+          !((is_iterable x) || (is_iterator x))
+
+      iterate = (x) ->
+        unless maybe_iterator_f x
+          do (it = iterator x) ->
+            async ->
+              {done, value} = it.next()
+              {done, value: yield promise value}
+        else
+          x
+
+      context.test "iterate", ->
+        i = iterate [1, 2, 3]
+        assert maybe_iterator_f i
+        assert maybe_iterator_f iterate i
+        assert (yield i()).value == 1
+        assert (yield i()).value == 2
+        assert (yield i()).value == 3
+        assert (yield i()).done
+
+## collect
+
+      {leave} = require "./array"
+
+      collect = async (i) ->
+        i = iterate i
+        done = false
+        result = []
+        until done
+          {done, value} = yield promise i()
+          result.push value unless done
+        result
+
+      context.test "collect", ->
+
+        i = do ->
+          n = 5
+          -> if n-- > 0 then {value: n, done: false} else {done: true}
+
+        {first} = require "./array"
+        assert (first yield collect i) == 4
+
+## map
+
+      map = curry (f, x) ->
+        do (i = iterate x) ->
+          async ->
+            {done, value} = yield i()
+            unless done then {done, value: yield promise f value} else {done}
+
+      context.test "map", ->
+        double = (x) -> x * 2
+        x = collect map double, [1,2,3]
+        assert x[1] == 4
+
+## fold
+
+      {ternary} = require "./core"
+
+      fold = curry ternary async (x, f, i) ->
+        i = iterate i
+        done = false
+        until done
+          {done, value} = yield promise i()
+          x = (f x, value) unless done
+        x
+
+      {add} = require "./numeric"
+      context.test "fold", ->
+        assert (yield fold 0, add, [1..5]) == 15
+
+## foldr
+
+      {flip} = require "./core"
+      {detach} = require "./object"
+
+      _foldr = flip ternary detach Array::reduceRight
+
+      foldr = curry ternary async (x, f, i) ->
+        _foldr x, f, (yield collect iterate i)
+
+      context.test "foldr", ->
+        assert (yield foldr "", add, "panama") == "amanap"
+
+## select
+
+      select = curry (f, i) ->
+        i = iterate i
+        done = false
+        async ->
+          unless done
+            found = false
+            until done || found
+              {value, done} = yield promise i()
+              found = f value unless done
+            if found then {done, value} else {done}
+          else
+            {done}
+
+      {odd} = require "./numeric"
+      {second} = require "./array"
+      context.test "select", ->
+        assert (second yield collect select odd, [0..9]) == 3
+
+## reject
+
+      {negate} = require "./logical"
+      reject = curry (f, i) -> select (negate f), i
+
+      context.test "reject", ->
+        assert (second yield collect reject odd, [0..9]) == 2
+
+## any
+
+      {binary} = require "./core"
+      any = curry binary async (f, i) ->
+        i = iterate i
+        done = false
+        found = false
+        until done || found
+          {done, value} = yield promise i()
+          found = (f value) unless done
+        found
+
+      context.test "any", ->
+        count = 0
+        test = (x) -> count++; odd x
+        assert (yield any test, [0..9])
+        assert count == 2
+
+## all
+
+      all = curry binary async (f, i) ->
+        !yield any (negate f), i
+
+      context.test "all", ->
+        assert !(yield all odd, [0..9])
+        assert (yield all (-> true), "foobar")
+
+
+## zip
+
+      zip = (i, j) ->
+        i = iterate i
+        j = iterate j
+        async ->
+          if (_i = yield i()).done || (_j = j()).done
+            done: true
+          else
+            done: false, value: [_i.value, _j.value]
+
+      context.test "zip", ->
+        {second, third} = require "../src/index"
+        assert (second third yield collect zip [1, 2, 3], [4, 5, 6]) == 6
+
+## unzip
+
+      _unzip = ([ax, bx], [a, b]) ->
+        ax.push a
+        bx.push b
+        [ax, bx]
+
+      unzip = (i) -> fold [[],[]], _unzip, i
+
+      context.test "unzip", ->
+        {first} = require "./array"
+        {to_string} = require "./string"
+        assert (fold "", add, first collect unzip zip "panama", "canary") ==
+          "panama"
+
+## assoc
+
+      {first, second} = require "../src/index"
+      assoc = async (i) ->
+        do (i = iterate i) ->
+          result = {}
+          until done
+            {done, value} = yield i()
+            result[first value] = (second value) if value?
+          result
+
+      context.test "assoc", ->
+        assert (yield assoc [["foo", 1], ["bar", 2]]).foo == 1
+
+
+## project
+
+      {property} = require "./object"
+      {w} = require "./string"
+      project = curry binary async (p, i) -> yield map (property p), i
+
+      {third} = require "./array"
+      context.test "project", ->
+        assert (third collect project "length", w "one two three") == 5
+
+
+## flatten
+
+      flatten = (ax) ->
+        fold [], ((r, a) ->
+          if a.forEach?
+            r.push (flatten a)...
+          else
+            r.push a
+          r), ax
+
+      context.test "flatten", ->
+        do (data = [1, [2, 3], 4, [5, [6, 7]]]) ->
+          assert (second yield flatten data) == 2
+
+
+## partition
+
+      partition = curry (n, i) ->
+        i = iterate i
+        done = false
+        async ->
+          batch = []
+          until done || batch.length == n
+            {done, value} = yield promise i()
+            batch.push value unless done
+          if done then {done} else {value: batch, done}
+
+      context.test "partition", ->
+        assert (first second collect partition 2, [0..9]) == 2
+
+## take
+
+      take = curry (n, i) ->
+        i = iterate i
+        done = false
+        async ->
+          unless done || n-- == 0
+            {done, value} = yield promise i()
+            if done then {done} else {done, value}
+          else
+            done = true
+            {done}
+
+      {last} = require "./array"
+      context.test "take", ->
+        assert (last collect take 3, [1..5]) == 3
+
+## leave
+
+      leave = curry binary async (n, i) ->
+        (yield collect i)[0...-n]
+
+      context.test "leave", ->
+        assert (last leave 3, [1..5]) == 2
+
+## skip
+
+      skip = curry binary async (n, i) ->
+        (yield collect i)[n..-1]
+
+      context.test "skip", ->
+        assert (first skip 3, [1..5]) == 4
+
+## sample
+
+Sample 1% of the integers up to 1 million. Take the first 500.
+
+```coffee
+collect take 500, sample 0.01, [0..1e6]
+```
+
+      sample = curry (n, i) ->
+        _sample = -> Math.random() < n
+        select _sample, i
+
+      context.test "sample"
+
+---
+
+      module.exports = {is_iterable, iterator, is_iterator, iterate,
+        collect, map, fold, foldr, select, reject, any, all, zip, unzip,
+        assoc, project, flatten, partition, take, leave, skip, sample}

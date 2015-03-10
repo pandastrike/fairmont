@@ -4,6 +4,10 @@
 
     describe "String functions", (context) ->
 
+## to_string
+
+      to_string = (x) -> x.toString()
+
 ### plain_text ###
 
 Convert an camel-case or underscore- or dash-separated string into a
@@ -105,5 +109,5 @@ Split a string on whitespace. Useful for concisely creating arrays of strings.
 
 ---
 
-      module.exports = {capitalize, title_case, camel_case, underscored,
-        dashed, plain_text, html_escape, w}
+      module.exports = {to_string, capitalize, title_case, camel_case,
+        underscored, dashed, plain_text, html_escape, w}

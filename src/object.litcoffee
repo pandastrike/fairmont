@@ -64,16 +64,16 @@ Perform a deep clone on an object. Taken from [The CoffeeScript Cookboox][0].
       context.test "clone"
 
 
-## pluck
+## property
 
-Extract a property from an object. You can extract nested properties by composing curried `pluck` invocations.
+Extract a property from an object. You can extract nested properties by composing curried `property` invocations.
 
-      pluck = curry (key, object) -> object[key]
+      property = curry (key, object) -> object[key]
 
-      context.test "pluck", ->
+      context.test "property", ->
         a = { foo: 1, bar: 2, baz: { foo: 2 }}
-        assert (pluck "foo", a) == 1
-        baz_foo = (compose (pluck "foo"), (pluck "baz"))
+        assert (property "foo", a) == 1
+        baz_foo = (compose (property "foo"), (property "baz"))
         assert (baz_foo a) == 2
 
 ## delegate
@@ -114,7 +114,7 @@ Define getters and setters on an object.
 
 Properties defined using `properties` are enumerable.
 
-      properties = property = do ->
+      properties = do ->
         defaults = enumerable: true, configurable: true
         (object, properties) ->
           for key, value of properties
@@ -136,5 +136,5 @@ Properties defined using `properties` are enumerable.
 
 ---
 
-      module.exports = {include, extend, merge, clone, pluck,
-        property, delegate, bind, detach}
+      module.exports = {include, extend, merge, clone,
+        properties, property, delegate, bind, detach}

@@ -1,7 +1,7 @@
 # Numeric Functions
 
     {curry, partial} = require "./core"
-    {f_not} = require "./logical"
+    {negate} = require "./logical"
 
     {describe, assert} = require "./helpers"
 
@@ -25,12 +25,18 @@
 ## odd, even
 
       even = mod 2
-      odd = f_not even
+      odd = negate even
 
       context.test "odd", -> assert odd 5
 
 
       {min, max} = Math
+
+## sum
+
+## average
+
+
 
 ---
 

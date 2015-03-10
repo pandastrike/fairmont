@@ -14,12 +14,12 @@
 
       f_or = curry (f, g) -> -> (f arguments...) || (g arguments...)
 
-# f_not
+# negate
 
-      f_not = (f) -> -> !(f arguments...)
+      negate = (f) -> -> !(f arguments...)
 
-      context.test "f_not", ->
-        assert !((f_not -> true)())
+      context.test "negate", ->
+        assert !((negate -> true)())
 
 # f_eq
 
@@ -31,4 +31,4 @@
 
 ---
 
-      module.exports = {f_and, f_or, f_not, f_eq, f_neq}
+      module.exports = {f_and, f_or, negate, f_eq, f_neq}
