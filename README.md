@@ -51,7 +51,7 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 >
 
-    f_and, f_or, f_not, f_eq, f_neq
+    f_and, f_or, negate, f_eq, f_neq
 
 [logical]:src/logical.litcoffee
 
@@ -72,7 +72,8 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 >
 
-    deep_equal, type, is_type, instance_of
+    deep_equal, type, is_type, instance_of,
+      is_string, is_function
 
 [type]:src/type.litcoffee
 
@@ -82,11 +83,23 @@ One of the nice things about Underscore is that it offers a lot of useful functi
 
 >
 
-    fold, foldr, map, filter, any, all, each, cat, slice,
-    first, last, rest, take, leave, drop, includes, unique_by,
-    unique, uniq, flatten, dupes, union, intersection, remove, shuffle
+    cat, slice, first, second, third, last, rest,
+      includes, unique_by, unique, uniq, dupes, union, intersection,
+      remove, shuffle
 
 [array]:src/array.litcoffee
+
+### Iterator Functions
+
+* [API Reference][it]
+
+>
+
+    is_iterable, iterator, is_iterator, iterate,
+      collect, map, fold, foldr, select, reject, any, all, zip, unzip,
+      assoc, project, flatten, partition, take, leave, skip, sample
+
+[it]:src/iterator.litcoffee
 
 ### Crypto Functions
 

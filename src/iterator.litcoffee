@@ -22,14 +22,14 @@ For example, `any` collects an iterator into a true or false value. It does not 
     describe "Iterator functions", (context) ->
 
 
-## is_iteraable
+## is_iterable
 
       is_iterable = (x) -> x[Symbol.iterator]?
 
       context.test "is_iterable", ->
         assert is_iterable [1, 2, 3]
 
-## iteratar
+## iterator
 
       iterator = (x) ->
         if is_iterable x
