@@ -97,12 +97,15 @@ Flip the arguments of the given function.
 
 Compose a list of functions, returning a new function.
 
+      promise = require "when"
+      {async} = require "./generator"
+
       compose = (fx..., f) ->
-        unless fx.length == 0
-          g = compose fx...
-          (ax...) -> g(f(ax...))
-        else
+        if fx.length == 0
           f
+        else
+          g = compose fx...
+          async (ax...) -> yield promise g yield promise f ax...
 
       context.test "compose", ->
         data = foo: 1, bar: 2, baz: 3

@@ -89,3 +89,4 @@ Load the rest of the functions.
       include module.exports, require "./fs"
       include module.exports, require "./object"
       include module.exports, require "./string"
+      include module.exports, require "./generator"

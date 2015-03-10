@@ -1,6 +1,6 @@
 # Fairmont
 
-A collection of useful CoffeeScript/JavaScript functions. These include functions to help with functional programming, arrays, objects, and more. Fairmont is inspired by [Underscore][100], [EssentialJS][110], and [prelude.coffee][120].
+A collection of useful JavaScript functions to support a functional style of programming that takes advantage of ES6 features like iterators, generators, and promises. Fairmont is inspired by [Underscore][100], [EssentialJS][110], and [prelude.coffee][120].
 
 [100]:http://underscorejs.org/
 [110]:https://github.com/elclanrs/essential.js
@@ -8,29 +8,25 @@ A collection of useful CoffeeScript/JavaScript functions. These include function
 
 ## Why Fairmont?
 
-Fairmont offers a combination of features we couldn't find in existing libraries:
+Fairmont offers a combination of features we couldn't find in existing libraries. In particular, we wanted:
 
-* Functional programming friendly
-* ES6 aware (in particular, uses promises and generators for async operations)
-* Comprehensive
+* To use a functional programming style, even when performing asynchronous operations&hellip;
 
-Fairmont is also a literate programming project—the documentation, code, examples, and tests are together, making it easy to see what a function does, how it does it, and why it does it that particular way.
+* While coming as close to inline code for performance as possible (read: use lazy evaluation when working with collections)&hellip;
 
-### Functional Programming Friendly
+* Taking full-advantage of ES6 features like iterators, generators, and promises, which offer powerful new ways of doing things
 
-Fairmont is built on a functional programming foundation, including implementations for currying, partial application, and composition. Most functions are curried by default and designed with composition in mind.
-
-### ES6 Aware
-
-Fairmont wraps common asynchronous operations so they can be used in `yield` expressions. For example, here's how you can read a file using Fairmont.
+For example, here's how we would define a function that takes a path and returns a content-addressable dictionary of the files it contains.
 
 ```coffee
-content = yield read "war-and-peace.txt"
+content_map = async (path) ->
+  paths = collect map (compose resolve, join path), yield readdir path
+  assoc zip (map (compose md5, read), paths), paths
 ```
 
-### Comprehensive
+We've seamlessly integrated asychronous functions with synchronous functions, even when doing composition. Behind the scenes we're using iterators to avoid multiple passes across the data. We make two passes here, even though it appears that we're making five.
 
-One of the nice things about Underscore is that it offers a lot of useful functions. Many common tasks can be written entirely using Underscore functions. Fairmont has a similar ambition. While there's nothing wrong with specialized libraries, there are times when you just want a good Swiss Army Knife.
+Fairmont is also a literate programming project—the documentation, code, examples, and tests are together, making it easy to see what a function does, how it does it, and why it does it that particular way.
 
 ## List of Functions
 

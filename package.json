@@ -1,6 +1,6 @@
 {
   "name": "fairmont",
-  "version": "1.0.0-alpha-07",
+  "version": "1.0.0-alpha-08",
   "description": "A collection of useful functions and utilities.",
   "files": [
     "src/",
