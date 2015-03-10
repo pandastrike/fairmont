@@ -89,6 +89,10 @@
         data = [1..5]
         assert (first data) == 1
 
+      second = (ax) -> ax[1]
+      third = (ax) -> ax[2]
+
+
 ## last
 
       last = ([rest..., x]) -> x
@@ -242,5 +246,6 @@ Generates an array of integers based on the given range.
 
 
       module.exports = {fold, foldr, map, filter, any, all, each, cat, slice,
-        first, last, rest, take, leave, drop, includes, unique_by, unique, uniq,
-        flatten, dupes, union, intersection, remove, shuffle}
+        first, second, third, last, rest, take, leave, drop, includes,
+        unique_by, unique, uniq, flatten, dupes, union, intersection,
+        remove, shuffle}

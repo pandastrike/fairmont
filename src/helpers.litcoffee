@@ -6,7 +6,7 @@ The basic idea is to check the script name and provide pass-through helpers unle
 
     script = process.argv[1]
 
-    if script.match /test.litcoffee$/
+    if script?.match /test.litcoffee$/
 
       assert = require "assert"
       Amen = require "amen"

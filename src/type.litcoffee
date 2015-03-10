@@ -30,6 +30,15 @@ Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `d
 
       context.test "instance_of"
 
+## is_string
+
+      is_string = (x) -> x.trim?
+
+## is_function
+
+      is_function = (x) -> x.call?
+
 ---
 
-      module.exports = {deep_equal, type, is_type, instance_of}
+      module.exports = {deep_equal, type, is_type, instance_of,
+        is_string, is_function}
