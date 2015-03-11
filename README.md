@@ -24,7 +24,7 @@ content_map = async (path) ->
   assoc zip (map (compose md5, read), paths), paths
 ```
 
-We've seamlessly integrated asychronous functions with synchronous functions, even when doing composition. Behind the scenes we're using iterators to avoid multiple passes across the data. We make two passes here, even though it appears that we're making five.
+We've seamlessly integrated asynchronous functions with synchronous functions, even when doing composition. Behind the scenes we're using iterators to avoid multiple passes across the data. We make two passes here, even though it appears that we're making five.
 
 Fairmont is also a literate programming project—the documentation, code, examples, and tests are together, making it easy to see what a function does, how it does it, and why it does it that particular way.
 

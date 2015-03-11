@@ -29,51 +29,44 @@ For example, `any` collects an iterator into a true or false value. It does not 
       context.test "is_iterable", ->
         assert is_iterable [1, 2, 3]
 
+## is_iterator
+
+      is_iterator = (x) -> x?.next?
+
 ## iterator
+
+      {is_function} = require "./type"
+      {wrap} = require "./core"
 
       iterator = (x) ->
         if is_iterable x
           x[Symbol.iterator]()
         else if is_iterator x
           x
+        else if (is_function x) && (x.length == 0)
+          next: x
         else
-          throw new TypeError "Value is not an iterable or an iterator"
-
-      context.test "iterator", ->
-        {is_function} = require "../src/index"
-        assert is_function (iterator [1, 2, 3]).next
-
-## is_iterator
-
-      is_iterator = (x) -> x.next?
+          next: wrap x
 
       context.test "is_iterator", ->
         assert is_iterator (iterator [1, 2, 3])
 
+      context.test "iterator", ->
+        assert is_function (iterator [1, 2, 3]).next
 
 ## iterate
 
-The `maybe_iterator_f` function is not exported because it's really only useful to the `iterate` function. There is no way to be sure a function is an iterator function with the current design. The intent is to make `iterate` idempotent, so we don't have to worry if it gets called twice on an iterable.
-
-      {is_function} = require "./type"
-
-      maybe_iterator_f = (x) ->
-        (is_function x) && (x.length == 0) &&
-          !((is_iterable x) || (is_iterator x))
-
       iterate = (x) ->
-        unless maybe_iterator_f x
-          do (it = iterator x) ->
-            async ->
-              {done, value} = it.next()
-              {done, value: yield promise value}
-        else
-          x
+        i = iterator x
+        f = async ->
+          {done, value} = i.next()
+          {done, value: yield promise value}
+        f[Symbol.iterator] = wrap i
+        f
 
       context.test "iterate", ->
         i = iterate [1, 2, 3]
-        assert maybe_iterator_f i
-        assert maybe_iterator_f iterate i
+        assert is_iterable i
         assert (yield i()).value == 1
         assert (yield i()).value == 2
         assert (yield i()).value == 3
@@ -81,33 +74,37 @@ The `maybe_iterator_f` function is not exported because it's really only useful 
 
 ## collect
 
-      {leave} = require "./array"
-
       collect = async (i) ->
         i = iterate i
         done = false
         result = []
         until done
-          {done, value} = yield promise i()
+          {done, value} = yield i()
           result.push value unless done
         result
 
       context.test "collect", ->
 
-        i = do ->
-          n = 5
-          -> if n-- > 0 then {value: n, done: false} else {done: true}
-
         {first} = require "./array"
-        assert (first yield collect i) == 4
+        assert (first yield collect [1..5]) == 1
+
+## each
+
+      each = async (f, i) ->
+        i = iterate i
+        done = false
+        until done
+          {done, value} = yield i()
+          f value unless done
+        undefined
 
 ## map
 
-      map = curry (f, x) ->
-        do (i = iterate x) ->
-          async ->
-            {done, value} = yield i()
-            unless done then {done, value: yield promise f value} else {done}
+      map = curry (f, i) ->
+        i = iterate i
+        async ->
+          {done, value} = yield i()
+          unless done then {done, value: yield promise f value} else {done}
 
       context.test "map", ->
         double = (x) -> x * 2

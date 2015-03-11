@@ -29,16 +29,15 @@
 
       context.test "odd", -> assert odd 5
 
-
-      {min, max} = Math
-
 ## sum
 
 ## average
 
+## Functions exported from Math
 
+      {min, max, abs, pow} = Math
 
 ---
 
       module.exports = {gt, lt, gte, lte, add, sub, mul, div, mod,
-        even, odd, min, max}
+        even, odd, min, max, abs}
