@@ -10,7 +10,7 @@
   "main": "lib/index.js",
   "scripts": {
     "prepublish": "coffee -o lib/ -c src/*.*coffee",
-    "test": "coffee ./test.coffee",
+    "test": "coffee --nodejs --harmony test/test.litcoffee",
     "watch": "coffee --nodejs --harmony -o lib/ -cw src/*.*coffee"
   },
   "repository": {

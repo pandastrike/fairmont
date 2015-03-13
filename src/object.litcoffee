@@ -44,7 +44,7 @@ Perform a deep clone on an object. Taken from [The CoffeeScript Cookboox][0].
           return object
 
         if object instanceof Date
-          return new Date(obj.getTime())
+          return new Date(object.getTime())
 
         if object instanceof RegExp
           flags = ''
@@ -54,15 +54,28 @@ Perform a deep clone on an object. Taken from [The CoffeeScript Cookboox][0].
           flags += 'y' if object.sticky?
           return new RegExp(object.source, flags)
 
-        clone = new object.constructor()
+        _clone = new object.constructor()
 
         for key of object
-          clone[key] = ($.clone object[key])
+          _clone[key] = (clone object[key])
 
-        return clone
+        return _clone
 
-      context.test "clone"
+      context.test "clone", ->
+        is_clone = (original, copy) ->
+          assert.notEqual  original, copy
+          assert.deepEqual original, copy
 
+        person =
+          name: "Steve Jobs"
+          address:
+            street: "1 Infinite Loop"
+            city: "Cupertino, CA"
+            zip: 95014
+          birthdate: new Date 'Feb 24, 1955'
+          regex: /foo.*/igm
+
+        is_clone person, clone person
 
 ## property
 
