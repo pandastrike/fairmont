@@ -14,17 +14,28 @@
 
 ## cat
 
+Concatenates (joins) arrays.
+
       cat = detach Array::concat
 
       context.test "cat", ->
         data = [1..5]
         assert deep_equal (cat data), data
+        assert deep_equal (cat data, data), data.concat data
 
 ## slice
 
+Curryied version of `Array::slice`.
+
       slice = curry (i, j, ax) -> ax[i...j]
 
+      context.test "slice", ->
+        data = [1..5]
+        assert deep_equal ((slice 1, 2) data), [2]
+
 ## first
+
+Returns the first element of an array.
 
       first = (ax) -> ax[0]
 
@@ -38,6 +49,8 @@
 
 ## last
 
+Returns the last element of an array.
+
       last = ([rest..., x]) -> x
 
       context.test "last", ->
@@ -45,12 +58,16 @@
 
 ## rest
 
+Returns all array elements but the first.
+
       rest = slice 1, undefined
 
       context.test "rest", ->
         do (data = [1..5]) -> assert deep_equal (rest data), [2..5]
 
 ## includes
+
+Check if an element is a member of an array.
 
       includes = (x, ax) -> x in ax
 
@@ -60,6 +77,10 @@
           assert !(includes 6, data)
 
 ## unique_by
+
+Returns a new array containing only unique members of an array,
+after transforming them with `f`. This is a generalized version of
+[`unique`](#unique) below.
 
       # TODO: replace with Set operators?
       unique_by = curry (f, ax) ->
@@ -71,21 +92,17 @@
 
 ## unique
 
+Returns a new array containing only unique member of an array.
+
       unique = uniq = unique_by identity
 
       context.test "unique", ->
         do (data = [1, 2, 1, 3, 5, 3, 6]) ->
           assert deep_equal (unique data), [1, 2, 3, 5, 6]
 
-## difference
-
-      difference = curry (ax, bx) ->
-        cx = union ax, bx
-        cx.filter (c) ->
-          (cx in ax && !(cx in bx)) ||
-            (cx in bx && !(cx in bx))
-
 ## dupes
+
+Returns only the elements that exist more than once.
 
       dupes = ([first, rest...]) ->
         if rest.length == 0
@@ -99,10 +116,34 @@
         do (data = [1, 2, 1, 3, 5, 3, 6]) ->
           assert deep_equal (dupes data), [1, 3]
 
-## union and intersection
+## union
+
+Set union (combination of two array with duplicates removed).
 
       union = curry compose unique, cat
+
+      context.test "union", ->
+        do (a = [1..4], b = [3..6]) ->
+          assert deep_equal (union a, b), [1..6]
+          assert deep_equal (union a, a), [1..4]
+
+## intersection
+
       intersection = curry compose dupes, cat
+
+## difference
+
+Returns the elements that are not shared between two arrays.
+
+      difference = curry (ax, bx) ->
+        cx = union ax, bx
+        cx.filter (c) ->
+          (c in ax && !(c in bx)) ||
+            (c in bx && !(c in ax))
+
+      context.test "difference", ->
+        do (ax = [1..4], bx = [3..6]) ->
+          assert deep_equal (difference ax, bx), [1,2,5,6]
 
 ## remove
 
@@ -151,4 +192,4 @@ Generates an array of integers based on the given range.
 
       module.exports = {cat, slice, first, second, third, last, rest,
         includes, unique_by, unique, uniq, dupes, union, intersection,
-        remove, shuffle}
+        difference, remove, shuffle}
