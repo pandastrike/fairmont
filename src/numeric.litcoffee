@@ -29,10 +29,6 @@
 
       context.test "odd", -> assert odd 5
 
-## sum
-
-## average
-
 ## Functions exported from Math
 
       {min, max, abs, pow} = Math
