@@ -188,12 +188,31 @@ Removes a directory.
           call ->
             (yield stat path).isDirectory()
 
+      context.test "is_directory", ->
+        assert (yield is_directory "./test")
+
+## is_file
+
+      is_file = (path) ->
+        fs ({stat}, {call}) ->
+          call ->
+            (yield stat path).isFile()
+
+      context.test "is_file", ->
+        assert (yield is_file "./test/test.json")
+
+
 ## mkdir
 
 Creates a directory. Takes a `mode` and a `path`. Assumes any intermediate directories in the path already exist.
 
       {curry, binary} = require "./core"
       mkdir = curry (mode, path) -> fs ({mkdir}) -> mkdir path, mode
+
+      context.test "mdkir", ->
+        yield mkdir '0777', "./test/foobar"
+        assert (yield is_directory "./test/foobar")
+        yield rmdir "./test/foobar"
 
 ## mkdirp
 
@@ -207,13 +226,12 @@ Creates a directory and any intermediate directories in the given `path`. Takes 
         mkdir mode, path
 
       context.test "mkdirp", ->
-        yield mkdirp '0777', "./test/foobar"
-        assert (yield is_directory "./test/foobar")
-        yield rmdir "./test/foobar"
-
+        yield mkdirp '0777', "./test/foo/bar"
+        assert (yield is_directory "./test/foo/bar")
+        yield rmdir "./test/foo/bar"
+        yield rmdir "./test/foo"
 
 ---
-
 
       module.exports = {exists, read, read_stream, stream, lines,
         readdir, stat, write, chdir, rm, rmdir, is_directory, mkdir, mkdirp}
