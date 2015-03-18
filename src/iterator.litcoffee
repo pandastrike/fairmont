@@ -155,9 +155,9 @@ For example, `any` collects an iterator into a true or false value. It does not 
           else
             {done}
 
-      {odd} = require "./numeric"
-      {second} = require "./array"
       context.test "select", ->
+        {second} = require "./array"
+        {odd} = require "./numeric"
         assert (second yield collect select odd, [0..9]) == 3
 
 ## reject
@@ -166,6 +166,8 @@ For example, `any` collects an iterator into a true or false value. It does not 
       reject = curry (f, i) -> select (negate f), i
 
       context.test "reject", ->
+        {second} = require "./array"
+        {odd} = require "./numeric"
         assert (second yield collect reject odd, [0..9]) == 2
 
 ## any
@@ -181,6 +183,7 @@ For example, `any` collects an iterator into a true or false value. It does not 
         found
 
       context.test "any", ->
+        {odd} = require "./numeric"
         count = 0
         test = (x) -> count++; odd x
         assert (yield any test, [0..9])
@@ -192,6 +195,7 @@ For example, `any` collects an iterator into a true or false value. It does not 
         !yield any (negate f), i
 
       context.test "all", ->
+        {odd} = require "./numeric"
         assert !(yield all odd, [0..9])
         assert (yield all (-> true), "foobar")
 
@@ -208,7 +212,7 @@ For example, `any` collects an iterator into a true or false value. It does not 
             done: false, value: [_i.value, _j.value]
 
       context.test "zip", ->
-        {second, third} = require "../src/index"
+        {second, third} = require "./array"
         assert (second third yield collect zip [1, 2, 3], [4, 5, 6]) == 6
 
 ## unzip
@@ -280,6 +284,7 @@ For example, `any` collects an iterator into a true or false value. It does not 
           if done then {done} else {value: batch, done}
 
       context.test "partition", ->
+        {first, second} = require "./array"
         assert (first second collect partition 2, [0..9]) == 2
 
 ## take
@@ -329,8 +334,46 @@ collect take 500, sample 0.01, [0..1e6]
 
       context.test "sample"
 
+## sum
+
+      {add} = require "./numeric"
+      sum = fold 0, add
+
+      context.test "sum", ->
+        assert (sum [1..5]) == 15
+
+## average
+
+      average = (i) ->
+        j = 0
+        f = (r, n) -> r += ((n - r)/++j)
+        fold 0, f, i
+
+      context.test "average", ->
+        assert (average [1..5]) == 3
+        assert (average [-5..-1]) == -3
+
+## join
+
+      {cat} = require "./array"
+      join = fold "", add
+
+      context.test "join", ->
+        {w} = require "./string"
+        assert (join w "one two three") == "onetwothree"
+
+## delimit
+
+      delimit = (d, i) ->
+        f = (r, s) -> if r == "" then r += s else r += d + s
+        fold "", f, i
+
+      context.test "delimit", ->
+        {w} = require "./string"
+        assert (delimit ", ", w "one two three") == "one, two, three"
 ---
 
       module.exports = {is_iterable, iterator, is_iterator, iterate,
         collect, map, fold, foldr, select, reject, any, all, zip, unzip,
-        assoc, project, flatten, partition, take, leave, skip, sample}
+        assoc, project, flatten, partition, take, leave, skip, sample,
+        sum, average}
