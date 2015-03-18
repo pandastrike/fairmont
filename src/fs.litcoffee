@@ -90,12 +90,12 @@ Convert a stream into a line-by-line stream.
 [100]:https://github.com/dominictarr/event-stream
 
 
-## read_block
+## stream
 
-Read a chunk of data from a stream without blocking. Returns a function that will return a promise for the next block and can be called repeatedly. **Important** This should probably be generator function, except that I haven't quite decided how to integrate the object-oriented nature of Iterators with the FP approach we're trying to use here. **Also** I'd ideally like to simplify this function somehow.
+Turns a stream into an iterator function.
 
-      read_block = do ({promise, reject, resolve} = require "when") ->
-        (stream) ->
+      stream = do ({promise, reject, resolve} = require "when") ->
+        (s) ->
           do (pending = [], resolved = [], _resolve=null, _reject=null) ->
             _resolve = (x) ->
               if pending.length == 0
@@ -108,9 +108,9 @@ Read a chunk of data from a stream without blocking. Returns a function that wil
               else
                 pending.shift().reject x
 
-            stream.on "data", (data) -> _resolve data.toString()
-            stream.on "end", -> _resolve null
-            stream.on "error", -> _reject error
+            s.on "data", (data) -> _resolve data.toString()
+            s.on "end", -> _resolve null
+            s.on "error", -> _reject error
 
             ->
               if resolved.length == 0
@@ -119,18 +119,16 @@ Read a chunk of data from a stream without blocking. Returns a function that wil
               else
                 resolved.shift()
 
-
-
-      context.test "read_block", ->
+      context.test "stream", ->
         {Readable} = require "stream"
-        do (stream = new Readable) ->
-          stream.push "one\n"
-          stream.push "two\n"
-          stream.push "three\n"
-          _stream = lines stream
-          assert (yield read_block _stream) == "one"
-          assert (yield read_block _stream) == "two"
-          assert (yield read_block _stream) == "three"
+        do (s = new Readable) ->
+          s.push "one\n"
+          s.push "two\n"
+          s.push "three\n"
+          _s = lines s
+          assert (yield read_block _s) == "one"
+          assert (yield read_block _s) == "two"
+          assert (yield read_block _s) == "three"
 
 ## write
 
@@ -178,5 +176,5 @@ Removes a directory.
 ---
 
 
-      module.exports = {exists, read, read_stream, lines, read_block,
+      module.exports = {exists, read, read_stream, stream, lines,
         readdir, stat, write, chdir, rm, rmdir}
