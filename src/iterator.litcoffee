@@ -271,6 +271,15 @@ For example, `any` collects an iterator into a true or false value. It does not 
           assert (second yield flatten data) == 2
 
 
+## compact
+
+      {is_value} = require "./type"
+      compact = select is_value
+
+      context.test "compact", ->
+        assert (second collect compact [1, null, null, 2]) == 2
+
+
 ## partition
 
       partition = curry (n, i) ->

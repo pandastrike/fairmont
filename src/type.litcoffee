@@ -38,7 +38,11 @@ Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `d
 
       is_function = (x) -> x.call?
 
+## is_value
+
+      is_value = (x) -> x?
+
 ---
 
       module.exports = {deep_equal, type, is_type, instance_of,
-        is_string, is_function}
+        is_string, is_function, is_value}

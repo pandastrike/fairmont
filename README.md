@@ -64,13 +64,3 @@ Fairmont is still under heavy development and is `alpha` quality, meaning you sh
 You can get an idea of what we're planning by looking at the [issues list][200]. If you want something that isn't there, and you think it would be a good addition, please open a ticket.
 
 [200]:https://github.com/pandastrike/fairmont/issues
-
-Our overarching goals for the project include:
-
-* Making the library more comprehensive
-
-* Improving the tests and documentation
-
-* Ensuring that we can use an FP style in real-world scenarios
-
-* Introducing an idiom for supporting lazy evaluation

@@ -147,7 +147,45 @@ Properties defined using `properties` are enumerable.
         assert a.foo == "bar"
         assert a._foo?
 
+## has
+
+Check if an object has a property.
+
+      has = curry (p, x) -> x[p]?
+
+      context.test "has", ->
+        assert (has "a" , {a: 1})
+
+## keys
+
+Get the keys for an object.
+
+      keys = Object.keys
+
+      context.test "keys", ->
+        assert ("a" in keys {a: 1})
+
+## values
+
+Get the values for an object.
+
+      values = (x) -> v for k, v of x
+
+      context.test "values", ->
+        assert (1 in values {a: 1})
+
+## pairs
+
+Convert an object into association array.
+
+      pairs = (x) -> [k, v] for k, v of x
+
+      context.test "pairs", ->
+        assert deep_equal (pairs {a: 1, b: 2, c: 3}),
+          [["a", 1], ["b", 2], ["c", 3]]
+
 ---
 
       module.exports = {include, extend, merge, clone,
-        properties, property, delegate, bind, detach}
+        properties, property, delegate, bind, detach,
+        has, keys, values, pairs}
