@@ -390,4 +390,4 @@ Like `join`, except that it takes a delimeter, separating each string with the d
       module.exports = {is_iterable, iterator, is_iterator, iterate,
         collect, map, fold, foldr, select, reject, any, all, zip, unzip,
         assoc, project, flatten, partition, take, leave, skip, sample,
-        sum, average}
+        sum, average, join, delimit}

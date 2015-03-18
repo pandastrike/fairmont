@@ -25,7 +25,7 @@ Synchronously get the stat object for a file.
 
 Check to see if a file exists.
 
-      exists = (path) ->
+      exists = exist = (path) ->
         fs ({stat}) ->
           call ->
             try
@@ -233,5 +233,6 @@ Creates a directory and any intermediate directories in the given `path`. Takes 
 
 ---
 
-      module.exports = {exists, read, read_stream, stream, lines,
-        readdir, stat, write, chdir, rm, rmdir, is_directory, mkdir, mkdirp}
+      module.exports = {read, write, stream, lines, rm,
+        stat, exist, exists, is_file, is_directory
+        readdir, mkdir, mkdirp, chdir, rmdir}

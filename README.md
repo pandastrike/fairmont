@@ -28,125 +28,31 @@ We've seamlessly integrated asynchronous functions with synchronous functions, e
 
 Fairmont is also a literate programming project—the documentation, code, examples, and tests are together, making it easy to see what a function does, how it does it, and why it does it that particular way.
 
-## List of Functions
+## Function Reference
 
-### Core Functions
+* [Core][core]
+* [Logical][logical]
+* [Numeric][numeric]
+* [Type][core]
+* [Array][array]
+* [Iterator][it]
+* [Crypto-Related][crypto]
+* [File System][fs]
+* [Object][object]
+* [String][string]
+* [Other][misc]
 
-* [API Reference][core]
-
->
-
-    identity, wrap, curry, _, partial, flip,
-    compose, pipe, variadic, unary, binary, ternary
 
 [core]:src/core.litcoffee
-
-### Logical Functions
-
-* [API Reference][logical]
-
->
-
-    f_and, f_or, negate, f_eq, f_neq
-
 [logical]:src/logical.litcoffee
-
-### Numeric Functions
-
-* [API Reference][numeric]
-
->
-
-    gt, lt, gte, lte, add, sub, mul, div, mod,
-    even, odd, min, max
-
 [numeric]:src/numeric.litcoffee
-
-### Type Functions
-
-* [API Reference][core]
-
->
-
-    deep_equal, type, is_type, instance_of,
-      is_string, is_function
-
 [type]:src/type.litcoffee
-
-### Array functions
-
-* [API Reference][array]
-
->
-
-    cat, slice, first, second, third, last, rest,
-      includes, unique_by, unique, uniq, dupes, union, intersection,
-      remove, shuffle
-
 [array]:src/array.litcoffee
-
-### Iterator Functions
-
-* [API Reference][it]
-
->
-
-    is_iterable, iterator, is_iterator, iterate,
-      collect, map, fold, foldr, select, reject, any, all, zip, unzip,
-      assoc, project, flatten, partition, take, leave, skip, sample
-
 [it]:src/iterator.litcoffee
-
-### Crypto Functions
-
-* [API Reference][crypto]
-
->
-
-    md5, base64, base64url
-
 [crypto]:src/crypto.litcoffee
-
-### File System Functions
-
-* [API Reference][fs]
-
->
-
-    exists, stat, read, readdir, read_stream, read_block, lines,
-    write, chdir, rm, rmdir
-
 [fs]:src/fs.litcoffee
-
-### Object Functions
-
-* [API Reference][object]
-
->
-
-    include/extend, merge, clone, pluck, property, delegate, bind, detach
-
 [object]:src/object.litcoffee
-
-### String Functions
-
-* [API Reference][string]
-
->
-
-    capitalize, title_case, camel_case, underscored,
-    dashed, plain_text, html_escape, w
-
 [string]:src/string.litcoffee
-
-### Miscellaneous Functions
-
-* [API Reference][misc]
-
->
-
-    times, shell, sleep, timer, memoize, abort
-
 [misc]:src/index.litcoffee
 
 ## Status
