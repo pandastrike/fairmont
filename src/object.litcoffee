@@ -184,6 +184,26 @@ Convert an object into association array.
         assert deep_equal (pairs {a: 1, b: 2, c: 3}),
           [["a", 1], ["b", 2], ["c", 3]]
 
+## pick
+
+      pick = (f, x) ->
+        r = {}
+        r[k] = v for k, v of x when f k, v
+        r
+
+      context.test "pick", ->
+        assert deep_equal (pick ((k, v) -> v?), {a: 1, b: null, c: 3}),
+          {a :1, c: 3}
+
+## omit
+
+      {negate} = require "./logical"
+      omit = (f, x) -> pick (negate f), x
+
+      context.test "omit", ->
+        assert deep_equal (omit ((k, v) -> v?), {a: 1, b: null, c: 3}),
+          {b: null}
+
 ---
 
       module.exports = {include, extend, merge, clone,
