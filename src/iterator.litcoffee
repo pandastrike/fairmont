@@ -336,6 +336,10 @@ collect take 500, sample 0.01, [0..1e6]
 
 ## sum
 
+Sum the numbers produced by a given iterator.
+
+This is here instead of in [Numeric Functions](./numeric.litcoffee) to avoid forward declaring `fold`.
+
       {add} = require "./numeric"
       sum = fold 0, add
 
@@ -343,6 +347,10 @@ collect take 500, sample 0.01, [0..1e6]
         assert (sum [1..5]) == 15
 
 ## average
+
+Average the numbers producced by a given iterator.
+
+This is here instead of in [Numeric Functions](./numeric.litcoffee) to avoid forward declaring `fold`.
 
       average = (i) ->
         j = 0
@@ -355,6 +363,10 @@ collect take 500, sample 0.01, [0..1e6]
 
 ## join
 
+Concatenate the strings produced by a given iterator. Unlike `Array::join`, this function does not delimit the strings. See also: `delimit`.
+
+This is here instead of in [String Functions](./string.litcoffee) to avoid forward declaring `fold`.
+
       {cat} = require "./array"
       join = fold "", add
 
@@ -364,7 +376,9 @@ collect take 500, sample 0.01, [0..1e6]
 
 ## delimit
 
-      delimit = (d, i) ->
+Like `join`, except that it takes a delimeter, separating each string with the delimiter. Similar to `Array::join`, except there's no default delimiter. The function is curried, though, so calling `delimit ' '` is analogous to `Array::join` with no delimiter argument.
+
+      delimit = curry (d, i) ->
         f = (r, s) -> if r == "" then r += s else r += d + s
         fold "", f, i
 
