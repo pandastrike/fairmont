@@ -2,10 +2,10 @@
 
 All file-system functions are based on Node's `fs` API. This is not `require`d unless the function is actually invoked.
 
+    {call, async} = require "./generator"
+
     fs = (f) ->
       {liftAll} = require "when/node"
-      {call} = (require "when/generator")
-      async = (require "when/generator").lift
       f (liftAll require "fs"), {call, async}
 
     {describe, assert} = require "./helpers"
@@ -25,11 +25,18 @@ Synchronously get the stat object for a file.
 
 Check to see if a file exists.
 
-      exists = stat
+      exists = (path) ->
+        fs ({stat}) ->
+          call ->
+            try
+              yield stat path
+              true
+            catch
+              false
 
       context.test "exists", ->
-        (yield exists "test/test.json")
         assert (yield exists "test/test.json")
+        assert !(yield exists "test/does-not-exist")
 
 
 ## read
@@ -161,7 +168,7 @@ Change directories, execute a function, and then restore the original working di
 
 Removes a file.
 
-      rm = (path) -> fs({unlink}) -> unlink path
+      rm = (path) -> fs ({unlink}) -> unlink path
 
       context.test "rm"
 
@@ -169,12 +176,44 @@ Removes a file.
 
 Removes a directory.
 
-      rmdir = (path) -> fs({rmdir}) -> rmdir path
+      rmdir = (path) -> fs ({rmdir}) -> rmdir path
 
-      context.test "rmdir"
+      context.test "rmdir", ->
+        # test is effectively done with mkdirp test
+
+## is_directory
+
+      is_directory = (path) ->
+        fs ({stat}, {call}) ->
+          call ->
+            (yield stat path).isDirectory()
+
+## mkdir
+
+Creates a directory. Takes a `mode` and a `path`. Assumes any intermediate directories in the path already exist.
+
+      {curry, binary} = require "./core"
+      mkdir = curry (mode, path) -> fs ({mkdir}) -> mkdir path, mode
+
+## mkdirp
+
+Creates a directory and any intermediate directories in the given `path`. Takes a `mode` and a `path`.
+
+      {dirname} = require "path"
+      mkdirp = curry binary async (mode, path) ->
+        parent = dirname path
+        if !(yield exists parent)
+          yield mkdirp mode, parent
+        mkdir mode, path
+
+      context.test "mkdirp", ->
+        yield mkdirp '0777', "./test/foobar"
+        assert (yield is_directory "./test/foobar")
+        yield rmdir "./test/foobar"
+
 
 ---
 
 
       module.exports = {exists, read, read_stream, stream, lines,
-        readdir, stat, write, chdir, rm, rmdir}
+        readdir, stat, write, chdir, rm, rmdir, is_directory, mkdir, mkdirp}
