@@ -12,6 +12,12 @@
 
     describe "Array functions", (context) ->
 
+## empty
+
+Returns true if an array is empty.
+
+      empty = (ax) -> ax.length == 0
+
 ## cat
 
 Concatenates (joins) arrays.
@@ -82,12 +88,11 @@ Returns a new array containing only unique members of an array,
 after transforming them with `f`. This is a generalized version of
 [`unique`](#unique) below.
 
-      # TODO: replace with Set operators?
       unique_by = curry (f, ax) ->
         bx = []
         for a in ax
-          y = f a
-          bx.push y unless y in bx
+          b = f a
+          (bx.push b) unless b in bx
         bx
 
 ## unique
@@ -97,24 +102,22 @@ Returns a new array containing only unique member of an array.
       unique = uniq = unique_by identity
 
       context.test "unique", ->
-        do (data = [1, 2, 1, 3, 5, 3, 6]) ->
-          assert deep_equal (unique data), [1, 2, 3, 5, 6]
+        assert deep_equal (unique cat [1..5], [1..5], [1..5]), [1..5]
 
 ## dupes
 
 Returns only the elements that exist more than once.
 
-      dupes = ([first, rest...]) ->
-        if rest.length == 0
+      dupes = ([a, ax...]) ->
+        if empty ax
           []
-        else if first in rest
-          [first, (dupes rest)...]
         else
-          dupes rest
+          bx = dupes ax
+          if a in ax && !(a in bx) then [a, bx...] else bx
+
 
       context.test "dupes", ->
-        do (data = [1, 2, 1, 3, 5, 3, 6]) ->
-          assert deep_equal (dupes data), [1, 3]
+        assert deep_equal (dupes cat [1..3], [2..4], [3..5]), [2..4]
 
 ## union
 
@@ -129,7 +132,20 @@ Set union (combination of two array with duplicates removed).
 
 ## intersection
 
-      intersection = curry compose dupes, cat
+      intersection = (first, rest...) ->
+        if empty rest
+          first
+        else
+          x for x in (intersection rest...) when x in first
+
+      context.test "intersection", ->
+        assert  empty intersection [1, 2], [3, 4]
+        assert empty intersection [1, 1], [2, 2]
+        assert empty intersection [], [1, 2, 3]
+        assert empty intersection [1, 2, 3], []
+        assert empty intersection [1, 2], [2, 3], [3, 4]
+        assert (first intersection [1, 2], [2, 3]) == 2
+        assert (first intersection [1, 2], [2, 3], [3, 2]) == 2
 
 ## difference
 
