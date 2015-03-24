@@ -107,17 +107,17 @@ Split a string on whitespace. Useful for concisely creating arrays of strings.
 
       context.test "w", -> assert (w "one two three").length == 3
 
-## empty
+## blank
 
-Check to see if a string is empty. Can also be imported as `blank` to avoid conflicts with the [Array](./array.litcoffee) function of the same name.
+Check to see if a string has zero length.
 
-      empty = blank = (s) -> s == ""
+      blank = (s) -> s.length == 0
 
-      context.test "empty", ->
-        assert empty ""
+      context.test "blank", ->
+        assert blank ""
         assert !blank "x"
 
 ---
 
       module.exports = {to_string, capitalize, title_case, camel_case,
-        underscored, dashed, plain_text, html_escape, w, blank, empty}
+        underscored, dashed, plain_text, html_escape, w, blank}

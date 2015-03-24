@@ -75,7 +75,7 @@ Returns all array elements but the first.
 
 Check if an element is a member of an array.
 
-      includes = (x, ax) -> x in ax
+      includes = curry (x, ax) -> x in ax
 
       context.test "includes", ->
         do (data = [1..5]) ->
@@ -206,6 +206,6 @@ Generates an array of integers based on the given range.
 ---
 
 
-      module.exports = {cat, slice, first, second, third, last, rest,
+      module.exports = {cat, slice, empty, first, second, third, last, rest,
         includes, unique_by, unique, uniq, dupes, union, intersection,
         difference, remove, shuffle}

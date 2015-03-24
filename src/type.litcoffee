@@ -32,11 +32,19 @@ Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `d
 
 ## is_string
 
-      is_string = (x) -> x.trim?
+      is_string = is_type "string"
 
 ## is_function
 
-      is_function = (x) -> x.call?
+      is_function = is_type "function"
+
+## is_object
+
+      is_object = is_type "object"
+
+## is_array
+
+      is_array = is_type "array"
 
 ## is_value
 
@@ -45,4 +53,4 @@ Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `d
 ---
 
       module.exports = {deep_equal, type, is_type, instance_of,
-        is_string, is_function, is_value}
+        is_string, is_function, is_object, is_array, is_value}
