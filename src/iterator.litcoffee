@@ -232,7 +232,7 @@ For example, `any` collects an iterator into a true or false value. It does not 
 
 ## assoc
 
-      {first, second} = require "../src/index"
+      {first, second} = require "./index"
       assoc = async (i) ->
         do (i = iterate i) ->
           result = {}
