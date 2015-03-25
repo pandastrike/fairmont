@@ -43,6 +43,7 @@ For example, `any` collects an iterator into a true or false value. It does not 
           x[Symbol.iterator]()
         else if is_iterator x
           x
+        # TODO: fix these
         else if (is_function x) && (x.length == 0)
           next: x
         else
@@ -71,6 +72,13 @@ For example, `any` collects an iterator into a true or false value. It does not 
         assert (yield i()).value == 2
         assert (yield i()).value == 3
         assert (yield i()).done
+
+## repeat
+
+Analogous to `wrap` (the K combinator) for an iterator. Always produces the same value `x`.
+
+      repeat = (x) ->
+        -> done: false, value: x
 
 ## collect
 
@@ -232,7 +240,7 @@ For example, `any` collects an iterator into a true or false value. It does not 
 
 ## assoc
 
-      {first, second} = require "../src/index"
+      {first, second} = require "./index"
       assoc = async (i) ->
         do (i = iterate i) ->
           result = {}
@@ -394,9 +402,23 @@ Like `join`, except that it takes a delimeter, separating each string with the d
       context.test "delimit", ->
         {w} = require "./string"
         assert (delimit ", ", w "one two three") == "one, two, three"
+
+## where
+
+Performs a `select` using a given object object. See `query`.
+
+      {query} = require "./object"
+      {cat} = require "./array"
+      where = curry (example, i) ->
+        select (query example), i
+
+      context.test "where", ->
+        assert (collect where ["a", 1],
+          (zip (repeat "a"), [1,2,3,1,2,3])).length == 2
+
 ---
 
       module.exports = {is_iterable, iterator, is_iterator, iterate,
         collect, map, fold, foldr, select, reject, any, all, zip, unzip,
         assoc, project, flatten, partition, take, leave, skip, sample,
-        sum, average, join, delimit}
+        sum, average, join, delimit, where, repeat}

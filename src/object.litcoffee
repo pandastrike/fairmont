@@ -204,8 +204,25 @@ Convert an object into association array.
         assert deep_equal (omit ((k, v) -> v?), {a: 1, b: null, c: 3}),
           {b: null}
 
+## query
+
+      {is_object} = require "./type"
+      query = curry (example, target) ->
+        if (is_object example) && (is_object target)
+          for k, v of example
+            return false unless query v, target[k]
+          return true
+        else
+          deep_equal example, target
+
+      context.test "query", ->
+        snow_white = name: "Snow White", dwarves: 7, enemies: [ "Evil Queen" ]
+        assert query {name: "Snow White"}, snow_white
+        assert query {enemies: [ "Evil Queen" ]}, snow_white
+        assert ! query {name: "Sleeping Beauty"}, snow_white
+        assert ! query {enemies: [ "Maleficent" ]}, snow_white
 ---
 
       module.exports = {include, extend, merge, clone,
         properties, property, delegate, bind, detach,
-        has, keys, values, pairs}
+        has, keys, values, pairs, pick, omit, query}
