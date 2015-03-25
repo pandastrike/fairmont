@@ -75,12 +75,12 @@ Read a stream, in its entirety, without blocking.
       context.test "read_stream", ->
         do (lines) ->
           {Readable} = require "stream"
-          stream = new Readable
-          promise = read stream
-          stream.push "one\n"
-          stream.push "two\n"
-          stream.push "three\n"
-          stream.push null
+          s = new Readable
+          promise = read s
+          s.push "one\n"
+          s.push "two\n"
+          s.push "three\n"
+          s.push null
           lines = (yield promise).split("\n")
           assert lines.length == 3
           assert lines[0] == "one"
@@ -128,14 +128,15 @@ Turns a stream into an iterator function.
 
       context.test "stream", ->
         {Readable} = require "stream"
-        do (s = new Readable) ->
-          s.push "one\n"
-          s.push "two\n"
-          s.push "three\n"
-          _s = lines s
-          assert (yield read_block _s) == "one"
-          assert (yield read_block _s) == "two"
-          assert (yield read_block _s) == "three"
+        s = new Readable
+        _s = stream lines s
+        s.push "one\n"
+        s.push "two\n"
+        s.push "three\n"
+        s.push null
+        assert (yield _s()) == "one"
+        assert (yield _s()) == "two"
+        assert (yield _s()) == "three"
 
 ## write
 
