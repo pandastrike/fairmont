@@ -1,6 +1,6 @@
 {
   "name": "fairmont",
-  "version": "1.0.0-alpha-17",
+  "version": "1.0.0-alpha-18",
   "description": "A collection of useful functions and utilities.",
   "files": [
     "src/",
@@ -11,8 +11,9 @@
   "scripts": {
     "prepublish": "coffee -o lib/ -c src/*.*coffee",
     "test": "coffee --nodejs --harmony test/test.litcoffee",
-    "watch": "coffee --nodejs --harmony -o lib/ -cw src/*.*coffee"
-  },
+    "watch": "coffee --nodejs --harmony -o lib/ -cw src/*.*coffee",
+    "tag": "(node_modules/.bin/json -f package.json version | xargs -I version git tag -am version version) && git push --tags"
+},
   "repository": {
     "type": "git",
     "url": "git://github.com/dyoder/fairmont.git"

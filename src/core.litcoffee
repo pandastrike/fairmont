@@ -127,9 +127,9 @@ Composition, except the functions arguments are in order of application.
 
 ## variadic
 
-Helper function that converts an argument list to an array.
+Converts a function taking a list of arguments into a function taking an array.
 
-      variadic = (ax...) -> ax
+      variadic = (f) -> (ax) -> f ax...
 
 
 ## unary, binary, and ternary

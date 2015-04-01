@@ -6,17 +6,15 @@
     {detach} = require "./object"
     {deep_equal} = require "./type"
 
+    # array only version of empty, not exported
+    empty = (x) -> x.length == 0
+
     {odd, lt} = require "./numeric"
 
     {assert, describe} = require "./helpers"
 
+
     describe "Array functions", (context) ->
-
-## empty
-
-Returns true if an array is empty.
-
-      empty = (ax) -> ax.length == 0
 
 ## cat
 
@@ -206,6 +204,6 @@ Generates an array of integers based on the given range.
 ---
 
 
-      module.exports = {cat, slice, empty, first, second, third, last, rest,
+      module.exports = {cat, slice, first, second, third, last, rest,
         includes, unique_by, unique, uniq, dupes, union, intersection,
         difference, remove, shuffle}

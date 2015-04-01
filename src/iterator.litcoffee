@@ -416,6 +416,7 @@ Performs a `select` using a given object object. See `query`.
         assert (collect where ["a", 1],
           (zip (repeat "a"), [1,2,3,1,2,3])).length == 2
 
+
 ---
 
       module.exports = {is_iterable, iterator, is_iterator, iterate,

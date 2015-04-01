@@ -72,9 +72,47 @@ Run a function N number of times.
         do (n = 0) ->
           assert (times (-> ++n), 3).length == 3
 
+
+## benchmark
+
+Run a function an record how long it took. Use this in conjunction with `times` to benchmark a function over N repetitions.
+
+      {is_function, is_generator} = require "./type"
+      {async} = require "./generator"
+      benchmark = async (fn) ->
+        if is_function fn
+          start = Date.now()
+          fn()
+          Date.now() - start
+        else if is_generator fn
+          start = Date.now()
+          yield fn()
+          Date.now() - start
+
+
+      context.test "benchmark"
+
+## empty
+
+Returns true if an iterable is produces no values.
+
+      {keys} = require "./object"
+      {is_array, is_object} = require "./type"
+      {blank} = require "./string"
+      empty = (x) ->
+        if is_array x
+          a.length == 0
+        else if is_object x
+          empty keys x
+        else if is_string x
+          blank x
+        else
+          x?
+
 ---
 
-      module.exports = {times, shell, sleep, timer, memoize, abort}
+      module.exports = {times, shell, sleep, timer, memoize, abort,
+        times, benchmark, empty}
 
 Load the rest of the functions.
 
