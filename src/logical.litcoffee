@@ -6,14 +6,6 @@
 
     describe "Logical functions", (context) ->
 
-# f_and
-
-      f_and = curry (f, g) -> -> (f arguments...) && (g arguments...)
-
-# f_or
-
-      f_or = curry (f, g) -> -> (f arguments...) || (g arguments...)
-
 # negate
 
       negate = (f) -> -> !(f arguments...)
@@ -21,14 +13,26 @@
       context.test "negate", ->
         assert !((negate -> true)())
 
-# f_eq
+# both
 
-      f_eq = curry (f, g) -> -> (f arguments...) == (g arguments...)
+      both = curry (f, g) -> -> (f arguments...) && (g arguments...)
 
-# f_neq
+# either
 
-      f_neq = curry (x,y) -> -> (f arguments...) != (g arguments...)
+      either = curry (f, g) -> -> (f arguments...) || (g arguments...)
+
+# neither
+
+      neither = negate either
+
+# same
+
+      same = curry (f, g) -> -> (f arguments...) == (g arguments...)
+
+# different
+
+      different = curry (x,y) -> -> (f arguments...) != (g arguments...)
 
 ---
 
-      module.exports = {f_and, f_or, negate, f_eq, f_neq}
+      module.exports = {negate, both, either, neither, same, different}

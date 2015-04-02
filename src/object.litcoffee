@@ -221,8 +221,20 @@ Convert an object into association array.
         assert query {enemies: [ "Evil Queen" ]}, snow_white
         assert ! query {name: "Sleeping Beauty"}, snow_white
         assert ! query {enemies: [ "Maleficent" ]}, snow_white
+
+## to_json
+
+      to_json = (x, pretty = false) ->
+        if pretty
+          JSON.stringify x, null, 2
+        else
+          JSON.stringify x
+
+      from_json = JSON.parse
+
 ---
 
       module.exports = {include, extend, merge, clone,
         properties, property, delegate, bind, detach,
-        has, keys, values, pairs, pick, omit, query}
+        has, keys, values, pairs, pick, omit, query,
+        to_json, from_json}

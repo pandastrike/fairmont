@@ -9,11 +9,11 @@
   ],
   "main": "lib/index.js",
   "scripts": {
-    "prepublish": "coffee -o lib/ -c src/*.*coffee",
+    "prepublish": "coffee --nodejs --harmony -o lib/ -c src/*.*coffee",
     "test": "coffee --nodejs --harmony test/test.litcoffee",
     "watch": "coffee --nodejs --harmony -o lib/ -cw src/*.*coffee",
-    "tag": "(node_modules/.bin/json -f package.json version | xargs -I version git tag -am version version) && git push --tags"
-},
+    "tag": "(node_modules/.bin/json -f package.json version | tee VERSION | xargs -I version git tag -am version version) && git push --tags"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/dyoder/fairmont.git"
@@ -27,9 +27,10 @@
     "Dan Yoder",
     "Matthew King"
   ],
-  "license": "MIT",
+  "license": "ISC",
   "devDependencies": {
-    "amen": "^1.0.0-alpha-03"
+    "amen": "^1.0.0-alpha-03",
+    "json": "^9.0.3"
   },
   "dependencies": {
     "byline": "^4.2.1",
