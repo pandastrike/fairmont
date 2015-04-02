@@ -32,11 +32,37 @@ Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `d
 
 ## is_number
 
-      is_number = is_type "number"
+      is_number = (n) -> n == +n
 
       context.test "is_number", ->
         assert is_number 7
-        assert !is_number false
+        assert ! is_number "7"
+        assert ! is_number false
+
+
+## is_integer
+
+Adapted from [StackOverflow][is_integer].
+
+[is_integer]:http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer/3885844#3885844
+
+      is_integer = (n) -> n == +n && n == (n|0)
+
+      context.test "is_integer", ->
+        assert is_integer 5
+        assert ! is_integer 3.5
+        assert ! is_integer "5"
+        assert ! is_integer NaN
+
+## is_float
+
+      is_float = (n) -> n == +n && n != (n|0)
+
+      context.test "is_float", ->
+        assert is_float 3.5
+        assert ! is_float 5
+        assert ! is_float "3.5"
+        assert ! is_float NaN
 
 ## is_boolean
 

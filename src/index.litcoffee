@@ -94,25 +94,43 @@ Run a function an record how long it took. Use this in conjunction with `times` 
 
 ## empty
 
-Returns true if an iterable is produces no values.
+Returns true if a contains no value. For arrays and strings, this means that its length is zero. For an object, it means that `keys` returns an array of length zero. For any other value, it will return true unless it's `undefined`.
 
       {keys} = require "./object"
-      {is_array, is_object} = require "./type"
+      {is_array, is_string, is_object} = require "./type"
       {blank} = require "./string"
       empty = (x) ->
         if is_array x
-          a.length == 0
+          x.length == 0
         else if is_object x
           empty keys x
         else if is_string x
           blank x
         else
-          x?
+          !x?
+
+      context.test "empty", ->
+        assert empty []
+        assert empty ""
+        assert empty {}
+        assert ! empty [1]
+        assert ! empty "abc"
+        assert ! empty a: 0
+        assert empty undefined
+        assert ! empty true
+
+## length
+
+Returns the length property of an object. This is so frequently used with strings and arrays that it's reasonable to include it. We were tempted to add a variant for objects, but that could produce surprising results. Instead, just use `length keys object`, which is still much more readable than `Object.keys(foo).length`. And, of course, if you're just comparing to zero, use `empty`: `empty foo` works on objects.
+
+      length = (x) -> x.length
+
+      context.test "length", -> assert (length []) == 0
 
 ---
 
       module.exports = {times, shell, sleep, timer, memoize, abort,
-        times, benchmark, empty}
+        times, benchmark, empty, length}
 
 Load the rest of the functions.
 
