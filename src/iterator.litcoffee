@@ -240,7 +240,7 @@ Analogous to `wrap` (the K combinator) for an iterator. Always produces the same
 
 ## assoc
 
-      {first, second} = require "./index"
+      {first, second} = require "./array"
       assoc = async (i) ->
         do (i = iterate i) ->
           result = {}

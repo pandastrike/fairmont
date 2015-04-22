@@ -43,13 +43,23 @@ Check to see if a file exists.
 
 Read a file and return a UTF-8 string of the contents.
 
-      read = (path) ->
+      read = (path, encoding = 'utf8') ->
         fs ({readFile}, {call}) ->
-          call -> (yield readFile path).toString()
-
+          call -> (yield readFile path, encoding)
 
       context.test "read", ->
         assert (JSON.parse (yield read "test/test.json")).name == "fairmont"
+
+## read_buffer
+
+Read a file and return the raw buffer.
+
+      read_buffer = (path) ->
+        fs ({readFile}, {call}) ->
+          call -> (yield readFile path)
+
+      context.test "read_buffer", ->
+        assert (yield read_buffer "test/test.json").constructor.name == "Buffer"
 
 ## readdir
 
@@ -140,7 +150,7 @@ Turns a stream into an iterator function.
 
 ## write
 
-Synchronously write a UTF-8 string to a file.
+Synchronously write a UTF-8 string or data buffer to a file.
 
       write = (path, content) -> fs ({writeFile}) -> writeFile path, content
 
@@ -221,10 +231,11 @@ Creates a directory and any intermediate directories in the given `path`. Takes 
 
       {dirname} = require "path"
       mkdirp = curry binary async (mode, path) ->
-        parent = dirname path
-        if !(yield exists parent)
-          yield mkdirp mode, parent
-        mkdir mode, path
+        if !(yield exists path)
+          parent = dirname path
+          if !(yield exists parent)
+            yield mkdirp mode, parent
+          mkdir mode, path
 
       context.test "mkdirp", ->
         yield mkdirp '0777', "./test/foo/bar"
@@ -234,6 +245,6 @@ Creates a directory and any intermediate directories in the given `path`. Takes 
 
 ---
 
-      module.exports = {read, write, stream, lines, rm,
+      module.exports = {read, read_buffer, write, stream, lines, rm,
         stat, exist, exists, is_file, is_directory
         readdir, mkdir, mkdirp, chdir, rmdir}

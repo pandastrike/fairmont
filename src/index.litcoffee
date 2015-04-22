@@ -8,7 +8,9 @@
 
 Simple wrapper around `process.exit(-1)`.
 
-      abort = -> process.exit -1
+      abort = (message) ->
+        console.error message if message?
+        process.exit -1
 
       context.test "abort"
 
