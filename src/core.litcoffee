@@ -95,23 +95,37 @@ Flip the arguments of the given function.
 
 ## compose
 
-Compose a list of functions, returning a new function.
-
-      promise = require "when"
-      {async} = require "./generator"
+Compose a list of functions, returning a new function. You can compose functions returning promises (defined as returning a value having a `then` property) and you'll get a promise back, resolving to the result of the composition.
 
       compose = (fx..., f) ->
         if fx.length == 0
           f
         else
           g = compose fx...
-          async (ax...) -> yield promise g yield promise f ax...
+          (ax...) ->
+            if (f_ax = f ax...).then? then (f_ax.then g) else (g f_ax)
+
 
       context.test "compose", ->
         data = foo: 1, bar: 2, baz: 3
         {parse, stringify} = JSON
         clone = compose parse, stringify
         assert deep_equal (clone data), data
+        {promise} = require "when"
+        _stringify = (x) ->
+          promise (resolve) ->
+            setTimeout (-> resolve stringify x), 100
+        _parse = (s) ->
+          promise (resolve) ->
+            setTimeout (-> resolve parse s), 100
+        clone_1 = compose parse, _stringify
+        clone_2 = compose _parse, stringify
+        clone_3 = compose _parse, _stringify
+        assert deep_equal (yield clone_1 data), data
+        assert deep_equal (yield clone_2 data), data
+        assert deep_equal (yield clone_3 data), data
+
+
 
 ## pipe
 
