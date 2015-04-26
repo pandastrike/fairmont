@@ -103,7 +103,7 @@ Compose a list of functions, returning a new function. You can compose functions
         else
           g = compose fx...
           (ax...) ->
-            if (f_ax = f ax...).then? then (f_ax.then g) else (g f_ax)
+            if (f_ax = f ax...)?.then? then (f_ax.then g) else (g f_ax)
 
 
       context.test "compose", ->
