@@ -421,5 +421,5 @@ Performs a `select` using a given object object. See `query`.
 
       module.exports = {is_iterable, iterator, is_iterator, iterate,
         collect, map, fold, foldr, select, reject, any, all, zip, unzip,
-        assoc, project, flatten, partition, take, leave, skip, sample,
-        sum, average, join, delimit, where, repeat}
+        assoc, project, flatten, compact, partition, take, leave, skip,
+        sample, sum, average, join, delimit, where, repeat}
