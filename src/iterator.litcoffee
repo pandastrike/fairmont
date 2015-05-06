@@ -61,7 +61,7 @@ For example, `any` collects an iterator into a true or false value. It does not 
         i = iterator x
         f = async ->
           {done, value} = i.next()
-          {done, value: yield promise value}
+          {done, value: yield value}
         f[Symbol.iterator] = wrap i
         f
 

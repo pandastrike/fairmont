@@ -8,7 +8,15 @@
 
       to_string = (x) -> x.toString()
 
-### plain_text ###
+## to_upper
+
+      to_upper = (s) -> s.toUpperCase()
+
+## to_lower
+
+      to_lower = (s) -> s.toLowerCase()
+
+## plain_text
 
 Convert an camel-case or underscore- or dash-separated string into a
 whitespace separated string.
@@ -119,5 +127,6 @@ Check to see if a string has zero length.
 
 ---
 
-      module.exports = {to_string, capitalize, title_case, camel_case,
-        underscored, dashed, plain_text, html_escape, w, blank}
+      module.exports = {to_string, to_upper, to_lower, capitalize,
+        title_case, camel_case, underscored, dashed, plain_text,
+        html_escape, w, blank}
