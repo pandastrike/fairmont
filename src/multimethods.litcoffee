@@ -28,7 +28,7 @@ For definitions which the value is itself a function, you must wrap the function
     dispatch = (method, ax) ->
       best = { p: 0, f: method.default }
       for [tx, f] in method.entries
-        if tx.length == ax.length
+        if tx.length == ax.length || (tx[tx.length - 1] == _)
           p = 0
           ai = ti = 0
           while ai < ax.length && ti < tx.length
@@ -112,3 +112,11 @@ You can define multimethods either using `create` (ex: `Method.create`) or just 
         assert (foo b, a) == "foo: B + A"
         assert.throws ->
           foo b, a, b
+
+      context.test "Variadic arguments", ->
+
+        bar = method()
+        define bar, Number, String, ->
+        define bar, Number, _, (x, a...) -> a[0]
+
+        assert (bar 7, 1, 2, 3) == 1
