@@ -40,6 +40,7 @@ Fairmont is also a literate programming project—the documentation, code, examp
 * [File System][fs]
 * [Object][object]
 * [String][string]
+* [Multimethods][multi]
 * [Other][misc]
 
 
@@ -54,10 +55,11 @@ Fairmont is also a literate programming project—the documentation, code, examp
 [object]:src/object.litcoffee
 [string]:src/string.litcoffee
 [misc]:src/index.litcoffee
+[multi]:src/multimethods.litcoffee
 
 ## Status
 
-Fairmont is still under heavy development and is `alpha` quality, meaning you should probably not use it in your production code.
+Fairmont is still under heavy development and is `beta` quality, meaning you should probably not use it in your production code.
 
 ## Roadmap
 

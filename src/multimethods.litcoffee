@@ -1,6 +1,8 @@
 # Multimethods
 
-Multimethods are polymorphic functions on their arguments. Methods in JavaScript objects dispatch based only on the (implicit first argument, which is the) object itself. Multimethods provide a more functional and flexible approach.
+[Multimethods][1] are polymorphic functions on their arguments. Methods in JavaScript objects dispatch based only on the (implicit first argument, which is the) object itself. Multimethods provide a more functional and flexible approach.
+
+[1]:https://en.wikipedia.org/wiki/Multiple_dispatch
 
 The `dispatch` function is the soul of the multimethod implementation. Our approach is iterate through all the available method implementations (`entries`) and find the best match by checking each argument (given by `ax`).
 
@@ -43,7 +45,7 @@ For definitions which the value is itself a function, you must wrap the function
               p += 3
             else if term.constructor == Function && (argument instanceof term)
               p += 2
-            else if term.constructor == Function && (term argument)
+            else if term.constructor == Function && (term argument) == true
               p += 5
             else
               p = 0
@@ -71,8 +73,8 @@ The `define` function adds an entry into the dispatch table. It takes the method
 
 You can define multimethods either using `create` (ex: `Method.create`) or just using the `method` function (in the case where you don't need scoping).
 
-    create = method
-    module.exports = {create, method, define}
+    Method = {create: method, define}
+    module.exports = {Method, method, define}
 
     {assert, describe} = require "./helpers"
 
