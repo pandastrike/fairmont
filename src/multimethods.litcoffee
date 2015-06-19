@@ -16,42 +16,40 @@ We score each match based on a set of precedence rules, from highest to lowest:
 
 * A inherited type match, defined by `instanceof` returning true
 
-* A variadic match, indicated with the value `_`, which automatically matches the remaining arguments.
-
 All the arguments must match, otherwise the score is zero. If no match is found, the `default` method will be selected.
 
 The method definition can either be a value or a function. If it's a function, the function is run using the given arguments. Otherwise, the value is returned directly.
 
 For definitions which the value is itself a function, you must wrap the function inside another function. The `dispatch` function is not exposed directly.
 
-    # we use the special value _ to allow for variadic matching.
-    {_} = require "./core"
+A map function allows for the transformation of the arguments for matching purposes. For example, variadic functions can be implemented by simply providing a variadic map function that returns the arguments as an Array.
 
     dispatch = (method, ax) ->
       best = { p: 0, f: method.default }
+      bx = if method.map? then (method.map ax...) else ax
+
       for [tx, f] in method.entries
-        if tx.length == ax.length || (tx[tx.length - 1] == _)
+        if tx.length == bx.length
           p = 0
-          ai = ti = 0
-          while ai < ax.length && ti < tx.length
+          bi = ti = 0
+          while bi < bx.length && ti < tx.length
             term = tx[ti++]
-            argument = ax[ai++]
-            if term == _ && ti == tx.length
-              p += 1 + ax.length - ai
-              break
-            if term == argument
+            arg = bx[bi++]
+            if term == arg
               p += 4
-            else if term == argument.constructor
+            else if term == arg.constructor
               p += 3
-            else if term.constructor == Function && (argument instanceof term)
+            else if term.constructor == Function && (arg instanceof term)
               p += 2
-            else if term.constructor == Function && (term argument) == true
+            else if term.constructor == Function &&
+                term != Boolean && (term arg) == true
               p += 5
             else
               p = 0
               break
-          if p >= best.p
+          if p > 0 && p >= best.p
             best = { p, f }
+
       if best.f.constructor == Function
         best.f ax...
       else
@@ -59,10 +57,17 @@ For definitions which the value is itself a function, you must wrap the function
 
 The `method` function defines a new multimethod, taking an optional description of the method. This can be accessed via the `description` property of the method.
 
-    method = (description) ->
-      m = -> dispatch m, arguments
+    create = (args...) ->
+      args = args[0..1]
+      map = description = undefined
+      while (arg=args.shift())
+        switch arg.constructor
+          when String then description ?= arg
+          when Function then map ?= arg
+      m = (args...) -> dispatch m, args
       m.entries = []
       m.default = -> throw new TypeError "No method matches arguments."
+      m.map = map
       m.description = description
       m
 
@@ -73,8 +78,8 @@ The `define` function adds an entry into the dispatch table. It takes the method
 
 You can define multimethods either using `create` (ex: `Method.create`) or just using the `method` function (in the case where you don't need scoping).
 
-    Method = {create: method, define}
-    module.exports = {Method, method, define}
+    Method = {create, define}
+    module.exports = {Method}
 
     {assert, describe} = require "./helpers"
 
@@ -82,14 +87,14 @@ You can define multimethods either using `create` (ex: `Method.create`) or just 
 
       context.test "Fibonacci function", ->
 
-        fib = method "Fibonacci sequence"
+        fib = Method.create "Fibonacci sequence"
 
-        define fib, ((n) -> n <= 0),
+        Method.define fib, ((n) -> n <= 0),
           -> throw new TypeError "Operand must be a postive integer"
 
-        define fib, 1, 1
-        define fib, 2, 1
-        define fib, Number, (n) -> (fib n - 1) + (fib n - 2)
+        Method.define fib, 1, 1
+        Method.define fib, 2, 1
+        Method.define fib, Number, (n) -> (fib n - 1) + (fib n - 2)
 
         assert (fib 5) == 5
 
@@ -101,12 +106,12 @@ You can define multimethods either using `create` (ex: `Method.create`) or just 
         a = new A
         b = new B
 
-        foo = method()
-        define foo, A, -> "foo: A"
-        define foo, B, -> "foo: B"
-        define foo, A, B, -> "foo: A + B"
-        define foo, B, A, -> "foo: B + A"
-        define foo, a, b, -> "foo: a + b"
+        foo = Method.create()
+        Method.define foo, A, -> "foo: A"
+        Method.define foo, B, -> "foo: B"
+        Method.define foo, A, B, -> "foo: A + B"
+        Method.define foo, B, A, -> "foo: B + A"
+        Method.define foo, a, b, -> "foo: a + b"
 
 
         assert (foo b) == "foo: B"
@@ -117,8 +122,17 @@ You can define multimethods either using `create` (ex: `Method.create`) or just 
 
       context.test "Variadic arguments", ->
 
-        bar = method()
-        define bar, Number, String, ->
-        define bar, Number, _, (x, a...) -> a[0]
+        bar = Method.create (x) -> [ x ]
+        Method.define bar, String, (x, a...) -> a[0]
+        Method.define bar, Number, (x, a...) -> x
 
-        assert (bar 7, 1, 2, 3) == 1
+        assert (bar "foo", 1, 2, 3) == 1
+
+      context.test "Predicate functions", ->
+
+        baz = Method.create()
+        Method.define baz, Boolean, -> false
+        Method.define baz, ((x) -> x == 7), (x) -> true
+
+        assert (baz 7)
+        assert.throws -> (baz 6)
