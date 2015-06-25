@@ -36,14 +36,16 @@ A map function allows for the transformation of the arguments for matching purpo
             term = tx[ti++]
             arg = bx[bi++]
             if term == arg
-              p += 4
-            else if term == arg.constructor
-              p += 3
-            else if term.constructor == Function && (arg instanceof term)
-              p += 2
-            else if term.constructor == Function &&
-                term != Boolean && (term arg) == true
               p += 5
+            else if term.constructor == Function
+              if term == arg.constructor
+                p += 4
+              else if (arg instanceof term)
+                p += 2
+              else if arg.prototype instanceof term
+                p += 1
+              else if term != Boolean && (term arg) == true
+                p += 5
             else
               p = 0
               break
@@ -136,3 +138,14 @@ You can define multimethods either using `create` (ex: `Method.create`) or just 
 
         assert (baz 7)
         assert.throws -> (baz 6)
+
+      context.test "Class methods", ->
+
+        class A
+        class B extends A
+
+        foo = Method.create()
+
+        Method.define foo, A, -> true
+
+        assert (foo B)
