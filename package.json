@@ -1,6 +1,6 @@
 {
   "name": "fairmont",
-  "version": "1.0.0-beta-10",
+  "version": "1.0.0-beta-11",
   "description": "A collection of useful functions and utilities.",
   "files": [
     "src/",
@@ -12,7 +12,8 @@
     "prepublish": "coffee --nodejs --harmony -o lib/ -c src/*.*coffee",
     "test": "coffee --nodejs --harmony test/test.litcoffee",
     "watch": "coffee --nodejs --harmony -o lib/ -cw src/*.*coffee",
-    "tag": "(node_modules/.bin/json -f package.json version | tee VERSION | xargs -I version git tag -am version version) && git push --tags"
+    "version": "(node_modules/.bin/json -f package.json version > VERSION)",
+    "tag": "(cat VERSION | xargs -I version git tag -am version version) && git push --tags"
   },
   "repository": {
     "type": "git",
@@ -34,6 +35,7 @@
   },
   "dependencies": {
     "byline": "^4.2.1",
+    "minimatch": "^2.0.8",
     "when": "^3.7.2"
   },
   "engine": "node >= 0.12.x"
