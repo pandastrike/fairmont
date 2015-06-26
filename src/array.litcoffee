@@ -159,6 +159,17 @@ Returns the elements that are not shared between two arrays.
         do (ax = [1..4], bx = [3..6]) ->
           assert deep_equal (difference ax, bx), [1,2,5,6]
 
+## complement
+
+Returns the complement of the second array relative to the first array.
+
+      complement = curry (ax, bx) ->
+        ax.filter (c) -> !(c in bx)
+
+      context.test "complement", ->
+        do (ax = [1..4], bx = [3..6]) ->
+          assert deep_equal (complement ax, bx), [1,2]
+
 ## remove
 
 Destructively remove an element from an array. Returns the element removed.
