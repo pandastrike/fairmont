@@ -79,14 +79,14 @@ Run a function N number of times.
 
 Run a function an record how long it took. Use this in conjunction with `times` to benchmark a function over N repetitions.
 
-      {is_function, is_generator} = require "./type"
+      {isFunction, isGenerator} = require "./type"
       {async} = require "./generator"
       benchmark = async (fn) ->
-        if is_function fn
+        if isFunction fn
           start = Date.now()
           fn()
           Date.now() - start
-        else if is_generator fn
+        else if isGenerator fn
           start = Date.now()
           yield fn()
           Date.now() - start
@@ -99,14 +99,14 @@ Run a function an record how long it took. Use this in conjunction with `times` 
 Returns true if a contains no value. For arrays and strings, this means that its length is zero. For an object, it means that `keys` returns an array of length zero. For any other value, it will return true unless it's `undefined`.
 
       {keys} = require "./object"
-      {is_array, is_string, is_object} = require "./type"
+      {isArray, isString, isObject} = require "./type"
       {blank} = require "./string"
       empty = (x) ->
-        if is_array x
+        if isArray x
           x.length == 0
-        else if is_object x
+        else if isObject x
           empty keys x
-        else if is_string x
+        else if isString x
           blank x
         else
           !x?

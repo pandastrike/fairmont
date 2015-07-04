@@ -22,38 +22,38 @@ For example, `any` collects an iterator into a true or false value. It does not 
     describe "Iterator functions", (context) ->
 
 
-## is_iterable
+## isIterable
 
-      is_iterable = (x) -> x[Symbol.iterator]?
+      isIterable = (x) -> x[Symbol.iterator]?
 
-      context.test "is_iterable", ->
-        assert is_iterable [1, 2, 3]
+      context.test "isIterable", ->
+        assert isIterable [1, 2, 3]
 
-## is_iterator
+## isIterator
 
-      is_iterator = (x) -> x?.next?
+      isIterator = (x) -> x?.next?
 
 ## iterator
 
-      {is_function} = require "./type"
+      {isFunction} = require "./type"
       {wrap} = require "./core"
 
       iterator = (x) ->
-        if is_iterable x
+        if isIterable x
           x[Symbol.iterator]()
-        else if is_iterator x
+        else if isIterator x
           x
         # TODO: fix these
-        else if (is_function x) && (x.length == 0)
+        else if (isFunction x) && (x.length == 0)
           next: x
         else
           next: wrap x
 
-      context.test "is_iterator", ->
-        assert is_iterator (iterator [1, 2, 3])
+      context.test "isIterator", ->
+        assert isIterator (iterator [1, 2, 3])
 
       context.test "iterator", ->
-        assert is_function (iterator [1, 2, 3]).next
+        assert isFunction (iterator [1, 2, 3]).next
 
 ## iterate
 
@@ -67,7 +67,7 @@ For example, `any` collects an iterator into a true or false value. It does not 
 
       context.test "iterate", ->
         i = iterate [1, 2, 3]
-        assert is_iterable i
+        assert isIterable i
         assert (yield i()).value == 1
         assert (yield i()).value == 2
         assert (yield i()).value == 3
@@ -234,7 +234,7 @@ Analogous to `wrap` (the K combinator) for an iterator. Always produces the same
 
       context.test "unzip", ->
         {first} = require "./array"
-        {to_string} = require "./string"
+        {toString} = require "./string"
         assert (fold "", add, first collect unzip zip "panama", "canary") ==
           "panama"
 
@@ -281,8 +281,8 @@ Analogous to `wrap` (the K combinator) for an iterator. Always produces the same
 
 ## compact
 
-      {is_value} = require "./type"
-      compact = select is_value
+      {isValue} = require "./type"
+      compact = select isValue
 
       context.test "compact", ->
         assert (second collect compact [1, null, null, 2]) == 2
@@ -419,7 +419,7 @@ Performs a `select` using a given object object. See `query`.
 
 ---
 
-      module.exports = {is_iterable, iterator, is_iterator, iterate,
+      module.exports = {isIterable, iterator, isIterator, iterate,
         collect, map, fold, foldr, select, reject, any, all, zip, unzip,
         assoc, project, flatten, compact, partition, take, leave, skip,
         sample, sum, average, join, delimit, where, repeat}

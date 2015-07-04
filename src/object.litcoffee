@@ -2,7 +2,7 @@
 
     {describe, assert} = require "./helpers"
     {compose, curry} = require "./core"
-    {deep_equal} = require "./type"
+    {deepEqual} = require "./type"
 
     describe "Object functions", (context) ->
 
@@ -36,7 +36,7 @@ Creates new object by progressively adding the properties of each given object.
 
 Perform a deep clone on an object. Taken from [The CoffeeScript Cookboox][0].
 
-[0]:http://coffeescriptcookbook.com/chapters/classes_and_objects/cloning
+[0]:http://coffeescriptcookbook.com/chapters/classesAndObjects/cloning
 
       clone = (object) ->
 
@@ -62,7 +62,7 @@ Perform a deep clone on an object. Taken from [The CoffeeScript Cookboox][0].
         return _clone
 
       context.test "clone", ->
-        is_clone = (original, copy) ->
+        isClone = (original, copy) ->
           assert.notEqual  original, copy
           assert.deepEqual original, copy
 
@@ -75,7 +75,7 @@ Perform a deep clone on an object. Taken from [The CoffeeScript Cookboox][0].
           birthdate: new Date 'Feb 24, 1955'
           regex: /foo.*/igm
 
-        is_clone person, clone person
+        isClone person, clone person
 
 ## property
 
@@ -86,8 +86,8 @@ Extract a property from an object. You can extract nested properties by composin
       context.test "property", ->
         a = { foo: 1, bar: 2, baz: { foo: 2 }}
         assert (property "foo", a) == 1
-        baz_foo = (compose (property "foo"), (property "baz"))
-        assert (baz_foo a) == 2
+        bazFoo = (compose (property "foo"), (property "baz"))
+        assert (bazFoo a) == 2
 
 ## delegate
 
@@ -181,7 +181,7 @@ Convert an object into association array.
       pairs = (x) -> [k, v] for k, v of x
 
       context.test "pairs", ->
-        assert deep_equal (pairs {a: 1, b: 2, c: 3}),
+        assert deepEqual (pairs {a: 1, b: 2, c: 3}),
           [["a", 1], ["b", 2], ["c", 3]]
 
 ## pick
@@ -192,7 +192,7 @@ Convert an object into association array.
         r
 
       context.test "pick", ->
-        assert deep_equal (pick ((k, v) -> v?), {a: 1, b: null, c: 3}),
+        assert deepEqual (pick ((k, v) -> v?), {a: 1, b: null, c: 3}),
           {a :1, c: 3}
 
 ## omit
@@ -201,40 +201,40 @@ Convert an object into association array.
       omit = (f, x) -> pick (negate f), x
 
       context.test "omit", ->
-        assert deep_equal (omit ((k, v) -> v?), {a: 1, b: null, c: 3}),
+        assert deepEqual (omit ((k, v) -> v?), {a: 1, b: null, c: 3}),
           {b: null}
 
 ## query
 
-      {is_object} = require "./type"
+      {isObject} = require "./type"
       query = curry (example, target) ->
-        if (is_object example) && (is_object target)
+        if (isObject example) && (isObject target)
           for k, v of example
             return false unless query v, target[k]
           return true
         else
-          deep_equal example, target
+          deepEqual example, target
 
       context.test "query", ->
-        snow_white = name: "Snow White", dwarves: 7, enemies: [ "Evil Queen" ]
-        assert query {name: "Snow White"}, snow_white
-        assert query {enemies: [ "Evil Queen" ]}, snow_white
-        assert ! query {name: "Sleeping Beauty"}, snow_white
-        assert ! query {enemies: [ "Maleficent" ]}, snow_white
+        snowWhite = name: "Snow White", dwarves: 7, enemies: [ "Evil Queen" ]
+        assert query {name: "Snow White"}, snowWhite
+        assert query {enemies: [ "Evil Queen" ]}, snowWhite
+        assert ! query {name: "Sleeping Beauty"}, snowWhite
+        assert ! query {enemies: [ "Maleficent" ]}, snowWhite
 
-## to_json
+## toJson
 
-      to_json = (x, pretty = false) ->
+      toJson = (x, pretty = false) ->
         if pretty
           JSON.stringify x, null, 2
         else
           JSON.stringify x
 
-      from_json = JSON.parse
+      fromJson = JSON.parse
 
 ---
 
       module.exports = {include, extend, merge, clone,
         properties, property, delegate, bind, detach,
         has, keys, values, pairs, pick, omit, query,
-        to_json, from_json}
+        toJson, fromJson}

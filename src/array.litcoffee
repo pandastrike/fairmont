@@ -4,7 +4,7 @@
       unary, binary, ternary} = require "./core"
 
     {detach} = require "./object"
-    {deep_equal} = require "./type"
+    {deepEqual} = require "./type"
 
     # array only version of empty, not exported
     empty = (x) -> x.length == 0
@@ -24,8 +24,8 @@ Concatenates (joins) arrays.
 
       context.test "cat", ->
         data = [1..5]
-        assert deep_equal (cat data), data
-        assert deep_equal (cat data, data), data.concat data
+        assert deepEqual (cat data), data
+        assert deepEqual (cat data, data), data.concat data
 
 ## slice
 
@@ -35,7 +35,7 @@ Curryied version of `Array::slice`.
 
       context.test "slice", ->
         data = [1..5]
-        assert deep_equal ((slice 1, 2) data), [2]
+        assert deepEqual ((slice 1, 2) data), [2]
 
 ## first
 
@@ -67,7 +67,7 @@ Returns all array elements but the first.
       rest = slice 1, undefined
 
       context.test "rest", ->
-        do (data = [1..5]) -> assert deep_equal (rest data), [2..5]
+        do (data = [1..5]) -> assert deepEqual (rest data), [2..5]
 
 ## includes
 
@@ -80,13 +80,13 @@ Check if an element is a member of an array.
           assert (includes 3, data)
           assert !(includes 6, data)
 
-## unique_by
+## uniqueBy
 
 Returns a new array containing only unique members of an array,
 after transforming them with `f`. This is a generalized version of
 [`unique`](#unique) below.
 
-      unique_by = curry (f, ax) ->
+      uniqueBy = curry (f, ax) ->
         bx = []
         for a in ax
           b = f a
@@ -97,10 +97,10 @@ after transforming them with `f`. This is a generalized version of
 
 Returns a new array containing only unique member of an array.
 
-      unique = uniq = unique_by identity
+      unique = uniq = uniqueBy identity
 
       context.test "unique", ->
-        assert deep_equal (unique cat [1..5], [1..5], [1..5]), [1..5]
+        assert deepEqual (unique cat [1..5], [1..5], [1..5]), [1..5]
 
 ## dupes
 
@@ -115,7 +115,7 @@ Returns only the elements that exist more than once.
 
 
       context.test "dupes", ->
-        assert deep_equal (dupes cat [1..3], [2..4], [3..5]), [2..4]
+        assert deepEqual (dupes cat [1..3], [2..4], [3..5]), [2..4]
 
 ## union
 
@@ -125,8 +125,8 @@ Set union (combination of two array with duplicates removed).
 
       context.test "union", ->
         do (a = [1..4], b = [3..6]) ->
-          assert deep_equal (union a, b), [1..6]
-          assert deep_equal (union a, a), [1..4]
+          assert deepEqual (union a, b), [1..6]
+          assert deepEqual (union a, a), [1..4]
 
 ## intersection
 
@@ -157,7 +157,7 @@ Returns the elements that are not shared between two arrays.
 
       context.test "difference", ->
         do (ax = [1..4], bx = [3..6]) ->
-          assert deep_equal (difference ax, bx), [1,2,5,6]
+          assert deepEqual (difference ax, bx), [1,2,5,6]
 
 ## complement
 
@@ -168,7 +168,7 @@ Returns the complement of the second array relative to the first array.
 
       context.test "complement", ->
         do (ax = [1..4], bx = [3..6]) ->
-          assert deep_equal (complement ax, bx), [1,2]
+          assert deepEqual (complement ax, bx), [1,2]
 
 ## remove
 
@@ -185,7 +185,7 @@ Destructively remove an element from an array. Returns the element removed.
 
 Takes an array and returns a new array with all values shuffled randomly. Use the [Fisher-Yates algorithm][shuffle-1]. Adapted from the [CoffeeScript Cookbook][shuffle-2].
 
-[shuffle-1]:http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+[shuffle-1]:http://en.wikipedia.org/wiki/Fisher%E2%80%93YatesShuffle
 [shuffle-2]:http://coffeescriptcookbook.com/chapters/arrays/shuffling-array-elements
 
       shuffle = (ax) ->
@@ -196,13 +196,13 @@ Takes an array and returns a new array with all values shuffled randomly. Use th
             while j == i
               j = Math.floor Math.random() * bx.length
             [bx[i], bx[j]] = [bx[j], bx[i]]
-          if deep_equal ax, bx then shuffle ax else bx
+          if deepEqual ax, bx then shuffle ax else bx
         else
           bx
 
       context.test "shuffle", ->
         do (data = [1..5]) ->
-          assert !deep_equal (shuffle data), data
+          assert !deepEqual (shuffle data), data
 
 ## range
 
@@ -210,11 +210,11 @@ Generates an array of integers based on the given range.
 
       range = (start, finish) -> [start..finish]
 
-      context.test "range", -> assert deep_equal (range 1, 5), [1..5]
+      context.test "range", -> assert deepEqual (range 1, 5), [1..5]
 
 ---
 
 
       module.exports = {cat, slice, first, second, third, last, rest,
-        includes, unique_by, unique, uniq, dupes, union, intersection,
+        includes, uniqueBy, unique, uniq, dupes, union, intersection,
         difference, remove, shuffle}

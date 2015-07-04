@@ -4,33 +4,33 @@
 
     describe "String functions", (context) ->
 
-## to_string
+## toString
 
-      to_string = (x) -> x.toString()
+      toString = (x) -> x.toString()
 
-## to_upper
+## toUpper
 
-      to_upper = (s) -> s.toUpperCase()
+      toUpper = (s) -> s.toUpperCase()
 
-## to_lower
+## toLower
 
-      to_lower = (s) -> s.toLowerCase()
+      toLower = (s) -> s.toLowerCase()
 
-## plain_text
+## plainText
 
 Convert an camel-case or underscore- or dash-separated string into a
 whitespace separated string.
 
-      plain_text = (string) ->
+      plainText = (string) ->
         string
           .replace( /^[A-Z]/g, (c) -> c.toLowerCase() )
           .replace( /[A-Z]/g, (c) -> " #{c.toLowerCase()}" )
           .replace( /\W+/g, " " )
 
 
-      context.test "plain_text", ->
-        assert plain_text("hello-world") == "hello world"
-        assert plain_text("Hello World") == "hello world"
+      context.test "plainText", ->
+        assert plainText("hello-world") == "hello world"
+        assert plainText("Hello World") == "hello world"
 
 ## capitalize
 
@@ -42,53 +42,53 @@ Capitalize the first letter of a string.
       context.test "capitalize", ->
         assert capitalize( "hello world" ) == "Hello world"
 
-## title_case
+## titleCase
 
 Capitalize the first letter of each word in a string.
 
-      title_case = (string) ->
+      titleCase = (string) ->
         string
         .toLowerCase()
         .replace(/^(\w)|\W(\w)/g, (char) -> char.toUpperCase())
 
 
-      context.test "title_case", ->
-        assert title_case( "hello woRld" ) == "Hello World"
+      context.test "titleCase", ->
+        assert titleCase( "hello woRld" ) == "Hello World"
 
-## camel_case
+## camelCase
 
 Convert a sequence of words into a camel-cased string.
 
-      camel_case = (string) ->
+      camelCase = (string) ->
         string.toLowerCase().replace(/(\W+\w)/g, (string) ->
           string.trim().toUpperCase())
 
-      context.test "camel_case", ->
-        assert camel_case( "Hello World" ) == "helloWorld"
+      context.test "camelCase", ->
+        assert camelCase( "Hello World" ) == "helloWorld"
 
 ## underscored
 
 Convert a sequence of words into an underscore-separated string.
 
-      underscored = (string) -> plain_text(string).replace(/\W+/g, "_")
+      underscored = (string) -> plainText(string).replace(/\W+/g, "_")
 
       context.test "underscored", ->
-        assert underscored( "Hello World" ) == "hello_world"
+        assert underscored( "Hello World" ) == "helloWorld"
 
 ## dashed
 
 Convert a sequence of words into a dash-separated string.
 
-      dashed = (string) -> plain_text(string).replace(/\W+/g, "-")
+      dashed = (string) -> plainText(string).replace(/\W+/g, "-")
 
       context.test "dashed", ->
         assert dashed( "Hello World" ) == "hello-world"
 
-## html_escape
+## htmlEscape
 
 Escape a string so that it can be embedded into HTML. Adapted from Mustache.js.
 
-      html_escape = do ->
+      htmlEscape = do ->
 
         map =
           "&": "&amp;"
@@ -102,8 +102,8 @@ Escape a string so that it can be embedded into HTML. Adapted from Mustache.js.
         re = new RegExp( "#{entities.join('|')}", "g" )
         (string) -> string.replace( re, (s) -> map[s] )
 
-      context.test "html_escape", ->
-        assert.equal html_escape( "<a href='foo'>bar & baz</a>" ),
+      context.test "htmlEscape", ->
+        assert.equal htmlEscape( "<a href='foo'>bar & baz</a>" ),
           "&lt;a href=&#39;foo&#39;&gt;bar &amp; baz&lt;&#x2F;a&gt;"
 
 
@@ -127,6 +127,6 @@ Check to see if a string has zero length.
 
 ---
 
-      module.exports = {to_string, to_upper, to_lower, capitalize,
-        title_case, camel_case, underscored, dashed, plain_text,
-        html_escape, w, blank}
+      module.exports = {toString, toUpper, toLower, capitalize,
+        titleCase, camelCase, underscored, dashed, plainText,
+        htmlEscape, w, blank}

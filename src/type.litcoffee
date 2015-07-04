@@ -1,12 +1,12 @@
 # Type Functions
 
-    {curry, deep_equal} = require "./core"
+    {curry, deepEqual} = require "./core"
 
     {describe, assert} = require "./helpers"
 
     describe "Type functions", (context) ->
 
-## deep_equal
+## deepEqual
 
 This is actually defined in `core` to avoid circular dependences. However, we require and export it here, since this is where it logically belongs.
 
@@ -18,127 +18,127 @@ Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `d
 
       context.test "type"
 
-## is_type
+## isType
 
-      is_type = curry (t, x) -> type(x) == t
+      isType = curry (t, x) -> type(x) == t
 
-      context.test "is_type"
+      context.test "isType"
 
-## instance_of
+## instanceOf
 
-      instance_of = curry (t, x) -> x instanceof t
+      instanceOf = curry (t, x) -> x instanceof t
 
-      context.test "instance_of"
+      context.test "instanceOf"
 
-## is_number
+## isNumber
 
-      is_number = (n) -> n == +n
+      isNumber = (n) -> n == +n
 
-      context.test "is_number", ->
-        assert is_number 7
-        assert ! is_number "7"
-        assert ! is_number false
+      context.test "isNumber", ->
+        assert isNumber 7
+        assert ! isNumber "7"
+        assert ! isNumber false
 
 
-## is_integer
+## isInteger
 
-Adapted from [StackOverflow][is_integer].
+Adapted from [StackOverflow][isInteger].
 
-[is_integer]:http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer/3885844#3885844
+[isInteger]:http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer/3885844#3885844
 
-      is_integer = (n) -> n == +n && n == (n|0)
+      isInteger = (n) -> n == +n && n == (n|0)
 
-      context.test "is_integer", ->
-        assert is_integer 5
-        assert ! is_integer 3.5
-        assert ! is_integer "5"
-        assert ! is_integer NaN
+      context.test "isInteger", ->
+        assert isInteger 5
+        assert ! isInteger 3.5
+        assert ! isInteger "5"
+        assert ! isInteger NaN
 
-## is_float
+## isFloat
 
-      is_float = (n) -> n == +n && n != (n|0)
+      isFloat = (n) -> n == +n && n != (n|0)
 
-      context.test "is_float", ->
-        assert is_float 3.5
-        assert ! is_float 5
-        assert ! is_float "3.5"
-        assert ! is_float NaN
+      context.test "isFloat", ->
+        assert isFloat 3.5
+        assert ! isFloat 5
+        assert ! isFloat "3.5"
+        assert ! isFloat NaN
 
-## is_boolean
+## isBoolean
 
-      is_boolean = is_type "boolean"
+      isBoolean = isType "boolean"
 
-      context.test "is_boolean", ->
-        assert is_boolean true
-        assert !is_boolean 7
+      context.test "isBoolean", ->
+        assert isBoolean true
+        assert !isBoolean 7
 
-## is_date
+## isDate
 
-      is_date = is_type "date"
+      isDate = isType "date"
 
-      context.test "is_date", ->
-        assert is_date (new Date)
-        assert !is_date 7
+      context.test "isDate", ->
+        assert isDate (new Date)
+        assert !isDate 7
 
-## is_regexp
+## isRegexp
 
-      is_regexp = is_type "regexp"
+      isRegexp = isType "regexp"
 
-      context.test "is_regexp", ->
-        assert is_regexp /\s/
-        assert !is_regexp 7
+      context.test "isRegexp", ->
+        assert isRegexp /\s/
+        assert !isRegexp 7
 
-## is_string
+## isString
 
-      is_string = is_type "string"
+      isString = isType "string"
 
-      context.test "is_string", ->
-        assert is_string "x"
-        assert !is_string 7
+      context.test "isString", ->
+        assert isString "x"
+        assert !isString 7
 
-## is_function
+## isFunction
 
-      is_function = is_type "function"
+      isFunction = isType "function"
 
-      context.test "is_function", ->
-        assert is_function ->
-        assert !is_function 7
+      context.test "isFunction", ->
+        assert isFunction ->
+        assert !isFunction 7
 
-## is_generator
+## isGenerator
 
-      is_generator = (x) ->
+      isGenerator = (x) ->
         x.constructor.name == "GeneratorFunction"
 
-      context.test "is_generator", ->
+      context.test "isGenerator", ->
         f = -> yield true
-        assert is_generator f
+        assert isGenerator f
 
-## is_object
+## isObject
 
-      is_object = is_type "object"
+      isObject = isType "object"
 
-      context.test "is_object", ->
-        assert is_object {}
-        assert !is_object 7
+      context.test "isObject", ->
+        assert isObject {}
+        assert !isObject 7
 
-## is_array
+## isArray
 
-      is_array = is_type "array"
+      isArray = isType "array"
 
-      context.test "is_array", ->
-        assert is_array []
-        assert !is_array 7
+      context.test "isArray", ->
+        assert isArray []
+        assert !isArray 7
 
-## is_value
+## isValue
 
-      is_value = (x) -> x?
+      isValue = (x) -> x?
 
-      context.test "is_value", ->
-        assert is_value {}
-        assert !is_value undefined
+      context.test "isValue", ->
+        assert isValue {}
+        assert !isValue undefined
 
 ---
 
-      module.exports = {deep_equal, type, is_type, instance_of,
-        is_boolean, is_number, is_string, is_function, is_generator,
-        is_object, is_array, is_value}
+      module.exports = {deepEqual, type, isType, instanceOf,
+        isBoolean, isNumber, isString, isFunction, isGenerator,
+        isObject, isArray, isValue}

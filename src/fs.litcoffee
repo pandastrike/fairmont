@@ -53,23 +53,30 @@ Read a file and return a UTF-8 string of the contents.
       context.test "read", ->
         assert (JSON.parse (yield read "test/test.json")).name == "fairmont"
 
-## read_buffer
+## readBuffer
 
 Read a file and return the raw buffer.
 
-      read_buffer = init async (path) -> yield FS.readFile path
+      readBuffer = init async (path) -> yield FS.readFile path
 
-      context.test "read_buffer", ->
-        assert (yield read_buffer "test/test.json").constructor == Buffer
+      context.test "readBuffer", ->
+        assert (yield readBuffer "test/test.json").constructor == Buffer
 
-## ls, readdir
+## readdir
 
 Get the contents of a directory as an array.
 
-      ls = readdir = init (path) -> FS.readdir path
+      readdir = init (path) -> FS.readdir path
 
       context.test "readdir", ->
         assert "test.json" in (yield readdir "test")
+
+## ls
+
+Get the contents of a directory as an array of pathnames.
+
+      ls = init async (path) ->
+        (join path, file) for file in (yield readdir path)
 
 ## lsR
 
@@ -78,8 +85,7 @@ Recursively get the contents of a directory as an array.
       {flatten} = require "./iterator"
       {join} = require "path"
       lsR = init async (path, visited = []) ->
-        for file in (yield readdir path)
-          childPath = join path, file
+        for childPath in (yield ls path)
           if !(childPath in visited)
             info = yield FS.lstat childPath
             if info.isDirectory()
@@ -109,11 +115,11 @@ Glob a directory.
         assert ((join testDir, "test", "test.litcoffee") in
           (yield glob "**/*.litcoffee", testDir))
 
-## read_stream
+## readStream
 
 Read a stream, in its entirety, without blocking.
 
-      read_stream = (stream) ->
+      readStream = (stream) ->
         {promise} = require "when"
         buffer = ""
         promise (resolve, reject) ->
@@ -121,7 +127,7 @@ Read a stream, in its entirety, without blocking.
           stream.on "end", -> resolve buffer
           stream.on "error", (error) -> reject error
 
-      context.test "read_stream", ->
+      context.test "readStream", ->
         do (lines) ->
           {Readable} = require "stream"
           s = new Readable
@@ -230,19 +236,19 @@ Removes a directory.
       context.test "rmdir", ->
         # test is effectively done with mkdirp test
 
-## is_directory
+## isDirectory
 
-      is_directory = init async (path) -> (yield stat path).isDirectory()
+      isDirectory = init async (path) -> (yield stat path).isDirectory()
 
-      context.test "is_directory", ->
-        assert (yield is_directory "./test")
+      context.test "isDirectory", ->
+        assert (yield isDirectory "./test")
 
-## is_file
+## isFile
 
-      is_file = init async (path) -> (yield stat path).isFile()
+      isFile = init async (path) -> (yield stat path).isFile()
 
-      context.test "is_file", ->
-        assert (yield is_file "./test/test.json")
+      context.test "isFile", ->
+        assert (yield isFile "./test/test.json")
 
 ## mkdir
 
@@ -253,7 +259,7 @@ Creates a directory. Takes a `mode` and a `path`. Assumes any intermediate direc
 
       context.test "mdkir", ->
         yield mkdir '0777', "./test/foobar"
-        assert (yield is_directory "./test/foobar")
+        assert (yield isDirectory "./test/foobar")
         yield rmdir "./test/foobar"
 
 ## mkdirp
@@ -271,12 +277,12 @@ Creates a directory and any intermediate directories in the given `path`. Takes 
 
       context.test "mkdirp", ->
         yield mkdirp '0777', "./test/foo/bar"
-        assert (yield is_directory "./test/foo/bar")
+        assert (yield isDirectory "./test/foo/bar")
         yield rmdir "./test/foo/bar"
         yield rmdir "./test/foo"
 
 ---
 
-      module.exports = {read, read_buffer, write, stream, lines, rm,
-        stat, exist, exists, is_file, is_directory
-        readdir, mkdir, mkdirp, chdir, rmdir}
+      module.exports = {read, readBuffer, write, stream, lines, rm,
+        stat, exist, exists, isFile, isDirectory
+        readdir, ls, lsR, mkdir, mkdirp, chdir, rmdir}

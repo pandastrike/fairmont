@@ -6,9 +6,9 @@ Support for currying, partial application, and composition of functions, along w
 
     describe "Functional programming functions", (context) ->
 
-## deep_equal
+## deepEqual
 
-      deep_equal = (a, b) ->
+      deepEqual = (a, b) ->
         assert = require "assert"
         try
           assert.deepEqual a, b
@@ -16,15 +16,15 @@ Support for currying, partial application, and composition of functions, along w
         catch
           false
 
-      context.test "deep_equal", ->
-        assert deep_equal {a: 1, b: 2}, {b: 2, a: 1}
-        assert !deep_equal {a: 1, b: 2}, {a: 1, b: 1}
+      context.test "deepEqual", ->
+        assert deepEqual {a: 1, b: 2}, {b: 2, a: 1}
+        assert !deepEqual {a: 1, b: 2}, {a: 1, b: 1}
 
 ## no-op
 
 Helper function for a no-op.
 
-      no_op = ->
+      noOp = ->
 
 ## identity
 
@@ -51,9 +51,9 @@ Convert a function taking N arguments into a function that takes one argument an
 
       context.test "curry", ->
         f = curry (x, y, z) -> {x, y, z}
-        assert deep_equal (f 1, 2, 3), {x: 1, y: 2, z: 3}
+        assert deepEqual (f 1, 2, 3), {x: 1, y: 2, z: 3}
         g = f 3, 2
-        assert deep_equal (g 1), {x: 3, y: 2, z: 1}
+        assert deepEqual (g 1), {x: 3, y: 2, z: 1}
 
 ## _
 
@@ -103,14 +103,14 @@ Compose a list of functions, returning a new function. You can compose functions
         else
           g = compose fx...
           (ax...) ->
-            if (f_ax = f ax...)?.then? then (f_ax.then g) else (g f_ax)
+            if (fax = f ax...)?.then? then (fax.then g) else (g fax)
 
 
       context.test "compose", ->
         data = foo: 1, bar: 2, baz: 3
         {parse, stringify} = JSON
         clone = compose parse, stringify
-        assert deep_equal (clone data), data
+        assert deepEqual (clone data), data
         {promise} = require "when"
         _stringify = (x) ->
           promise (resolve) ->
@@ -118,12 +118,12 @@ Compose a list of functions, returning a new function. You can compose functions
         _parse = (s) ->
           promise (resolve) ->
             setTimeout (-> resolve parse s), 100
-        clone_1 = compose parse, _stringify
-        clone_2 = compose _parse, stringify
-        clone_3 = compose _parse, _stringify
-        assert deep_equal (yield clone_1 data), data
-        assert deep_equal (yield clone_2 data), data
-        assert deep_equal (yield clone_3 data), data
+        clone1 = compose parse, _stringify
+        clone2 = compose _parse, stringify
+        clone3 = compose _parse, _stringify
+        assert deepEqual (yield clone1 data), data
+        assert deepEqual (yield clone2 data), data
+        assert deepEqual (yield clone3 data), data
 
 
 
@@ -137,7 +137,7 @@ Composition, except the functions arguments are in order of application.
         data = foo: 1, bar: 2, baz: 3
         {parse, stringify} = JSON
         clone = pipe stringify, parse
-        assert deep_equal (clone data), data
+        assert deepEqual (clone data), data
 
 ## variadic
 
@@ -156,5 +156,5 @@ These are helper functions for establishing the number of arguments.
 
 ---
 
-      module.exports = {deep_equal, no_op, identity, wrap, curry, _, partial,
+      module.exports = {deepEqual, noOp, identity, wrap, curry, _, partial,
         flip, compose, pipe, variadic, unary, binary, ternary}
