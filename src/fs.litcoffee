@@ -1,29 +1,19 @@
 # File System Functions
 
-All file-system functions are based on Node's `fs` API. This is not `require`d unless the `fs` function is actually invoked.
-
     {async} = require "./generator"
-
-    FS = undefined
-    initFS = ->
-      FS ?= do ->
-        {liftAll} = require "when/node"
-        (liftAll require "fs")
-
-    init = (f) ->
-      (ax...) ->
-        initFS()
-        f ax...
 
     {describe, assert} = require "./helpers"
 
     describe "File system functions", (context) ->
 
+      {liftAll} = require "when/node"
+      FS = (liftAll require "fs")
+
 ## stat
 
 Synchronously get the stat object for a file.
 
-      stat = init (path) -> FS.stat path
+      stat = (path) -> FS.stat path
 
       context.test "stat", ->
         assert (yield stat "test/test.json").size?
@@ -32,7 +22,7 @@ Synchronously get the stat object for a file.
 
 Check to see if a file exists.
 
-      exists = exist = init async (path) ->
+      exists = exist = async (path) ->
         try
           yield FS.stat path
           true
@@ -47,26 +37,49 @@ Check to see if a file exists.
 
 Read a file and return a UTF-8 string of the contents.
 
-      read = init async (path, encoding = 'utf8') ->
-        yield FS.readFile path, encoding
+      {Method} = require "./multimethods"
+
+      read = Method.create()
+
+      Method.define read, String, String, (path, encoding) ->
+        FS.readFile path, encoding
+
+      Method.define read, String, (path) -> read path, 'utf8'
+
+Passing an explicit 'null'/`undefined` or 'binary'/'buffer' as the encoding will return the raw buffer.
+
+      Method.define read, String, undefined, (path) -> FS.readFile path
+      Method.define read, String, "binary", (path) -> FS.readFile path
+      Method.define read, String, "buffer", (path) -> FS.readFile path
+
+You can also just pass in a readable stream.
+
+      stream = require "stream"
+      {promise} = require "when"
+      Method.define read, stream.Readable, (stream) ->
+        buffer = ""
+        promise (resolve, reject) ->
+          stream.on "data", (data) -> buffer += data.toString()
+          stream.on "end", -> resolve buffer
+          stream.on "error", (error) -> reject error
 
       context.test "read", ->
-        assert (JSON.parse (yield read "test/test.json")).name == "fairmont"
+      assert (yield read "test/lines.txt") == "one\ntwo\nthree\n"
 
-## readBuffer
+      context.test "read buffer", ->
+        assert (yield read "test/lines.txt", "binary").constructor == Buffer
 
-Read a file and return the raw buffer.
+      context.test "read stream", ->
+        {createReadStream} = require "fs"
+        s = createReadStream "test/lines.txt"
+        assert (yield read s) == "one\ntwo\nthree\n"
 
-      readBuffer = init async (path) -> yield FS.readFile path
 
-      context.test "readBuffer", ->
-        assert (yield readBuffer "test/test.json").constructor == Buffer
-
-## readdir
+## readDir
 
 Get the contents of a directory as an array.
 
-      readdir = init (path) -> FS.readdir path
+      readdir = readDir = (path) -> FS.readdir path
 
       context.test "readdir", ->
         assert "test.json" in (yield readdir "test")
@@ -75,7 +88,7 @@ Get the contents of a directory as an array.
 
 Get the contents of a directory as an array of pathnames.
 
-      ls = init async (path) ->
+      ls = async (path) ->
         (join path, file) for file in (yield readdir path)
 
 ## lsR
@@ -84,7 +97,7 @@ Recursively get the contents of a directory as an array.
 
       {flatten} = require "./iterator"
       {join} = require "path"
-      lsR = init async (path, visited = []) ->
+      lsR = async (path, visited = []) ->
         for childPath in (yield ls path)
           if !(childPath in visited)
             info = yield FS.lstat childPath
@@ -104,7 +117,7 @@ Recursively get the contents of a directory as an array.
 Glob a directory.
 
       {Minimatch} = require "minimatch"
-      glob = init async (pattern, path) ->
+      glob = async (pattern, path) ->
         minimatch = new Minimatch pattern
         match = (path) ->
           minimatch.match path
@@ -114,31 +127,6 @@ Glob a directory.
         testDir = join __dirname, ".."
         assert ((join testDir, "test", "test.litcoffee") in
           (yield glob "**/*.litcoffee", testDir))
-
-## readStream
-
-Read a stream, in its entirety, without blocking.
-
-      readStream = (stream) ->
-        {promise} = require "when"
-        buffer = ""
-        promise (resolve, reject) ->
-          stream.on "data", (data) -> buffer += data.toString()
-          stream.on "end", -> resolve buffer
-          stream.on "error", (error) -> reject error
-
-      context.test "readStream", ->
-        do (lines) ->
-          {Readable} = require "stream"
-          s = new Readable
-          promise = read s
-          s.push "one\n"
-          s.push "two\n"
-          s.push "three\n"
-          s.push null
-          lines = (yield promise).split("\n")
-          assert lines.length == 3
-          assert lines[0] == "one"
 
 ## lines
 
@@ -197,7 +185,7 @@ Turns a stream into an iterator function.
 
 Synchronously write a UTF-8 string or data buffer to a file.
 
-      write = init (path, content) -> FS.writeFile path, content
+      write = (path, content) -> FS.writeFile path, content
 
       context.test "write", ->
         write "test/test.json", (yield read "test/test.json")
@@ -223,7 +211,7 @@ Change directories, execute a function, and then restore the original working di
 
 Removes a file.
 
-      rm = init async (path) -> FS.unlink path
+      rm = async (path) -> FS.unlink path
 
       context.test "rm"
 
@@ -231,21 +219,21 @@ Removes a file.
 
 Removes a directory.
 
-      rmdir = init (path) -> FS.rmdir path
+      rmdir = (path) -> FS.rmdir path
 
       context.test "rmdir", ->
         # test is effectively done with mkdirp test
 
 ## isDirectory
 
-      isDirectory = init async (path) -> (yield stat path).isDirectory()
+      isDirectory = async (path) -> (yield stat path).isDirectory()
 
       context.test "isDirectory", ->
         assert (yield isDirectory "./test")
 
 ## isFile
 
-      isFile = init async (path) -> (yield stat path).isFile()
+      isFile = async (path) -> (yield stat path).isFile()
 
       context.test "isFile", ->
         assert (yield isFile "./test/test.json")
@@ -255,7 +243,7 @@ Removes a directory.
 Creates a directory. Takes a `mode` and a `path`. Assumes any intermediate directories in the path already exist.
 
       {curry, binary} = require "./core"
-      mkdir = curry binary init (mode, path) -> FS.mkdir path, mode
+      mkdir = curry binary (mode, path) -> FS.mkdir path, mode
 
       context.test "mdkir", ->
         yield mkdir '0777', "./test/foobar"
@@ -283,6 +271,6 @@ Creates a directory and any intermediate directories in the given `path`. Takes 
 
 ---
 
-      module.exports = {read, readBuffer, write, stream, lines, rm,
-        stat, exist, exists, isFile, isDirectory
-        readdir, ls, lsR, mkdir, mkdirp, chdir, rmdir}
+      module.exports = {read, write, stream, lines, rm,
+        stat, exist, exists, isFile, isDirectory, readdir, readDir,
+        ls, lsR, mkdir, mkdirp, chdir, rmdir}
