@@ -79,18 +79,21 @@ Run a function N number of times.
 
 Run a function an record how long it took. Use this in conjunction with `times` to benchmark a function over N repetitions.
 
+      {Method} = require "./multimethods"
       {isFunction, isGenerator} = require "./type"
       {async} = require "./generator"
-      benchmark = async (fn) ->
-        if isFunction fn
-          start = Date.now()
-          fn()
-          Date.now() - start
-        else if isGenerator fn
-          start = Date.now()
-          yield fn()
-          Date.now() - start
 
+      benchmark = Method.create()
+
+      Method.define benchmark, isFunction, (fn) ->
+        start = Date.now()
+        fn()
+        Date.now() - start
+
+      Method.define benchmark, isGenerator, (fn) ->
+        start = Date.now()
+        yield fn()
+        Date.now() - start
 
       context.test "benchmark"
 

@@ -281,8 +281,8 @@ Analogous to `wrap` (the K combinator) for an iterator. Always produces the same
 
 ## compact
 
-      {isValue} = require "./type"
-      compact = select isValue
+      {isDefined} = require "./type"
+      compact = select isDefined
 
       context.test "compact", ->
         assert (second collect compact [1, null, null, 2]) == 2

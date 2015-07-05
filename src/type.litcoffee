@@ -14,7 +14,7 @@ This is actually defined in `core` to avoid circular dependences. However, we re
 
 Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `date`, `regexp`, `function`, `array`, `object`, `null`, `undefined`.
 
-      type = (x) -> Object::toString.call(x).slice(8, -1).toLowerCase()
+      type = (x) -> x?.constructor
 
       context.test "type"
 
@@ -32,21 +32,24 @@ Get the type of a value. Possible values are: `number`, `string`, '`boolean`, `d
 
 ## isNumber
 
-      isNumber = (n) -> n == +n
+      isNumber = isType Number
 
       context.test "isNumber", ->
         assert isNumber 7
         assert ! isNumber "7"
         assert ! isNumber false
 
+## isNaN
+
+      isNaN = (n) -> Number.isNaN n
+
+## isFinite
+
+      isFinite = (n) -> Number.isFinite n
 
 ## isInteger
 
-Adapted from [StackOverflow][isInteger].
-
-[isInteger]:http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer/3885844#3885844
-
-      isInteger = (n) -> n == +n && n == (n|0)
+      isInteger = (n) -> Number.isInteger n
 
       context.test "isInteger", ->
         assert isInteger 5
@@ -54,7 +57,12 @@ Adapted from [StackOverflow][isInteger].
         assert ! isInteger "5"
         assert ! isInteger NaN
 
+
 ## isFloat
+
+Adapted from [StackOverflow][isFloat].
+
+[isFloat]:http://stackoverflow.com/questions/3885817/how-to-check-if-a-number-is-float-or-integer/3885844#3885844
 
       isFloat = (n) -> n == +n && n != (n|0)
 
@@ -66,7 +74,7 @@ Adapted from [StackOverflow][isInteger].
 
 ## isBoolean
 
-      isBoolean = isType "boolean"
+      isBoolean = isType Boolean
 
       context.test "isBoolean", ->
         assert isBoolean true
@@ -74,7 +82,7 @@ Adapted from [StackOverflow][isInteger].
 
 ## isDate
 
-      isDate = isType "date"
+      isDate = isType Date
 
       context.test "isDate", ->
         assert isDate (new Date)
@@ -82,7 +90,7 @@ Adapted from [StackOverflow][isInteger].
 
 ## isRegexp
 
-      isRegexp = isType "regexp"
+      isRegexp = isType RegExp
 
       context.test "isRegexp", ->
         assert isRegexp /\s/
@@ -90,7 +98,7 @@ Adapted from [StackOverflow][isInteger].
 
 ## isString
 
-      isString = isType "string"
+      isString = isType String
 
       context.test "isString", ->
         assert isString "x"
@@ -98,7 +106,7 @@ Adapted from [StackOverflow][isInteger].
 
 ## isFunction
 
-      isFunction = isType "function"
+      isFunction = isType Function
 
       context.test "isFunction", ->
         assert isFunction ->
@@ -106,8 +114,9 @@ Adapted from [StackOverflow][isInteger].
 
 ## isGenerator
 
-      isGenerator = (x) ->
-        x.constructor.name == "GeneratorFunction"
+      GeneratorFunction = (-> yield null).constructor
+
+      isGenerator = isType GeneratorFunction
 
       context.test "isGenerator", ->
         f = -> yield true
@@ -115,7 +124,7 @@ Adapted from [StackOverflow][isInteger].
 
 ## isObject
 
-      isObject = isType "object"
+      isObject = isType Object
 
       context.test "isObject", ->
         assert isObject {}
@@ -123,22 +132,22 @@ Adapted from [StackOverflow][isInteger].
 
 ## isArray
 
-      isArray = isType "array"
+      isArray = isType Array
 
       context.test "isArray", ->
         assert isArray []
         assert !isArray 7
 
-## isValue
+## isDefined
 
-      isValue = (x) -> x?
+      isDefined = (x) -> x?
 
-      context.test "isValue", ->
-        assert isValue {}
-        assert !isValue undefined
+      context.test "isDefined", ->
+        assert isDefined {}
+        assert !isDefined undefined
 
 ---
 
       module.exports = {deepEqual, type, isType, instanceOf,
-        isBoolean, isNumber, isString, isFunction, isGenerator,
-        isObject, isArray, isValue}
+        isBoolean, isNumber, isNaN, isFinite, isInteger, isFloat,
+        isString, isFunction, isGenerator, isObject, isArray, isDefined}

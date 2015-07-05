@@ -73,7 +73,7 @@ Convert a sequence of words into an underscore-separated string.
       underscored = (string) -> plainText(string).replace(/\W+/g, "_")
 
       context.test "underscored", ->
-        assert underscored( "Hello World" ) == "helloWorld"
+        assert underscored( "Hello World" ) == "hello_world"
 
 ## dashed
 

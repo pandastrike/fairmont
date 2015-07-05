@@ -185,7 +185,7 @@ Destructively remove an element from an array. Returns the element removed.
 
 Takes an array and returns a new array with all values shuffled randomly. Use the [Fisher-Yates algorithm][shuffle-1]. Adapted from the [CoffeeScript Cookbook][shuffle-2].
 
-[shuffle-1]:http://en.wikipedia.org/wiki/Fisher%E2%80%93YatesShuffle
+[shuffle-1]:http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
 [shuffle-2]:http://coffeescriptcookbook.com/chapters/arrays/shuffling-array-elements
 
       shuffle = (ax) ->
