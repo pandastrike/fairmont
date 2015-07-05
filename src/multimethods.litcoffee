@@ -37,7 +37,7 @@ A map function allows for the transformation of the arguments for matching purpo
             arg = bx[bi++]
             if term == arg
               p += 5
-            else if term.constructor == Function
+            else if term?.constructor == Function
               if term == arg.constructor
                 p += 4
               else if (arg instanceof term)
@@ -149,3 +149,7 @@ You can define multimethods either using `create` (ex: `Method.create`) or just 
         Method.define foo, A, -> true
 
         assert (foo B)
+
+      context.test "Multimethods are functions, too", ->
+
+        assert Method.create().constructor == Function

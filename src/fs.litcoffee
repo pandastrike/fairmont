@@ -16,7 +16,7 @@ Synchronously get the stat object for a file.
       stat = (path) -> FS.stat path
 
       context.test "stat", ->
-        assert (yield stat "test/test.json").size?
+        assert (yield stat "test/lines.txt").size?
 
 ## exists
 
@@ -30,7 +30,7 @@ Check to see if a file exists.
           false
 
       context.test "exists", ->
-        assert (yield exists "test/test.json")
+        assert (yield exists "test/lines.txt")
         assert !(yield exists "test/does-not-exist")
 
 ## read
@@ -48,14 +48,16 @@ Read a file and return a UTF-8 string of the contents.
 
 Passing an explicit 'null'/`undefined` or 'binary'/'buffer' as the encoding will return the raw buffer.
 
-      Method.define read, String, undefined, (path) -> FS.readFile path
-      Method.define read, String, "binary", (path) -> FS.readFile path
-      Method.define read, String, "buffer", (path) -> FS.readFile path
+      readBuffer = (path) -> FS.readFile path
+      Method.define read, String, undefined, readBuffer
+      Method.define read, String, "binary", readBuffer
+      Method.define read, String, "buffer", readBuffer
 
 You can also just pass in a readable stream.
 
       stream = require "stream"
       {promise} = require "when"
+
       Method.define read, stream.Readable, (stream) ->
         buffer = ""
         promise (resolve, reject) ->
@@ -64,7 +66,7 @@ You can also just pass in a readable stream.
           stream.on "error", (error) -> reject error
 
       context.test "read", ->
-      assert (yield read "test/lines.txt") == "one\ntwo\nthree\n"
+        assert (yield read "test/lines.txt") == "one\ntwo\nthree\n"
 
       context.test "read buffer", ->
         assert (yield read "test/lines.txt", "binary").constructor == Buffer
@@ -75,14 +77,14 @@ You can also just pass in a readable stream.
         assert (yield read s) == "one\ntwo\nthree\n"
 
 
-## readDir
+## readDir / readdir
 
 Get the contents of a directory as an array.
 
       readdir = readDir = (path) -> FS.readdir path
 
       context.test "readdir", ->
-        assert "test.json" in (yield readdir "test")
+        assert "lines.txt" in (yield readdir "test")
 
 ## ls
 
@@ -91,13 +93,13 @@ Get the contents of a directory as an array of pathnames.
       ls = async (path) ->
         (join path, file) for file in (yield readdir path)
 
-## lsR
+## lsR / lsr
 
 Recursively get the contents of a directory as an array.
 
       {flatten} = require "./iterator"
       {join} = require "path"
-      lsR = async (path, visited = []) ->
+      lsR = lsr = async (path, visited = []) ->
         for childPath in (yield ls path)
           if !(childPath in visited)
             info = yield FS.lstat childPath
@@ -110,7 +112,7 @@ Recursively get the contents of a directory as an array.
       context.test "lsR", ->
         {resolve} = require "path"
         testDir = join __dirname, ".."
-        assert (join testDir, "test/test.json") in (yield lsR testDir)
+        assert (join testDir, "test/lines.txt") in (yield lsR testDir)
 
 ## glob
 
@@ -127,18 +129,6 @@ Glob a directory.
         testDir = join __dirname, ".."
         assert ((join testDir, "test", "test.litcoffee") in
           (yield glob "**/*.litcoffee", testDir))
-
-## lines
-
-Convert a stream into a line-by-line stream.
-
-      lines = (stream) -> ((require "byline") stream)
-
-
-> We might be able to provide a more general solution here based on [EventStreams][100].
-
-[100]:https://github.com/dominictarr/event-stream
-
 
 ## stream
 
@@ -158,8 +148,8 @@ Turns a stream into an iterator function.
               else
                 pending.shift().reject x
 
-            s.on "data", (data) -> _resolve data.toString()
-            s.on "end", -> _resolve null
+            s.on "data", (data) -> _resolve value: data.toString(), done: false
+            s.on "end", -> _resolve done: true
             s.on "error", -> _reject error
 
             ->
@@ -170,16 +160,10 @@ Turns a stream into an iterator function.
                 resolved.shift()
 
       context.test "stream", ->
-        {Readable} = require "stream"
-        s = new Readable
-        _s = stream lines s
-        s.push "one\n"
-        s.push "two\n"
-        s.push "three\n"
-        s.push null
-        assert (yield _s()) == "one"
-        assert (yield _s()) == "two"
-        assert (yield _s()) == "three"
+        {createReadStream} = require "fs"
+        i = stream createReadStream "test/lines.txt"
+        assert ((yield i()).value == "one\ntwo\nthree\n")
+        assert (yield i()).done
 
 ## write
 
@@ -188,23 +172,31 @@ Synchronously write a UTF-8 string or data buffer to a file.
       write = (path, content) -> FS.writeFile path, content
 
       context.test "write", ->
-        write "test/test.json", (yield read "test/test.json")
+        write "test/lines.txt", (yield read "test/lines.txt")
 
-## chdir
+## chDir / chdir
 
-Change directories, execute a function, and then restore the original working directory. The function must return a Promise.
+Change directories. If a function is passed in execute the function, and restore the original working directory. Otherwise, returns a function to restore the original working directory. **Important** Do not rely on the automatic restoration feature when using asynchronous functions, since another function may also change the current directory.
 
-      chdir = (dir, fn) ->
+      {Method} = require "./multimethods"
+
+      chDir = chdir = Method.create()
+
+      Method.define chdir, String, (path) ->
         cwd = process.cwd()
-        process.chdir dir
-        fn()
-        process.chdir cwd
+        process.chdir path
+        -> process.chdir cwd
+
+      Method.define chdir, String, Function, (path, f) ->
+        restore = chdir path
+        f()
+        restore()
 
       context.test "chdir", ->
         cwd = process.cwd()
-        chdir "test", ->
+        chDir "test", ->
           fs = require "fs"
-          assert (fs.statSync "test.json").size?
+          assert (fs.statSync "lines.txt").size?
         assert cwd == process.cwd()
 
 ## rm
@@ -215,11 +207,11 @@ Removes a file.
 
       context.test "rm"
 
-## rmdir
+## rmDir / rmdir
 
 Removes a directory.
 
-      rmdir = (path) -> FS.rmdir path
+      rmDir = rmdir = (path) -> FS.rmdir path
 
       context.test "rmdir", ->
         # test is effectively done with mkdirp test
@@ -236,27 +228,27 @@ Removes a directory.
       isFile = async (path) -> (yield stat path).isFile()
 
       context.test "isFile", ->
-        assert (yield isFile "./test/test.json")
+        assert (yield isFile "./test/lines.txt")
 
-## mkdir
+## mkDir / mkdir
 
 Creates a directory. Takes a `mode` and a `path`. Assumes any intermediate directories in the path already exist.
 
       {curry, binary} = require "./core"
-      mkdir = curry binary (mode, path) -> FS.mkdir path, mode
+      mkDir = mkdir = curry binary (mode, path) -> FS.mkdir path, mode
 
       context.test "mdkir", ->
         yield mkdir '0777', "./test/foobar"
         assert (yield isDirectory "./test/foobar")
         yield rmdir "./test/foobar"
 
-## mkdirp
+## mkDirP / mkdirp
 
 Creates a directory and any intermediate directories in the given `path`. Takes a `mode` and a `path`.
 
       {dirname} = require "path"
       {curry, binary} = require "./core"
-      mkdirp = curry binary async (mode, path) ->
+      mkDirP = mkdirp =  curry binary async (mode, path) ->
         if !(yield exists path)
           parent = dirname path
           if !(yield exists parent)
@@ -271,6 +263,6 @@ Creates a directory and any intermediate directories in the given `path`. Takes 
 
 ---
 
-      module.exports = {read, write, stream, lines, rm,
-        stat, exist, exists, isFile, isDirectory, readdir, readDir,
-        ls, lsR, mkdir, mkdirp, chdir, rmdir}
+      module.exports = {read, write, stream, rm, stat, exist, exists,
+        isFile, isDirectory, readdir, readDir, ls, lsR, lsr,
+        mkdir, mkDir, mkdirp, mkDirP, chdir, chDir, rmdir, rmDir}

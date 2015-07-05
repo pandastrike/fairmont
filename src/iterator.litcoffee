@@ -416,6 +416,42 @@ Performs a `select` using a given object object. See `query`.
         assert (collect where ["a", 1],
           (zip (repeat "a"), [1,2,3,1,2,3])).length == 2
 
+## split
+
+Iterator transformation.
+
+      split = curry (f, i) ->
+        lines = []
+        done = false
+        async ->
+          if done
+            {done}
+          else if lines.length > 0
+            lines.shift()
+          else
+            {value, done} = yield i()
+            if !done
+              for line in f value when value != ""
+                lines.push value: line, done: false
+          lines.shift()
+
+      context.test "split"
+
+## lines
+
+      lines = split (s) -> s.split("\n")
+
+      context.test "lines", ->
+        {stream} = require "./fs"
+        {createReadStream} = require "fs"
+        i = lines stream createReadStream "test/lines.txt"
+        assert ((yield i()).value) == "one"
+        assert ((yield i()).value) == "two"
+        assert ((yield i()).value) == "three"
+        assert ((yield i()).done)
+
+
+
 
 ---
 
