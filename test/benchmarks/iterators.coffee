@@ -30,13 +30,13 @@ log "Iterators", benchmark -> times f2, N
 
 # Fairmont iterators
 {collect, map, identity} = require "../../src/index"
-h = ->
+f3 = ->
   collect map identity, a
 
-log "Fairmont iterator functions", benchmark -> times h, N
+log "Fairmont iterator functions", benchmark -> times f3, N
 
 # forEach
-j = ->
+f4 = ->
   a.forEach identity
 
-log "forEach", benchmark -> times j, N
+log "forEach", benchmark -> times f4, N
