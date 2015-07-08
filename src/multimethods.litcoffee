@@ -46,6 +46,9 @@ A map function allows for the transformation of the arguments for matching purpo
                 p += 1
               else if term != Boolean && (term arg) == true
                 p += 5
+              else
+                p = 0
+                break
             else
               p = 0
               break
@@ -59,18 +62,11 @@ A map function allows for the transformation of the arguments for matching purpo
 
 The `method` function defines a new multimethod, taking an optional description of the method. This can be accessed via the `description` property of the method.
 
-    create = (args...) ->
-      args = args[0..1]
-      map = description = undefined
-      while (arg=args.shift())
-        switch arg.constructor
-          when String then description ?= arg
-          when Function then map ?= arg
+    create = (options) ->
       m = (args...) -> dispatch m, args
       m.entries = []
-      m.default = -> throw new TypeError "No method matches arguments."
-      m.map = map
-      m.description = description
+      m[k] = v for k, v of options
+      m.default ?= -> throw new TypeError "No method matches arguments."
       m
 
 The `define` function adds an entry into the dispatch table. It takes the method, the signature, and the definition (implementation) as arguments.
@@ -89,7 +85,7 @@ You can define multimethods either using `create` (ex: `Method.create`) or just 
 
       context.test "Fibonacci function", ->
 
-        fib = Method.create "Fibonacci sequence"
+        fib = Method.create description: "Fibonacci sequence"
 
         Method.define fib, ((n) -> n <= 0),
           -> throw new TypeError "Operand must be a postive integer"
@@ -124,7 +120,7 @@ You can define multimethods either using `create` (ex: `Method.create`) or just 
 
       context.test "Variadic arguments", ->
 
-        bar = Method.create (x) -> [ x ]
+        bar = Method.create map: (x) -> [ x ]
         Method.define bar, String, (x, a...) -> a[0]
         Method.define bar, Number, (x, a...) -> x
 
@@ -150,6 +146,6 @@ You can define multimethods either using `create` (ex: `Method.create`) or just 
 
         assert (foo B)
 
-      context.test "Multimethods are functions, too", ->
+      context.test "Multimethods are functions", ->
 
         assert Method.create().constructor == Function
