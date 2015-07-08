@@ -546,68 +546,87 @@ Performs a `select` using a given object object. See `query`.
           (zip pair, (repeat "a"), [1,2,3,1,2,3])).length == 2
 
 
-# ## split
-#
-# Iterator transformation.
-#
-#       split = Method.create
-#         description: "Given a function and an iterator, produce a new
-#                       iterator whose values are delimited based on the
-#                       given function"
-#         default: (f, i) -> split f, (iteratorFunction i)
-#
-#       do (done) ->
-#
-#         Method.define split, Function, isIteratorFunction, (f, i) ->
-#           lines = []
-#           done = false
-#           iterator ->
-#             if done
-#               {done}
-#             else if lines.length > 0
-#               lines.shift()
-#             else
-#               {value, done} = i()
-#               if done
-#                 {done}
-#               else
-#                 [first, values..., last] = f value
-#                 if remainder?
-#                   # okay, how do we do this w/o cheating
-#                   first = remainder + first
-#                   remainder = last
-#                 lines = {value, done} for value in values
-#                 {value: first, done}
-#
-#       context.test "split"
-#
-# ## lines
-#
-#       lines = split (s) -> s.split("\n")
-#
-#       context.test "lines", ->
-#         {stream} = require "./fs"
-#         {createReadStream} = require "fs"
-#         i = lines stream createReadStream "test/lines.txt"
-#         assert ((yield i()).value) == "one"
-#         assert ((yield i()).value) == "two"
-#         assert ((yield i()).value) == "three"
-#         assert ((yield i()).done)
-#
-#
-#
-#
-# ---
-#
-#       module.exports = {isIterable, iterator, isIterator, iterate,
-#         collect, map, fold, reduce, foldr, select, reject, any, all,
-          zip, unzip,
-#         assoc, project, flatten, compact, partition, take, leave, skip,
-#         sample, sum, average, join, delimit, where, repeat}
+## split
+
+Iterator transformation.
+
+Given a function and an iterator, produce a new iterator whose values are delimited based on the given function.
+
+      split = Method.create()
+
+      Method.define split, Function, $,
+        (f, x) -> split f, (iteratorFunction x)
+
+      Method.define split, Function, isIteratorFunction, (f, i) ->
+        lines = []
+        remainder = ""
+        iterator ->
+          if lines.length > 0
+            value: lines.shift(), done: false
+          else
+            {value, done} = i()
+            if !done
+              [first, lines..., last] = f value
+              first = remainder + first
+              remainder = last
+              {value: first, done}
+            else if remainder != ""
+              value = remainder
+              remainder = ""
+              {value, done: false}
+            else
+              {done}
+
+      Method.define split, Function, isIteratorFunction, (f, i) ->
+        lines = []
+        remainder = ""
+        iterator ->
+          if lines.length > 0
+            value: lines.shift(), done: false
+          else
+            {value, done} = yield i()
+            if !done
+              [first, lines..., last] = f value
+              first = remainder + first
+              remainder = last
+              {value: first, done}
+            else if remainder != ""
+              value = remainder
+              remainder = ""
+              {value, done: false}
+            else
+              {done}
+
+      split = curry binary split
+      context.test "split", ->
+         i = split ((x) -> x.split("\n")), ["one\ntwo\n", "three\nfour"]
+         assert i().value == "one"
+         assert i().value == "two"
+         assert i().value == "three"
+         assert i().value == "four"
+         assert i().done
+
+## lines
+
+      lines = split (s) -> s.split("\n")
+
+      context.test "lines", ->
+        {stream} = require "./fs"
+        {createReadStream} = require "fs"
+        i = lines stream createReadStream "test/lines.txt"
+        assert ((yield i()).value) == "one"
+        assert ((yield i()).value) == "two"
+        assert ((yield i()).value) == "three"
+        assert ((yield i()).done)
+
+---
 
       module.exports = {isIterable, isAsyncIterable,
         iterator, isIterator, isAsyncIterator,
         iteratorFunction, isIteratorFunction, isAsyncIteratorFunction,
         collect, map, fold, reduce, foldr, reduceRight,
         select, reject, filter, any, all,
-        zip, assoc, project, flatten, compact, partition}
+        zip, assoc, project, flatten, compact, partition,
+        sum, average, join, delimit,
+        where,
+        lines, split}
