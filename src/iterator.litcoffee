@@ -112,74 +112,62 @@ Now we can define the trivial case, where we already have an iterator function a
       context.test "iteratorFunction", ->
         assert isIteratorFunction iteratorFunction [1..5]
 
-The last of our setup is a helper function, `done`. This takes a value object and evalutes to true if the `done` property is `true`.
-
-      done = (v) -> v.done == true
-
 ## repeat
 
 Analogous to `wrap`for an iterator. Always produces the same value `x`.
 
-      repeat = (x) -> -> done: false, value: x
+      repeat = (x) -> (iterator -> done: false, value: x)
+
+We're going to use `$` internally here to mean a wildcard value for purposes of argument matching.
+
+      $ = (-> true)
 
 ## collect
 
+Collect an iterator's values into an array.
+
       {Method} = require "./multimethods"
-      collect = Method.create
-        description: "Collect an iterator's values into an array"
-        default: (x) -> collect (iteratorFunction x)
+      collect = Method.create()
+
+      Method.define collect, $, (x) -> collect (iteratorFunction x)
 
       Method.define collect, isIteratorFunction,
-        (i) -> value until (done {value} = i())
+        (i) ->
+          loop
+            {done, value} = i()
+            break if done
+            value
 
       {async} = require "./generator"
       Method.define collect, isAsyncIteratorFunction,
-        async (i) -> value until (done {value} = yield i())
+        async (i) ->
+          loop
+            {done, value} = yield i()
+            break if done
+            value
 
       context.test "collect", ->
         {first} = require "./array"
         assert (first collect [1..5]) == 1
 
-## each
-
-      each = Method.create
-        description: "Apply the given function to each value in an iterator
-                      and returns the resulting array"
-        default: (f, x) -> each f, (iteratorFunction x)
-
-      Method.define each, Function, isIteratorFunction,
-        (f, i) -> (f value) until (done {value} = i())
-
-      Method.define each, Function, isAsyncIteratorFunction,
-        async (f, i) -> (f value) until (done {value} = yield i())
-
-      {curry, binary} = require "./core"
-      each = curry binary each
-
-      context.test "each", ->
-        {last} = require "./array"
-        assert (last each ((x) -> x + 1), [1..5]) == 6
-
 ## map
 
-      map = Method.create
-        description: "Return a new iterator that will apply the given function
-                      to each value produced by the iterator"
+Return a new iterator that will apply the given function to each value produced by the iterator.
 
-      Method.define map, Function, (-> true),
+      map = Method.create()
+
+      Method.define map, Function, $,
         (f, x) -> map f, (iteratorFunction x)
 
-      do (done) ->
+      Method.define map, Function, isIteratorFunction, (f, i) ->
+        iterator ->
+          {done, value} = i()
+          if done then {done} else {done, value: (f value)}
 
-        Method.define map, Function, isIteratorFunction, (f, i) ->
-          iterator ->
-            {done, value} = i()
-            if done then {done} else {done, value: (f value)}
-
-        Method.define map, Function, isAsyncIteratorFunction, (f, i) ->
-          iterator ->
-            {done, value} = yield i()
-            if done then {done} else {done, value: (f value)}
+      Method.define map, Function, isAsyncIteratorFunction, (f, i) ->
+        iterator ->
+          {done, value} = yield i()
+          if done then {done} else {done, value: (f value)}
 
         map = curry binary map
 
@@ -190,22 +178,41 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
         assert i().value == 3
         assert i().done
 
+## each
+
+Takes a function and an iterator and applies the given function to each value produced by the iterator, collecting the results into an array.
+
+      {curry, compose, binary} = require "./core"
+      each = curry binary compose collect, map
+
+      context.test "each", ->
+        {last} = require "./array"
+        assert (last each ((x) -> x + 1), [1..5]) == 6
+
 ## fold/reduce
 
-      {curry, ternary} = require "./core"
-      fold = Method.create
-        description: "Given function and an initial value, reduce an iterator
-                      to a single value, ex: sum a list of integers"
-        default: (x, f, y) -> fold x, f, (iteratorFunction y)
+Given an initial value, a function, and an iterator, reduce the iterator to a single value, ex: sum a list of integers.
 
-      Method.define fold, (-> true), Function, isIteratorFunction,
+      {curry, ternary} = require "./core"
+      fold = Method.create()
+
+      Method.define fold, $, Function, $,
+        (x, f, y) -> fold x, f, (iteratorFunction y)
+
+      Method.define fold, $, Function, isIteratorFunction,
         (x, f, i) ->
-          (x = (f x, value)) until (done {value} = i())
+          loop
+            {done, value} = i()
+            break if done
+            x = f x, value
           x
 
-      Method.define fold, (-> true), Function, isAsyncIteratorFunction,
+      Method.define fold, $, Function, isAsyncIteratorFunction,
         async (x, f, i) ->
-          (x = (f x, value)) until (done {value} = yield i())
+          loop
+            {done, value} = yield i()
+            break if done
+            x = f x, value
           x
 
       reduce = fold = curry ternary fold
@@ -217,17 +224,19 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
 
 ## foldr/reduceRight
 
-      {curry, ternary} = require "./core"
-      foldr = Method.create
-        description: "Given function and an initial value, reduce an iterator
-                      to a single value, ex: sum a list of integers, starting
-                      from the right, or last, value"
-        default: (x, f, y) -> foldr x, f, (iteratorFunction y)
+Given function and an initial value, reduce an iterator to a single value, ex: sum a list of integers, starting from the right, or last, value.
 
-      Method.define foldr, (-> true), Function, isIteratorFunction,
+      {curry, ternary} = require "./core"
+      foldr = Method.create()
+
+
+      Method.define foldr, $, Function, $,
+        (x, f, y) -> foldr x, f, (iteratorFunction y)
+
+      Method.define foldr, $, Function, isIteratorFunction,
         (x, f, i) -> (collect i).reduceRight(f, x)
 
-      Method.define foldr, (-> true), Function, isAsyncIteratorFunction,
+      Method.define foldr, $, Function, isAsyncIteratorFunction,
         async (x, f, i) -> (yield collect i).reduceRight(f, x)
 
       reduceRight = foldr = curry ternary foldr
@@ -238,33 +247,28 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
 
 ## select/filter
 
-      select = Method.create
-        description: "Given a function and an iterator, use the function as a
-                      filter to select values from those produced by the
-                      iterator"
-        default: (f, x) -> select f, (iteratorFunction x)
+Given a function and an iterator, return an iterator that produces values from the given iterator for which the function returns true.
 
-      do (done) ->
+      select = Method.create()
 
-        Method.define select, Function, isIteratorFunction,
-          (f, i) ->
-            done = true
-            iterator ->
-              found = false
-              until found || done
-                {done, value} = i()
-                found = (!done && (f value))
-              if done then {done} else {value, done}
+      Method.define select, Function, $,
+        (f, x) -> select f, (iteratorFunction x)
 
-        Method.define select, Function, isIteratorFunction,
-          (f, i) ->
-            done = false
-            iterator ->
-              found = false
-              until found || done
-                {done, value} = yield i()
-                found = (!done && (f value))
-              if done then {done} else {value, done}
+      Method.define select, Function, isIteratorFunction,
+        (f, i) ->
+          iterator ->
+            loop
+              {done, value} = i()
+              break if done || (f value)
+            if done then {done} else {value, done}
+
+      Method.define select, Function, isIteratorFunction,
+        (f, i) ->
+          iterator ->
+            loop
+              {done, value} = i()
+              break if done || (f value)
+            if done then {done} else {value, done}
 
       {binary, curry} = require "./core"
       select = filter = curry binary select
@@ -277,6 +281,8 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
 
 ## reject
 
+Given a function and an iterator, return an iterator that produces values from the given iterator for which the function returns false.
+
       {negate} = require "./logical"
       reject = curry (f, i) -> select (negate f), i
 
@@ -288,26 +294,25 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
 
 ## any
 
-      any = Method.create
-        description: "Given a function and an iterator, return true if
-                      any value produced by the iterator satisfies the
-                      function, acting as a filter"
-        default: (f, x) -> any f, (iteratorFunction x)
+Given a function and an iterator, return true if the given function returns true for any value produced by the iterator.
 
-      do (done) ->
-        Method.define any, Function, isIteratorFunction,
-          (f, i) ->
-            loop
-              ({done, value} = i())
-              break if (done || (f value))
-            !done
+      any = Method.create()
 
-        Method.define any, Function, isAsyncIteratorFunction,
-          async (f, i) ->
-            loop
-              ({done, value} = yield i())
-              break if (done || (f value))
-            !done
+      Method.define any, Function, $, (f, x) -> any f, (iteratorFunction x)
+
+      Method.define any, Function, isIteratorFunction,
+        (f, i) ->
+          loop
+            ({done, value} = i())
+            break if (done || (f value))
+          !done
+
+      Method.define any, Function, isAsyncIteratorFunction,
+        async (f, i) ->
+          loop
+            ({done, value} = yield i())
+            break if (done || (f value))
+          !done
 
       {curry, binary} = require "./core"
       any = curry binary any
@@ -319,10 +324,11 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
 
 ## all
 
-      all = Method.create
-        description: "Given a function and an iterator, return true if the
-                      function returns true for all the values produced by the iterator"
-        default: (f, x) -> all f, (iteratorFunction x)
+Given a function and an iterator, return true if the function returns true for all the values produced by the iterator.
+
+      all = Method.create()
+
+      Method.define all, Function, $, (f, x) -> all f, (iteratorFunction x)
 
       Method.define all, Function, isIteratorFunction,
         (f, i) -> !any (negate f), i
@@ -339,15 +345,19 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
 
 ## zip
 
-      zip = Method.create
-        description: "Given two iterators, combine them with the given function
-                      into a single iterator"
-        default: (f, x, y) -> zip f, (iteratorFunction x), (iteratorFunction y)
+Given a function and two iterators, return an iterator that produces values by applying a function to the values produced by the given iterators.
+
+      zip = Method.create()
+
+      Method.define zip, Function, $, $,
+        (f, x, y) -> zip f, (iteratorFunction x), (iteratorFunction y)
 
       Method.define zip, Function, isIteratorFunction, isIteratorFunction,
         (f, i, j) ->
           iterator ->
-            if !(done x = i()) && !(done y = j())
+            x = i()
+            y = j()
+            if !x.done && !y.done
               value: (f x.value, y.value), done: false
             else
               done: true
@@ -360,201 +370,182 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
         assert i().value[0] == 3
         assert i().done
 
-#
-# ## unzip
-#
-#       _unzip = ([ax, bx], [a, b]) ->
-#         ax.push a
-#         bx.push b
-#         [ax, bx]
-#
-#       unzip = (i) -> fold [[],[]], _unzip, i
-#
-#       context.test "unzip", ->
-#         {first} = require "./array"
-#         {toString} = require "./string"
-#         assert (fold "", add, first collect unzip zip "panama", "canary") ==
-#           "panama"
-#
-# ## assoc
-#
-#       {first, second} = require "./array"
-#       assoc = async (i) ->
-#         do (i = iterate i) ->
-#           result = {}
-#           until done
-#             {done, value} = yield i()
-#             result[first value] = (second value) if value?
-#           result
-#
-#       context.test "assoc", ->
-#         assert (yield assoc [["foo", 1], ["bar", 2]]).foo == 1
-#
-#
-# ## project
-#
-#       {property} = require "./object"
-#       {w} = require "./string"
-#       project = curry binary async (p, i) -> yield map (property p), i
-#
-#       {third} = require "./array"
-#       context.test "project", ->
-#         assert (third collect project "length", w "one two three") == 5
-#
-#
-# ## flatten
-#
-#       flatten = (ax) ->
-#         fold [], ((r, a) ->
-#           if a.forEach?
-#             r.push (flatten a)...
-#           else
-#             r.push a
-#           r), ax
-#
-#       context.test "flatten", ->
-#         do (data = [1, [2, 3], 4, [5, [6, 7]]]) ->
-#           assert (second yield flatten data) == 2
-#
-#
-# ## compact
-#
-#       {isDefined} = require "./type"
-#       compact = select isDefined
-#
-#       context.test "compact", ->
-#         assert (second collect compact [1, null, null, 2]) == 2
-#
-#
-# ## partition
-#
-#       partition = curry (n, i) ->
-#         i = iterate i
-#         done = false
-#         async ->
-#           batch = []
-#           until done || batch.length == n
-#             {done, value} = yield promise i()
-#             batch.push value unless done
-#           if done then {done} else {value: batch, done}
-#
-#       context.test "partition", ->
-#         {first, second} = require "./array"
-#         assert (first second collect partition 2, [0..9]) == 2
-#
-# ## take
-#
-#       take = curry (n, i) ->
-#         i = iterate i
-#         done = false
-#         async ->
-#           unless done || n-- == 0
-#             {done, value} = yield promise i()
-#             if done then {done} else {done, value}
-#           else
-#             done = true
-#             {done}
-#
-#       {last} = require "./array"
-#       context.test "take", ->
-#         assert (last collect take 3, [1..5]) == 3
-#
-# ## leave
-#
-#       leave = curry binary async (n, i) ->
-#         (yield collect i)[0...-n]
-#
-#       context.test "leave", ->
-#         assert (last leave 3, [1..5]) == 2
-#
-# ## skip
-#
-#       skip = curry binary async (n, i) ->
-#         (yield collect i)[n..-1]
-#
-#       context.test "skip", ->
-#         assert (first skip 3, [1..5]) == 4
-#
-# ## sample
-#
-# Sample 1% of the integers up to 1 million. Take the first 500.
-#
-# ```coffee
-# collect take 500, sample 0.01, [0..1e6]
-# ```
-#
-#       sample = curry (n, i) ->
-#         _sample = -> Math.random() < n
-#         select _sample, i
-#
-#       context.test "sample"
-#
-# ## sum
-#
-# Sum the numbers produced by a given iterator.
-#
-# This is here instead of in [Numeric Functions](./numeric.litcoffee) to avoid forward declaring `fold`.
-#
-#       {add} = require "./numeric"
-#       sum = fold 0, add
-#
-#       context.test "sum", ->
-#         assert (sum [1..5]) == 15
-#
-# ## average
-#
-# Average the numbers producced by a given iterator.
-#
-# This is here instead of in [Numeric Functions](./numeric.litcoffee) to avoid forward declaring `fold`.
-#
-#       average = (i) ->
-#         j = 0
-#         f = (r, n) -> r += ((n - r)/++j)
-#         fold 0, f, i
-#
-#       context.test "average", ->
-#         assert (average [1..5]) == 3
-#         assert (average [-5..-1]) == -3
-#
-# ## join
-#
-# Concatenate the strings produced by a given iterator. Unlike `Array::join`, this function does not delimit the strings. See also: `delimit`.
-#
-# This is here instead of in [String Functions](./string.litcoffee) to avoid forward declaring `fold`.
-#
-#       {cat} = require "./array"
-#       join = fold "", add
-#
-#       context.test "join", ->
-#         {w} = require "./string"
-#         assert (join w "one two three") == "onetwothree"
-#
-# ## delimit
-#
-# Like `join`, except that it takes a delimeter, separating each string with the delimiter. Similar to `Array::join`, except there's no default delimiter. The function is curried, though, so calling `delimit ' '` is analogous to `Array::join` with no delimiter argument.
-#
-#       delimit = curry (d, i) ->
-#         f = (r, s) -> if r == "" then r += s else r += d + s
-#         fold "", f, i
-#
-#       context.test "delimit", ->
-#         {w} = require "./string"
-#         assert (delimit ", ", w "one two three") == "one, two, three"
-#
-# ## where
-#
-# Performs a `select` using a given object object. See `query`.
-#
-#       {query} = require "./object"
-#       {cat} = require "./array"
-#       where = curry (example, i) ->
-#         select (query example), i
-#
-#       context.test "where", ->
-#         assert (collect where ["a", 1],
-#           (zip (repeat "a"), [1,2,3,1,2,3])).length == 2
-#
-#
+## unzip
+
+      unzip = (f, i) -> fold [[],[]], f, i
+
+      context.test "unzip", ->
+        pair = (x, y) -> [x, y]
+        unpair = ([ax, bx], [a, b]) ->
+          ax.push a
+          bx.push b
+          [ax, bx]
+
+        assert (unzip unpair, zip pair, "panama", "canary")[0][0] == "p"
+
+## assoc
+
+Given an iterator that produces associative pairs, return an object whose keys are the first element of the pair and whose values are the second element of the pair.
+
+      {first, second} = require "./array"
+      assoc = Method.create()
+
+      Method.define assoc, $, (x) -> assoc (iteratorFunction x)
+
+      Method.define assoc, isIteratorFunction, (i) ->
+        result = {}
+        loop
+          {done, value} = i()
+          break if done
+          result[(first value)] = (second value)
+        result
+
+      Method.define assoc, isAsyncIteratorFunction, (i) ->
+        result = {}
+        loop
+          {done, value} = yield i()
+          break if done
+          result[(first value)] = (second value)
+        result
+
+      context.test "assoc", ->
+        assert (assoc [["foo", 1], ["bar", 2]]).foo == 1
+
+
+## project
+
+      {property} = require "./object"
+      {curry} = require "./core"
+      project = curry (p, i) -> map (property p), i
+
+      context.test "project", ->
+        {w} = require "./string"
+        i = project "length", w "one two three"
+        assert i().value == 3
+
+## flatten
+
+      _flatten = (ax, a) ->
+        if isIterable a
+          ax.concat flatten a
+        else
+          ax.push a
+          ax
+
+      flatten = fold [], _flatten
+
+      context.test "flatten", ->
+        assert (flatten [1, [2, 3], 4, [5, [6, 7]]])[1] == 2
+
+
+## compact
+
+      {isDefined} = require "./type"
+      compact = select isDefined
+
+      context.test "compact", ->
+        i = compact [1, null, null, 2]
+        assert i().value == 1
+        assert i().value == 2
+
+## partition
+
+      partition = Method.create()
+
+      Method.define partition, Number, $, (n, x) ->
+        partition n, (iteratorFunction x)
+
+      Method.define partition, Number, isIteratorFunction, (n, i) ->
+        iterator ->
+          batch = []
+          loop
+            {done, value} = i()
+            break if done
+            batch.push value
+            break if batch.length == n
+          if done then {done} else {value: batch, done}
+
+      Method.define partition, Number, isAsyncIteratorFunction, (n, i) ->
+        iterator ->
+          batch = []
+          loop
+            {done, value} = yield i()
+            break if done
+            batch.push value
+            break if batch.length == n
+          if done then {done} else {value: batch, done}
+
+      context.test "partition", ->
+        i = partition 2, [0..9]
+        assert i().value[0] == 0
+        assert i().value[0] == 2
+
+## sum
+
+Sum the numbers produced by a given iterator.
+
+This is here instead of in [Numeric Functions](./numeric.litcoffee) to avoid forward declaring `fold`.
+
+      {add} = require "./numeric"
+      sum = fold 0, add
+
+      context.test "sum", ->
+        assert (sum [1..5]) == 15
+
+## average
+
+Average the numbers producced by a given iterator.
+
+This is here instead of in [Numeric Functions](./numeric.litcoffee) to avoid forward declaring `fold`.
+
+      average = (i) ->
+        j = 0 # current count
+        f = (r, n) -> r += ((n - r)/++j)
+        fold 0, f, i
+
+      context.test "average", ->
+        assert (average [1..5]) == 3
+        assert (average [-5..-1]) == -3
+
+## join
+
+Concatenate the strings produced by a given iterator. Unlike `Array::join`, this function does not delimit the strings. See also: `delimit`.
+
+This is here instead of in [String Functions](./string.litcoffee) to avoid forward declaring `fold`.
+
+      {cat} = require "./array"
+      join = fold "", add
+
+      context.test "join", ->
+        {w} = require "./string"
+        assert (join w "one two three") == "onetwothree"
+
+
+## delimit
+
+Like `join`, except that it takes a delimeter, separating each string with the delimiter. Similar to `Array::join`, except there's no default delimiter. The function is curried, though, so calling `delimit ' '` is analogous to `Array::join` with no delimiter argument.
+
+      delimit = curry (d, i) ->
+        f = (r, s) -> if r == "" then r += s else r += d + s
+        fold "", f, i
+
+      context.test "delimit", ->
+        {w} = require "./string"
+        assert (delimit ", ", w "one two three") == "one, two, three"
+
+## where
+
+Performs a `select` using a given object object. See `query`.
+
+      {query} = require "./object"
+      where = curry (example, i) -> select (query example), i
+
+      context.test "where", ->
+        pair = (x, y) -> [x, y]
+        assert (collect where ["a", 1],
+          (zip pair, (repeat "a"), [1,2,3,1,2,3])).length == 2
+
+
 # ## split
 #
 # Iterator transformation.
@@ -615,9 +606,8 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
 #         sample, sum, average, join, delimit, where, repeat}
 
       module.exports = {isIterable, isAsyncIterable,
-        isIterator, isAsyncIterator, iterator, iteratorFunction,
-        isIteratorFunction, isAsyncIteratorFunction,
+        iterator, isIterator, isAsyncIterator,
+        iteratorFunction, isIteratorFunction, isAsyncIteratorFunction,
         collect, map, fold, reduce, foldr, reduceRight,
-        select, reject, filter,
-        any, all,
-        zip}
+        select, reject, filter, any, all,
+        zip, assoc, project, flatten, compact, partition}

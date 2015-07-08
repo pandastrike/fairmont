@@ -162,4 +162,4 @@ You can define multimethods either using `create` (ex: `Method.create`) or just 
         Method.define foo, String, (x) -> false
 
         f = Method.lookup foo, [ 7 ]
-        assert f() == 14
+        assert (f 7) == 14
