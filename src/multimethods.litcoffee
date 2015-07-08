@@ -24,7 +24,7 @@ For definitions which the value is itself a function, you must wrap the function
 
 A map function allows for the transformation of the arguments for matching purposes. For example, variadic functions can be implemented by simply providing a variadic map function that returns the arguments as an Array.
 
-    dispatch = (method, ax) ->
+    lookup = (method, ax) ->
       best = { p: 0, f: method.default }
       bx = if method.map? then (method.map ax...) else ax
 
@@ -56,9 +56,13 @@ A map function allows for the transformation of the arguments for matching purpo
             best = { p, f }
 
       if best.f.constructor == Function
-        best.f ax...
-      else
         best.f
+      else
+        -> best.f
+
+    dispatch = (method, ax) ->
+      f = lookup method, ax
+      f ax...
 
 The `method` function defines a new multimethod, taking an optional description of the method. This can be accessed via the `description` property of the method.
 
@@ -76,7 +80,7 @@ The `define` function adds an entry into the dispatch table. It takes the method
 
 You can define multimethods either using `create` (ex: `Method.create`) or just using the `method` function (in the case where you don't need scoping).
 
-    Method = {create, define}
+    Method = {create, define, lookup}
     module.exports = {Method}
 
     {assert, describe} = require "./helpers"
@@ -149,3 +153,13 @@ You can define multimethods either using `create` (ex: `Method.create`) or just 
       context.test "Multimethods are functions", ->
 
         assert Method.create().constructor == Function
+
+      context.test "Lookups", ->
+
+        foo = Method.create()
+
+        Method.define foo, Number, (x) -> x + x
+        Method.define foo, String, (x) -> false
+
+        f = Method.lookup foo, [ 7 ]
+        assert f() == 14

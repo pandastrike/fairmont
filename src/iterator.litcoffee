@@ -165,8 +165,9 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
       map = Method.create
         description: "Return a new iterator that will apply the given function
                       to each value produced by the iterator"
-        default: (f, x) -> map f, (iteratorFunction x)
 
+      Method.define map, Function, (-> true),
+        (f, x) -> map f, (iteratorFunction x)
 
       do (done) ->
 
@@ -183,7 +184,7 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
         map = curry binary map
 
       context.test "map", ->
-        i = map Math.sqrt, [1,4,9]
+        i = map Math.sqrt, [1, 4, 9]
         assert i().value == 1
         assert i().value == 2
         assert i().value == 3
@@ -235,7 +236,7 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
       context.test "foldr/reduceRight", ->
         assert (foldr "", add, "panama") == "amanap"
 
-## select
+## select/filter
 
       select = Method.create
         description: "Given a function and an iterator, use the function as a
@@ -266,7 +267,7 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
               if done then {done} else {value, done}
 
       {binary, curry} = require "./core"
-      select = curry binary select
+      select = filter = curry binary select
 
       context.test "select", ->
         {odd} = require "./numeric"
@@ -612,3 +613,11 @@ Analogous to `wrap`for an iterator. Always produces the same value `x`.
           zip, unzip,
 #         assoc, project, flatten, compact, partition, take, leave, skip,
 #         sample, sum, average, join, delimit, where, repeat}
+
+      module.exports = {isIterable, isAsyncIterable,
+        isIterator, isAsyncIterator, iterator, iteratorFunction,
+        isIteratorFunction, isAsyncIteratorFunction,
+        collect, map, fold, reduce, foldr, reduceRight,
+        select, reject, filter,
+        any, all,
+        zip}
