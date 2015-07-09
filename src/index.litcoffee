@@ -152,3 +152,4 @@ Load the rest of the functions.
       include module.exports, require "./string"
       include module.exports, require "./generator"
       include module.exports, require "./multimethods"
+      include module.exports, require "./reactive"
