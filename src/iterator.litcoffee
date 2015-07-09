@@ -66,6 +66,23 @@ The simplest case is to just call the iterator method on the value. We can do th
       Method.define iterator, isIterable, (i) -> i[Symbol.iterator]()
       Method.define iterator, isAsyncIterable, (i) -> i[Symbol.asyncIterator]()
 
+## asyncIterator
+
+The `asyncIterator` function is analogous to the `iterator` function—it's job is to ensure that the object given as an argument is a proper asynchronous iterator. The `iterator` function knows to turn a generator into an asynchronous iterator already, but if we have a function producing promises, we need to call this function to declare the type of iterator explicitly.
+
+      asyncIterator = Method.create()
+
+      Method.define asyncIterator, isFunction, (f) ->
+        f.next = f
+        f[Symbol.asyncIterator] = -> @this
+        f
+
+      Method.define iterator, isGenerator, (g) ->
+        f = async g
+        f.next = f
+        f[Symbol.asyncIterator] = -> @this
+        f
+
 ## iteratorFunction
 
 `iteratorFunction` takes a value and tries to return an `IteratorFunction` based upon it. We're using predicates here throughout because they have a higher precedence than `constructor` matches.
@@ -507,6 +524,44 @@ This is here instead of in [Numeric Functions](./numeric.litcoffee) to avoid for
         assert (average [1..5]) == 3
         assert (average [-5..-1]) == -3
 
+## take
+
+Given a function and an iterator, return an iterator that produces values from the given iterator until the given function returns false when applied to the given iterator's values.
+
+      take = Method.create()
+
+      Method.define take, Function, $,
+        (f, x) -> take f, (iteratorFunction x)
+
+      Method.define take, Function, isIteratorFunction,
+        (f, i) ->
+          iterator ->
+            if !done
+              {done, value} = i()
+              if !done && (f value)
+                {value, done: false}
+              else
+                {done: true}
+
+      take = curry binary take
+
+      context.test "take"
+
+## takeN
+
+Given an iterator, produces the first N values from the given iterator.
+
+      takeN = do ->
+        f = (n, i = 0) -> -> i++ < n
+        (n, i) -> take (f n), i
+
+      context.test "takeN", ->
+        i = takeN 3, [0..9]
+        assert i().value == 0
+        assert i().value == 1
+        assert i().value == 2
+        assert i().done
+
 ## join
 
 Concatenate the strings produced by a given iterator. Unlike `Array::join`, this function does not delimit the strings. See also: `delimit`.
@@ -547,8 +602,6 @@ Performs a `select` using a given object object. See `query`.
 
 
 ## split
-
-Iterator transformation.
 
 Given a function and an iterator, produce a new iterator whose values are delimited based on the given function.
 
@@ -619,6 +672,55 @@ Given a function and an iterator, produce a new iterator whose values are delimi
         assert ((yield i()).value) == "three"
         assert ((yield i()).done)
 
+## events
+
+      {promise, reject, resolve} = require "when"
+      {has} = require "./object"
+      events = Method.create()
+      isSource = compose isFunction, property "on"
+
+      Method.define events, String, isSource, (name, source) ->
+        events {name, end: "end", error: "error"}, source
+
+      Method.define events, Object, isSource, (map, source) ->
+
+        {name, end, error} = map
+        done = false
+        pending = []
+        resolved = []
+
+        enqueue = (x) ->
+          if pending.length == 0
+            resolved.push x
+          else
+            {resolve, reject} = pending.shift()
+            x.then(resolve).catch(reject)
+
+        dequeue = ->
+          if resolved.length == 0
+            if !done
+              promise (resolve, reject) -> pending.push {resolve, reject}
+            else
+              resolve {done}
+          else
+            resolved.shift()
+
+        source.on name, (value) -> enqueue resolve {done, value}
+        source.on end, -> done = true
+        source.on error, -> enqueue reject error
+
+        asyncIterator dequeue
+
+      events = curry binary events
+
+
+      context.test "events", ->
+        {createReadStream} = require "fs"
+        i = events "data", createReadStream "test/lines.txt"
+        assert (yield i()).value.toString() == "one\ntwo\nthree\n"
+        console.log yield i()
+        # assert (yield i()).done
+
 ---
 
       module.exports = {isIterable, isAsyncIterable,
@@ -629,4 +731,5 @@ Given a function and an iterator, produce a new iterator whose values are delimi
         zip, assoc, project, flatten, compact, partition,
         sum, average, join, delimit,
         where,
-        lines, split}
+        lines, split,
+        take, takeN}
