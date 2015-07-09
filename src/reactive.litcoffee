@@ -7,21 +7,18 @@
 
 ## flow
 
-      {Method} = require "./multimethods"
-      hoist = Method.create()
-      Method.define hoist, isFunction, map
-      Method.define hoist, isGeneratorFunction, compose map, async
-      Method.define hoist, isIterator, identity
-      Method.define hoist, isAsynchronousIterator, identity
-
+      FS = require "fs"
       {reduce} = require "./iterator"
-      flow = ([i, fx...]) ->
-        reduce i, ((i, f) -> ((hoist f) i)), fx
+
+      flow = ([i, fx...]) -> reduce i, ((i,f) -> f i), fx
 
       context.test "flow", ->
+        {events, lines} = require "./iterator"
         i = flow [
-          stream createReadStream "./test/lines.txt"
+          events "data", FS.createReadStream "./test/lines.txt"
           lines
         ]
-        yield i()
-        console.log (yield i())
+        assert (yield i()).value == "one"
+        assert (yield i()).value == "two"
+        assert (yield i()).value == "three"
+        assert (yield i().done)

@@ -186,7 +186,8 @@ Return a new iterator that will apply the given function to each value produced 
           {done, value} = yield i()
           if done then {done} else {done, value: (f value)}
 
-        map = curry binary map
+      {curry, binary} = require "./core"
+      map = curry binary map
 
       context.test "map", ->
         i = map Math.sqrt, [1, 4, 9]
@@ -600,6 +601,66 @@ Performs a `select` using a given object object. See `query`.
         assert (collect where ["a", 1],
           (zip pair, (repeat "a"), [1,2,3,1,2,3])).length == 2
 
+## events
+
+      {promise, reject, resolve} = require "when"
+      {has} = require "./object"
+      events = Method.create()
+      isSource = compose isFunction, property "on"
+
+      Method.define events, String, isSource, (name, source) ->
+        events {name, end: "end", error: "error"}, source
+
+      Method.define events, Object, isSource, (map, source) ->
+
+        {name, end, error} = map
+        done = false
+        pending = []
+        resolved = []
+
+        enqueue = (x) ->
+          if pending.length == 0
+            resolved.push x
+          else
+            p = pending.shift()
+            x.then(p.resolve).catch(p.reject)
+
+        dequeue = ->
+          if resolved.length == 0
+            if !done
+              promise (resolve, reject) -> pending.push {resolve, reject}
+            else
+              resolve {done}
+          else
+            resolved.shift()
+
+        source.on name, (value) -> enqueue resolve {done, value}
+        source.on end, (error) -> done = true
+        source.on error, (error) -> enqueue reject error
+
+        asyncIterator dequeue
+
+      events = curry binary events
+
+      context.test "events", ->
+        {createReadStream} = require "fs"
+        i = events "data", createReadStream "test/lines.txt"
+        assert (yield i()).value.toString() == "one\ntwo\nthree\n"
+        console.log yield i()
+        # assert (yield i()).done
+
+
+## stream
+
+Turns a stream into an iterator function.
+
+      stream = events "data"
+
+      context.test "stream", ->
+        {createReadStream} = require "fs"
+        i = stream createReadStream "test/lines.txt"
+        assert ((yield i()).value == "one\ntwo\nthree\n")
+        assert (yield i()).done
 
 ## split
 
@@ -630,7 +691,7 @@ Given a function and an iterator, produce a new iterator whose values are delimi
             else
               {done}
 
-      Method.define split, Function, isIteratorFunction, (f, i) ->
+      Method.define split, Function, isAsyncIteratorFunction, (f, i) ->
         lines = []
         remainder = ""
         iterator ->
@@ -661,65 +722,15 @@ Given a function and an iterator, produce a new iterator whose values are delimi
 
 ## lines
 
-      lines = split (s) -> s.split("\n")
+      lines = split (s) -> s.toString().split("\n")
 
       context.test "lines", ->
-        {stream} = require "./fs"
         {createReadStream} = require "fs"
         i = lines stream createReadStream "test/lines.txt"
         assert ((yield i()).value) == "one"
         assert ((yield i()).value) == "two"
         assert ((yield i()).value) == "three"
         assert ((yield i()).done)
-
-## events
-
-      {promise, reject, resolve} = require "when"
-      {has} = require "./object"
-      events = Method.create()
-      isSource = compose isFunction, property "on"
-
-      Method.define events, String, isSource, (name, source) ->
-        events {name, end: "end", error: "error"}, source
-
-      Method.define events, Object, isSource, (map, source) ->
-
-        {name, end, error} = map
-        done = false
-        pending = []
-        resolved = []
-
-        enqueue = (x) ->
-          if pending.length == 0
-            resolved.push x
-          else
-            {resolve, reject} = pending.shift()
-            x.then(resolve).catch(reject)
-
-        dequeue = ->
-          if resolved.length == 0
-            if !done
-              promise (resolve, reject) -> pending.push {resolve, reject}
-            else
-              resolve {done}
-          else
-            resolved.shift()
-
-        source.on name, (value) -> enqueue resolve {done, value}
-        source.on end, -> done = true
-        source.on error, -> enqueue reject error
-
-        asyncIterator dequeue
-
-      events = curry binary events
-
-
-      context.test "events", ->
-        {createReadStream} = require "fs"
-        i = events "data", createReadStream "test/lines.txt"
-        assert (yield i()).value.toString() == "one\ntwo\nthree\n"
-        console.log yield i()
-        # assert (yield i()).done
 
 ---
 
@@ -731,5 +742,5 @@ Given a function and an iterator, produce a new iterator whose values are delimi
         zip, assoc, project, flatten, compact, partition,
         sum, average, join, delimit,
         where,
-        lines, split,
-        take, takeN}
+        take, takeN,
+        events, stream, lines, split}

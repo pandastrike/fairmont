@@ -130,41 +130,6 @@ Glob a directory.
         assert ((join testDir, "test", "test.litcoffee") in
           (yield glob "**/*.litcoffee", testDir))
 
-## stream
-
-Turns a stream into an iterator function.
-
-      stream = do ({promise, reject, resolve} = require "when") ->
-        (s) ->
-          do (pending = [], resolved = [], _resolve=null, _reject=null) ->
-            _resolve = (x) ->
-              if pending.length == 0
-                resolved.push resolve x
-              else
-                pending.shift().resolve x
-            _reject = (x) ->
-              if pending.length == 0
-                resolved.push reject x
-              else
-                pending.shift().reject x
-
-            s.on "data", (data) -> _resolve value: data.toString(), done: false
-            s.on "end", -> _resolve done: true
-            s.on "error", -> _reject error
-
-            ->
-              if resolved.length == 0
-                promise (resolve, reject) ->
-                  pending.push {resolve, reject}
-              else
-                resolved.shift()
-
-      context.test "stream", ->
-        {createReadStream} = require "fs"
-        i = stream createReadStream "test/lines.txt"
-        assert ((yield i()).value == "one\ntwo\nthree\n")
-        assert (yield i()).done
-
 ## write
 
 Synchronously write a UTF-8 string or data buffer to a file.
