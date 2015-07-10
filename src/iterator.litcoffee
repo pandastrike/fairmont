@@ -634,7 +634,9 @@ Performs a `select` using a given object object. See `query`.
           else
             resolved.shift()
 
-        source.on name, (value) -> enqueue resolve {done, value}
+        source.on name, (ax...) ->
+          value = if ax.length < 2 then ax[0] else ax
+          enqueue resolve {done, value}
         source.on end, (error) -> done = true
         source.on error, (error) -> enqueue reject error
 

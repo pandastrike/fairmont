@@ -228,6 +228,6 @@ Creates a directory and any intermediate directories in the given `path`. Takes 
 
 ---
 
-      module.exports = {read, write, stream, rm, stat, exist, exists,
+      module.exports = {read, write, rm, stat, exist, exists,
         isFile, isDirectory, readdir, readDir, ls, lsR, lsr,
         mkdir, mkDir, mkdirp, mkDirP, chdir, chDir, rmdir, rmDir}

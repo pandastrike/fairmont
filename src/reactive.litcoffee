@@ -4,7 +4,6 @@
 
     describe "Reactive programming functions", (context) ->
 
-
 ## flow
 
       FS = require "fs"
@@ -22,3 +21,24 @@
         assert (yield i()).value == "two"
         assert (yield i()).value == "three"
         assert (yield i().done)
+
+      {async} = require "../src/index"
+      start = async (i) ->
+        loop
+          {done, value} = yield i()
+          break if done
+
+      {curry, iterator} = require "../src/index"
+      pump = curry (s, i) ->
+        iterator ->
+          {done, value} = yield i()
+          if !done
+            value: (s.write value)
+            done: false
+          else
+            s.end()
+            {done}
+
+---
+
+      module.exports = {flow, start, pump}
