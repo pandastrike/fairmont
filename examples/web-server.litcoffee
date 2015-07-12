@@ -34,7 +34,7 @@ We're going to further narrow our interest to only the root resource. Again, in 
 
       select variadic (request) -> request.url == "/"
 
-We'll response with `hello, world`. The `tee` function returns an iterator function that operates on the value produced by the iterator, but then produces the original value. (In contrast to `map`, which produces the result of applying the function.) This allows us to do something with the request, but also pass it along to the next iterator function.
+We'll respond with `hello, world`. The `tee` function returns an iterator function that operates on the value produced by the iterator, but then produces the original value. (In contrast to `map`, which produces the result of applying the function.) This allows us to do something with the request, but also pass it along to the next iterator function.
 
       tee variadic (_, response) ->
         response.statusCode = 200
