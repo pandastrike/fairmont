@@ -22,13 +22,21 @@
         assert (yield i()).value == "three"
         assert (yield i().done)
 
-      {async} = require "../src/index"
+## start
+
+      # TODO: need to add synchronous version
+  
+      {async} = require "./generator"
       start = async (i) ->
         loop
           {done, value} = yield i()
           break if done
 
-      {curry, iterator} = require "../src/index"
+
+      # TODO: need to add synchronous version
+
+      {curry} = require "./core"
+      {iterator} = require "./iterator"
       pump = curry (s, i) ->
         iterator ->
           {done, value} = yield i()
@@ -38,6 +46,20 @@
           else
             s.end()
             {done}
+
+
+## tee
+
+      # TODO: need to add synchronous version
+
+      {curry} = require "./core"
+      {iterator} = require "./iterator"
+      tee = curry (f, i) ->
+        iterator ->
+          {done, value} = yield i()
+          (f value) unless done
+          {done, value}
+
 
 ---
 

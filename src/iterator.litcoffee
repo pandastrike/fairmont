@@ -278,15 +278,15 @@ Given a function and an iterator, return an iterator that produces values from t
             loop
               {done, value} = i()
               break if done || (f value)
-            if done then {done} else {value, done}
+            {done, value}
 
-      Method.define select, Function, isIteratorFunction,
+      Method.define select, Function, isAsyncIteratorFunction,
         (f, i) ->
           iterator ->
             loop
-              {done, value} = i()
+              {done, value} = yield i()
               break if done || (f value)
-            if done then {done} else {value, done}
+            {done, value}
 
       {binary, curry} = require "./core"
       select = filter = curry binary select
