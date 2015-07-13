@@ -22,7 +22,7 @@ Most of these are pretty self-explanatory, but some people won't have seen the t
 `variadic` takes a function which receives a list of arguments, and returns a new function which takes those same arguments as an array.
 This makes it easier to pipeline and compose functions, because it makes it easier to pass their arguments from function to function.
 
-We kick off the flow.
+Next, we kick off the flow.
 
     start flow [
 
