@@ -18,7 +18,11 @@ Let's pick up a few building blocks from Fairmont.
     {start, flow, events, select, variadic,
       tee, map, iterator, curry} = require "../src"
 
-We kick off the flow.
+Most of these are pretty self-explanatory, but some people won't have seen the term [variadic](https://github.com/pandastrike/fairmont/blob/master/src/core.litcoffee#variadic) before.
+`variadic` takes a function which receives a list of arguments, and returns a new function which takes those same arguments as an array.
+This makes it easier to pipeline and compose functions, because it makes it easier to pass their arguments from function to function.
+
+Next, we kick off the flow.
 
     start flow [
 
@@ -34,7 +38,7 @@ We're going to further narrow our interest to only the root resource. Again, in 
 
       select variadic (request) -> request.url == "/"
 
-We'll response with `hello, world`. The `tee` function returns an iterator function that operates on the value produced by the iterator, but then produces the original value. (In contrast to `map`, which produces the result of applying the function.) This allows us to do something with the request, but also pass it along to the next iterator function.
+We'll respond with `hello, world`. The `tee` function returns an iterator function that operates on the value produced by the iterator, but then produces the original value. (In contrast to `map`, which produces the result of applying the function.) This allows us to do something with the request, but also pass it along to the next iterator function.
 
       tee variadic (_, response) ->
         response.statusCode = 200
