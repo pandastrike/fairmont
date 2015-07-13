@@ -18,6 +18,10 @@ Let's pick up a few building blocks from Fairmont.
     {start, flow, events, select, variadic,
       tee, map, iterator, curry} = require "../src"
 
+Most of these are pretty self-explanatory, but some people won't have seen the term [variadic](https://github.com/pandastrike/fairmont/blob/master/src/core.litcoffee#variadic) before.
+`variadic` takes a function which receives a list of arguments, and returns a new function which takes those same arguments as an array.
+This makes it easier to pipeline and compose functions, because it makes it easier to pass their arguments from function to function.
+
 We kick off the flow.
 
     start flow [
