@@ -112,16 +112,6 @@ Adapted from [StackOverflow][isFloat].
         assert isFunction ->
         assert !isFunction 7
 
-## isGenerator
-
-      GeneratorFunction = (-> yield null).constructor
-
-      isGenerator = isType GeneratorFunction
-
-      context.test "isGenerator", ->
-        f = -> yield true
-        assert isGenerator f
-
 ## isObject
 
       isObject = isType Object
@@ -146,8 +136,23 @@ Adapted from [StackOverflow][isFloat].
         assert isDefined {}
         assert !isDefined undefined
 
+## isGenerator
+
+      GeneratorFunction = (-> yield null).constructor
+
+      isGenerator = isType GeneratorFunction
+
+      context.test "isGenerator", ->
+        f = -> yield true
+        assert isGenerator f
+
+## isPromise
+
+      isPromise = (x) -> x.then? && isFunction x.then
+
 ---
 
       module.exports = {deepEqual, type, isType, instanceOf,
         isBoolean, isNumber, isNaN, isFinite, isInteger, isFloat,
-        isString, isFunction, isGenerator, isObject, isArray, isDefined}
+        isString, isFunction, isObject, isArray, isDefined,
+        isGenerator, isPromise}

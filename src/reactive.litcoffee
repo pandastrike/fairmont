@@ -25,7 +25,7 @@
 ## start
 
       # TODO: need to add synchronous version
-  
+
       {async} = require "./generator"
       start = async (i) ->
         loop
@@ -61,6 +61,19 @@
           {done, value}
 
 
+## throttle
+
+      throttle = curry (ms, i) ->
+        last = 0
+        iterator ->
+          loop
+            {done, value} = yield i()
+            break if done
+            now = Date.now()
+            break if now - last >= ms
+          last = now
+          {done, value}
+
 ---
 
-      module.exports = {flow, start, pump}
+      module.exports = {flow, start, pump, tee, throttle}

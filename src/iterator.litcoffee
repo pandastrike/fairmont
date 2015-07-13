@@ -176,6 +176,10 @@ Return a new iterator that will apply the given function to each value produced 
       Method.define map, Function, $,
         (f, x) -> map f, (iteratorFunction x)
 
+      {isPromise} = require "./type"
+      Method.define map, Function, isPromise, async (f, p) ->
+        map f, (yield p)
+
       Method.define map, Function, isIteratorFunction, (f, i) ->
         iterator ->
           {done, value} = i()
@@ -739,7 +743,7 @@ Given a function and an iterator, produce a new iterator whose values are delimi
       module.exports = {isIterable, isAsyncIterable,
         iterator, isIterator, isAsyncIterator,
         iteratorFunction, isIteratorFunction, isAsyncIteratorFunction,
-        collect, map, fold, reduce, foldr, reduceRight,
+        collect, map, each, fold, reduce, foldr, reduceRight,
         select, reject, filter, any, all,
         zip, assoc, project, flatten, compact, partition,
         sum, average, join, delimit,
