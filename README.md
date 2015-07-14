@@ -1,61 +1,23 @@
 # Fairmont
 
-A collection of useful JavaScript functions to support a functional style of programming that takes advantage of ES6 features like iterators, generators, and promises. Fairmont is inspired by [Underscore][100], [EssentialJS][110], and [prelude.coffee][120].
+Fairmont is a JavaScript library for functional reactive programming. Fairmont takes full advantage of ES6+ features like iterators (including async iterators), generators, and promises. Inspired by libraries like [Underscore](http://underscorejs.org/) and many others, Fairmont features include:
 
-[100]:http://underscorejs.org/
-[110]:https://github.com/elclanrs/essential.js
-[120]:http://xixixao.github.io/prelude-ls/
+* reactive programming support through async iterators
+* lazy evaluation on collection operations via iterators
+* core functional operations, like currying and composition
+* bridge functions for integrating with OOP-based libraries
+* common file and stream based operations
+* streams and event emitters modeled as asynchronous iterators
+* seamless integration between synchronous and asynchronous operations
+* … and more!
 
-## Why Fairmont?
+## Examples
 
-Fairmont offers a combination of features we couldn't find in existing libraries. In particular, we wanted:
+You can get a feel for what Fairmont can do for you by [checking out the examples](./examples).
 
-* To use a functional programming style, even when performing asynchronous operations&hellip;
+## Reference
 
-* While coming as close to inline code for performance as possible (read: use lazy evaluation when working with collections)&hellip;
-
-* Taking full-advantage of ES6 features like iterators, generators, and promises, which offer powerful new ways of doing things
-
-For example, here's how we would define a function that takes a path and returns a content-addressable dictionary of the files it contains.
-
-```coffee
-content_map = async (path) ->
-  paths = collect map (compose resolve, join path), yield readdir path
-  assoc zip (map (compose md5, read), paths), paths
-```
-
-We've seamlessly integrated asynchronous functions with synchronous functions, even when doing composition. Behind the scenes we're using iterators to avoid multiple passes across the data. We make two passes here, even though it appears that we're making five.
-
-Fairmont is also a literate programming project—the documentation, code, examples, and tests are together, making it easy to see what a function does, how it does it, and why it does it that particular way.
-
-## Function Reference
-
-* [Core][core]
-* [Logical][logical]
-* [Numeric][numeric]
-* [Type][core]
-* [Array][array]
-* [Iterator][it]
-* [Crypto-Related][crypto]
-* [File System][fs]
-* [Object][object]
-* [String][string]
-* [Multimethods][multi]
-* [Other][misc]
-
-
-[core]:src/core.litcoffee
-[logical]:src/logical.litcoffee
-[numeric]:src/numeric.litcoffee
-[type]:src/type.litcoffee
-[array]:src/array.litcoffee
-[it]:src/iterator.litcoffee
-[crypto]:src/crypto.litcoffee
-[fs]:src/fs.litcoffee
-[object]:src/object.litcoffee
-[string]:src/string.litcoffee
-[misc]:src/index.litcoffee
-[multi]:src/multimethods.litcoffee
+Fairmont uses literate programming, so each source file doubles as documentation. Please see the [source directory](./src/index.litcoffee) for more.
 
 ## Status
 

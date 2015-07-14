@@ -185,6 +185,9 @@ Return a new iterator that will apply the given function to each value produced 
           {done, value} = i()
           if done then {done} else {done, value: (f value)}
 
+      # TODO add check for promise values in other async iterators
+      # TODO should sync iterators mutate into async iterators if the
+      #      given function returns a promise?
       Method.define map, Function, isAsyncIteratorFunction, (f, i) ->
         iterator ->
           {done, value} = yield i()

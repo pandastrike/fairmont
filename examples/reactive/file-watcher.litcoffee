@@ -10,7 +10,7 @@ We need a couple of things from the Node APIs so we can watch the files.
 We also need to pick up some functions from Fairmont.
 
     {each, start, flow, events, throttle,
-      map, async, shell, lsR} = require "../src/index"
+      map, shell, lsR} = require "../src/index"
 
 This is the directory that contains the files we're watching. In real life, we'd probably get this from the command line or a configuration file.
 
