@@ -188,7 +188,11 @@ Return a new iterator that will apply the given function to each value produced 
       Method.define map, Function, isAsyncIteratorFunction, (f, i) ->
         iterator ->
           {done, value} = yield i()
-          if done then {done} else {done, value: (f value)}
+          unless done
+            value = f value
+            if isPromise value
+              value = yield value
+          {done, value}
 
       {curry, binary} = require "./core"
       map = curry binary map

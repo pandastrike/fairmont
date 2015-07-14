@@ -148,7 +148,7 @@ Adapted from [StackOverflow][isFloat].
 
 ## isPromise
 
-      isPromise = (x) -> x.then? && isFunction x.then
+      isPromise = (x) -> x?.then? && isFunction x.then
 
 ---
 
