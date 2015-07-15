@@ -1,6 +1,6 @@
 # Example: Reactive File Watcher
 
-This example build on the previous examples of an [echo server][010] and `hello world` [web server][020]. In this example, we're going to generate `change` events from watching a set of files and then run our tests whenever we get one. We'll also throttle the events so we don't run the tests unnecessarily.
+This example build on the previous examples of an echo server and `hello world` web server. In this example, we're going to generate `change` events from watching a set of files and then run our tests whenever we get one. We'll also throttle the events so we don't run the tests unnecessarily.
 
 We need a couple of things from the Node APIs so we can watch the files.
 
