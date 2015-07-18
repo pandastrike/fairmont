@@ -78,7 +78,7 @@ The `asyncIterator` function is analogous to the `iterator` function—it's job 
         f[Symbol.asyncIterator] = -> @this
         f
 
-You might think we should have a way to construct an async iterator directly from a generator function, but this might have been an accident, so we'll generate a type error instead.
+You might think we should have a way to construct an async iterator directly from a generator function, but this is the kind of thing someone might do an accident, so we generate a type error instead.
 
 ## isIteratorFunction
 
@@ -96,6 +96,10 @@ This is the async variant of `isIteratorFunction`.
 ## iteratorFunction
 
 `iteratorFunction` takes a value and tries to return an `IteratorFunction` based upon it. We're using predicates here throughout because they have a higher precedence than `constructor` matches.
+
+It might seem rather strange that there's no corresponding `asyncIteratorFunction`. This is because `iteratorFunction` already handles both cases. If you have an async iteratable or iterator, `iteratorFunction` will still return you something that satisfies `isAsyncIteratorFunction`.
+
+If you want to _construct_ an async iterator function, use `asyncIterator` with a function that returns a promise.
 
       {Method} = require "./multimethods"
       iteratorFunction = Method.create()
