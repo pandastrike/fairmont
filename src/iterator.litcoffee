@@ -21,10 +21,12 @@ Array functions are included here when they complement another iterator function
 
 ## isIterable
 
-      isIterable = (x) -> x?[Symbol.iterator]?
+Generators in Node don't look like iterables. So we have to code around that.
 
-      context.test "isIterable", ->
-        assert isIterable [1, 2, 3]
+      {isGenerator} = require "./type"
+      isIterable = (x) -> (x?[Symbol.iterator]?) || (x? && isGenerator x)
+
+      context.test "isIterable", -> assert isIterable [1, 2, 3]
 
 ## isAsyncIterable
 
@@ -45,7 +47,7 @@ The `iterator` function takes a given value and attempts to return an iterator b
       {Method} = require "./multimethods"
       iterator = Method.create()
 
-If we don't have an iterable, we might have a function or a generator function. In that case, we assume we're dealing with an iterator function that simply hasn't been properly tagged.
+If we don't have an iterable, we might have a function. In that case, we assume we're dealing with an iterator function that simply hasn't been properly tagged. (Or, put another way, that we're calling `iterator` specifically to tag it.)
 
       {isFunction} = require "./type"
       Method.define iterator, isFunction, (f) ->
@@ -53,22 +55,21 @@ If we don't have an iterable, we might have a function or a generator function. 
         f[Symbol.iterator] = -> @this
         f
 
-      {isGenerator} = require "./type"
-      {async} = require "./generator"
-      Method.define iterator, isGenerator, (g) ->
-        f = async g
-        f.next = f
-        f[Symbol.asyncIterator] = -> @this
-        f
-
 The simplest case is to just call the iterator method on the value. We can do this when we have something iterable. We have sync and async variants. These are defined last to avoid infinite recursion.
 
       Method.define iterator, isIterable, (i) -> i[Symbol.iterator]()
       Method.define iterator, isAsyncIterable, (i) -> i[Symbol.asyncIterator]()
 
+For the moment, generator functions in Node aren't iterables for some reason. So we'll add this case here for the moment.
+
+      {isGenerator} = require "./type"
+      Method.define iterator, isGenerator, (g) -> g()
+
+(If what you want is an async iterator from a generator function, use `async` to adapt it into a function that returns promises first and then call `asyncIterator`.)
+
 ## asyncIterator
 
-The `asyncIterator` function is analogous to the `iterator` function—it's job is to ensure that the object given as an argument is a proper asynchronous iterator. The `iterator` function knows to turn a generator into an asynchronous iterator already, but if we have a function producing promises, we need to call this function to declare the type of iterator explicitly.
+The `asyncIterator` function is analogous to the `iterator` function—it's job is to ensure that the object given as an argument is a proper asynchronous iterator.
 
       asyncIterator = Method.create()
 
@@ -77,11 +78,20 @@ The `asyncIterator` function is analogous to the `iterator` function—it's job 
         f[Symbol.asyncIterator] = -> @this
         f
 
-      Method.define iterator, isGenerator, (g) ->
-        f = async g
-        f.next = f
-        f[Symbol.asyncIterator] = -> @this
-        f
+You might think we should have a way to construct an async iterator directly from a generator function, but this might have been an accident, so we'll generate a type error instead.
+
+## isIteratorFunction
+
+We want to be able to detect whether we have an iterator function. Iterators that are also functions are iterator functions.
+
+      {isFunction} = require "./type"
+      isIteratorFunction = (f) -> (isFunction f) && (isIterator f)
+
+## isAsyncIteratorFunction
+
+This is the async variant of `isIteratorFunction`.
+
+      isAsyncIteratorFunction = (f) -> (isFunction f) && (isAsyncIterator f)
 
 ## iteratorFunction
 
@@ -89,13 +99,6 @@ The `asyncIterator` function is analogous to the `iterator` function—it's job 
 
       {Method} = require "./multimethods"
       iteratorFunction = Method.create()
-
-We want to be able to detect whether we have an iterator function. Iterators that are also functions are iterator functions. We have sync and async variants of this test.
-
-      {isFunction} = require "./type"
-      isIteratorFunction = (f) -> (isFunction f) && (isIterator f)
-
-      isAsyncIteratorFunction = (f) -> (isFunction f) && (isAsyncIterator f)
 
 If we get an iterable, we want an iterator for it, and then to turn that into an iterator function.
 
@@ -110,13 +113,11 @@ If we get an iterator as a value, we simply need to wrap it in a function that c
         (either isIterator, isAsyncIterator),
         (i) -> iterator (-> i.next())
 
-If given a function or a Generator function that isn't already an iterator (or an iterator function), we can convert that into an iterator function by simply calling `iterator` on the value, since it's already a function.
+If given a function that isn't already an iterator (or an iterator function), we can convert that into an iterator function by simply calling `iterator` on the value, since it's already a function.
 
       {either} = require "./logical"
-      {isFunction, isGenerator} = require "./type"
-      Method.define iteratorFunction,
-        (either isFunction, isGenerator),
-        (f) -> iterator f
+      {isFunction} = require "./type"
+      Method.define iteratorFunction, isFunction, (f) -> iterator f
 
 Now we can define the trivial case, where we already have an iterator function and just need to return it. This comes last so that it has the highest precedence, since iterator functions are both iterators and functions (and would thus match each of the previous rules and cause an infinite recursion).
 
@@ -189,7 +190,7 @@ Return a new iterator that will apply the given function to each value produced 
       # TODO should sync iterators mutate into async iterators if the
       #      given function returns a promise?
       Method.define map, Function, isAsyncIteratorFunction, (f, i) ->
-        iterator ->
+        asyncIterator async ->
           {done, value} = yield i()
           unless done
             value = f value
@@ -293,7 +294,7 @@ Given a function and an iterator, return an iterator that produces values from t
 
       Method.define select, Function, isAsyncIteratorFunction,
         (f, i) ->
-          iterator ->
+          asyncIterator async ->
             loop
               {done, value} = yield i()
               break if done || (f value)
@@ -495,7 +496,7 @@ Given an iterator that produces associative pairs, return an object whose keys a
           if done then {done} else {value: batch, done}
 
       Method.define partition, Number, isAsyncIteratorFunction, (n, i) ->
-        iterator ->
+        asyncIterator async ->
           batch = []
           loop
             {done, value} = yield i()
@@ -648,7 +649,9 @@ Performs a `select` using a given object object. See `query`.
         source.on name, (ax...) ->
           value = if ax.length < 2 then ax[0] else ax
           enqueue resolve {done, value}
-        source.on end, (error) -> done = true
+        source.on end, (error) ->
+          done = true
+          enqueue resolve {done}
         source.on error, (error) -> enqueue reject error
 
         asyncIterator dequeue
@@ -659,9 +662,7 @@ Performs a `select` using a given object object. See `query`.
         {createReadStream} = require "fs"
         i = events "data", createReadStream "test/lines.txt"
         assert (yield i()).value.toString() == "one\ntwo\nthree\n"
-        console.log yield i()
-        # assert (yield i()).done
-
+        assert (yield i()).done
 
 ## stream
 
@@ -672,7 +673,7 @@ Turns a stream into an iterator function.
       context.test "stream", ->
         {createReadStream} = require "fs"
         i = stream createReadStream "test/lines.txt"
-        assert ((yield i()).value == "one\ntwo\nthree\n")
+        assert ((yield i()).value.toString() == "one\ntwo\nthree\n")
         assert (yield i()).done
 
 ## split
@@ -707,7 +708,7 @@ Given a function and an iterator, produce a new iterator whose values are delimi
       Method.define split, Function, isAsyncIteratorFunction, (f, i) ->
         lines = []
         remainder = ""
-        iterator ->
+        asyncIterator async ->
           if lines.length > 0
             value: lines.shift(), done: false
           else
@@ -749,7 +750,8 @@ Given a function and an iterator, produce a new iterator whose values are delimi
 
       module.exports = {isIterable, isAsyncIterable,
         iterator, isIterator, isAsyncIterator,
-        iteratorFunction, isIteratorFunction, isAsyncIteratorFunction,
+        isIteratorFunction, isAsyncIteratorFunction,
+        iteratorFunction,
         collect, map, each, fold, reduce, foldr, reduceRight,
         select, reject, filter, any, all,
         zip, assoc, project, flatten, compact, partition,
