@@ -4,7 +4,7 @@ Fairmont introduces the idea of _iterator functions_. Iterator functions are fun
 
 Iterator functions are also iterators and iterable. So they can be used anywhere an iterable can be used (ex: in a JavaScript `for` loop). And just as iterators are iterable, so are iterator functions.
 
-Fairmont also supports async iterators, which [are a proposed part of ES7][100]. Async iterators return promises that resolve to iterator value objects. Basically, they work just like normal iterators, except the values take an itermediate form of promises.
+Fairmont also supports async iterators, which [are a proposed part of ES7][100]. Async iterators return promises that resolve to iterator value objects. Basically, they work just like normal iterators, except the values take an intermediate form of promises.
 
 [100]:https://github.com/zenparsing/async-iteration/
 

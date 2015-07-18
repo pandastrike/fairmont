@@ -17,7 +17,7 @@ You can get a feel for what Fairmont can do for you by [checking out the example
 
 ## Reference
 
-Fairmont uses literate programming, so each source file doubles as documentation. Please see the [source directory](./src/index.litcoffee) for more.
+Fairmont uses [literate programming](http://www.coffeescriptlove.com/2013/02/literate-coffeescript.html), so each source file doubles as documentation. Please see the [source directory](./src/index.litcoffee) for more.
 
 ## Status
 

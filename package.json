@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "byline": "^4.2.1",
+    "coffee-script": "~1.9.3",
     "minimatch": "^2.0.8",
     "when": "^3.7.2"
   },
