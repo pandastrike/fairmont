@@ -37,8 +37,8 @@ A map function allows for the transformation of the arguments for matching purpo
             arg = bx[bi++]
             if term == arg
               p += 5
-            else if arg?
-              if term?.constructor == Function
+            else if term?.constructor == Function
+              if arg?
                 if term == arg.constructor
                   p += 4
                 else if (arg instanceof term)
@@ -46,10 +46,12 @@ A map function allows for the transformation of the arguments for matching purpo
                 else if arg.prototype instanceof term
                   p += 1
                 else if term != Boolean && (term arg) == true
-                  p += 5
+                    p += 5
                 else
                   p = 0
                   break
+              else if term != Boolean && (term arg) == true
+                  p += 5
               else
                 p = 0
                 break

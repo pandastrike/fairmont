@@ -1,7 +1,5 @@
 # Iterator Functions
 
-    {async} = require "./async"
-
 Fairmont introduces the idea of _iterator functions_. Iterator functions are functions that wrap Iterators. Many builtin JavaScript types are iterable, such as Arrays, Strings, Maps, and so on.
 
 Iterator functions are also iterators and iterable. So they can be used anywhere an iterable can be used (ex: in a JavaScript `for` loop). And just as iterators are iterable, so are iterator functions.
@@ -136,59 +134,6 @@ We're going to use `isDefined` internally here to mean a wildcard value for purp
 
     {isDefined} = require "./type"
 
-## fold/reduce
-
-Given an initial value, a function, and an iterator, reduce the iterator to a single value, ex: sum a list of integers.
-
-    {curry, ternary} = require "./core"
-    fold = Method.create()
-
-    Method.define fold, isDefined, Function, isDefined,
-      (x, f, y) -> fold x, f, (iteratorFunction y)
-
-    Method.define fold, isDefined, Function, isIteratorFunction,
-      (x, f, i) ->
-        loop
-          {done, value} = i()
-          break if done
-          x = f x, value
-        x
-
-    Method.define fold, isDefined, Function, isAsyncIteratorFunction,
-      async (x, f, i) ->
-        loop
-          {done, value} = yield i()
-          break if done
-          x = f x, value
-        x
-
-    reduce = fold = curry ternary fold
-
-## foldr/reduceRight
-
-Given function and an initial value, reduce an iterator to a single value, ex: sum a list of integers, starting from the right, or last, value.
-
-    {curry, ternary} = require "./core"
-    foldr = Method.create()
-
-    Method.define foldr, isDefined, Function, isDefined,
-      (x, f, y) -> foldr x, f, (iteratorFunction y)
-
-    Method.define foldr, isDefined, Function, isIteratorFunction,
-      (x, f, i) -> (collect i).reduceRight(f, x)
-
-    Method.define foldr, isDefined, Function, isAsyncIteratorFunction,
-      async (x, f, i) -> (yield collect i).reduceRight(f, x)
-
-    reduceRight = foldr = curry ternary foldr
-
-## collect
-
-Collect an iterator's values into an array.
-
-    {push} = require "./array"
-    collect = (i) -> reduce [], push, i
-
 ## map
 
 Return a new iterator that will apply the given function to each value produced by the iterator.
@@ -198,6 +143,7 @@ Return a new iterator that will apply the given function to each value produced 
     Method.define map, Function, isDefined,
       (f, x) -> map f, (iteratorFunction x)
 
+    {async} = require "./async"
     {isPromise} = require "./type"
     Method.define map, Function, isPromise, async (f, p) ->
       map f, (yield p)
@@ -221,13 +167,6 @@ Return a new iterator that will apply the given function to each value produced 
 
     {curry, binary} = require "./core"
     map = curry binary map
-
-## each
-
-Takes a function and an iterator and applies the given function to each value produced by the iterator, collecting the results into an array.
-
-    {curry, compose, binary} = require "./core"
-    each = curry binary compose collect, map
 
 ## select/filter
 
@@ -264,111 +203,11 @@ Given a function and an iterator, return an iterator that produces values from t
     {negate} = require "./logical"
     reject = curry (f, i) -> select (negate f), i
 
-## any
-
-Given a function and an iterator, return true if the given function returns true for any value produced by the iterator.
-
-    any = Method.create()
-
-    Method.define any, Function, isDefined, (f, x) -> any f, (iteratorFunction x)
-
-    Method.define any, Function, isIteratorFunction,
-      (f, i) ->
-        loop
-          ({done, value} = i())
-          break if (done || (f value))
-        !done
-
-    Method.define any, Function, isAsyncIteratorFunction,
-      async (f, i) ->
-        loop
-          ({done, value} = yield i())
-          break if (done || (f value))
-        !done
-
-    {curry, binary} = require "./core"
-    any = curry binary any
-
-## all
-
-Given a function and an iterator, return true if the function returns true for all the values produced by the iterator.
-
-    all = Method.create()
-
-    Method.define all, Function, isDefined, (f, x) -> all f, (iteratorFunction x)
-
-    Method.define all, Function, isIteratorFunction,
-      (f, i) -> !any (negate f), i
-
-    Method.define all, Function, isAsyncIteratorFunction,
-      async (f, i) -> !(yield any (negate f), i)
-
-    all = curry binary all
-
-## zip
-
-Given a function and two iterators, return an iterator that produces values by applying a function to the values produced by the given iterators.
-
-    zip = Method.create()
-
-    Method.define zip, Function, isDefined, isDefined,
-      (f, x, y) -> zip f, (iteratorFunction x), (iteratorFunction y)
-
-    Method.define zip, Function, isIteratorFunction, isIteratorFunction,
-      (f, i, j) ->
-        iterator ->
-          x = i()
-          y = j()
-          if !x.done && !y.done
-            value: (f x.value, y.value), done: false
-          else
-            done: true
-
-## unzip
-
-    unzip = (f, i) -> fold [[],[]], f, i
-
-## assoc
-
-Given an iterator that produces associative pairs, return an object whose keys are the first element of the pair and whose values are the second element of the pair.
-
-    {first, second} = require "./array"
-    assoc = Method.create()
-
-    Method.define assoc, isDefined, (x) -> assoc (iteratorFunction x)
-
-    Method.define assoc, isIteratorFunction, (i) ->
-      result = {}
-      loop
-        {done, value} = i()
-        break if done
-        result[(first value)] = (second value)
-      result
-
-    Method.define assoc, isAsyncIteratorFunction, (i) ->
-      result = {}
-      loop
-        {done, value} = yield i()
-        break if done
-        result[(first value)] = (second value)
-      result
-
 ## project
 
     {property} = require "./object"
     {curry} = require "./core"
     project = curry (p, i) -> map (property p), i
-
-## flatten
-
-    _flatten = (ax, a) ->
-      if isIterable a
-        ax.concat flatten a
-      else
-        ax.push a
-        ax
-
-    flatten = fold [], _flatten
 
 ## compact
 
@@ -402,26 +241,6 @@ Given an iterator that produces associative pairs, return an object whose keys a
           break if batch.length == n
         if done then {done} else {value: batch, done}
 
-## sum
-
-Sum the numbers produced by a given iterator.
-
-This is here instead of in [Numeric Functions](./numeric.litcoffee) to avoid forward declaring `fold`.
-
-    {add} = require "./numeric"
-    sum = fold 0, add
-
-## average
-
-Average the numbers producced by a given iterator.
-
-This is here instead of in [Numeric Functions](./numeric.litcoffee) to avoid forward declaring `fold`.
-
-    average = (i) ->
-      j = 0 # current count
-      f = (r, n) -> r += ((n - r)/++j)
-      fold 0, f, i
-
 ## take
 
 Given a function and an iterator, return an iterator that produces values from the given iterator until the given function returns false when applied to the given iterator's values.
@@ -451,23 +270,6 @@ Given an iterator, produces the first N values from the given iterator.
       f = (n, i = 0) -> -> i++ < n
       (n, i) -> take (f n), i
 
-## join
-
-Concatenate the strings produced by a given iterator. Unlike `Array::join`, this function does not delimit the strings. See also: `delimit`.
-
-This is here instead of in [String Functions](./string.litcoffee) to avoid forward declaring `fold`.
-
-    {cat} = require "./array"
-    join = fold "", add
-
-## delimit
-
-Like `join`, except that it takes a delimeter, separating each string with the delimiter. Similar to `Array::join`, except there's no default delimiter. The function is curried, though, so calling `delimit ' '` is analogous to `Array::join` with no delimiter argument.
-
-    delimit = curry (d, i) ->
-      f = (r, s) -> if r == "" then r += s else r += d + s
-      fold "", f, i
-
 ## where
 
 Performs a `select` using a given object object. See `query`.
@@ -478,6 +280,7 @@ Performs a `select` using a given object object. See `query`.
 ## events
 
     {has} = require "./object"
+    {compose} = require "./core"
     events = Method.create()
     isSource = compose isFunction, property "on"
 
@@ -585,12 +388,6 @@ Given a function and an iterator, produce a new iterator whose values are delimi
 
     module.exports = {isIterable, isAsyncIterable,
       iterator, isIterator, isAsyncIterator,
-      isIteratorFunction, isAsyncIteratorFunction,
-      iteratorFunction, repeat,
-      collect, map, each, fold, reduce, foldr, reduceRight,
-      select, reject, filter, any, all,
-      zip, unzip, assoc, project, flatten, compact, partition,
-      sum, average, join, delimit,
-      where,
-      take, takeN,
-      events, stream, lines, split}
+      isIteratorFunction, isAsyncIteratorFunction, iteratorFunction,
+      repeat, map, select, reject, filter, project, compact,
+      partition, where, take, takeN, events, stream, lines, split}

@@ -3,7 +3,7 @@
 ## flow
 
       FS = require "fs"
-      {reduce} = require "./iterator"
+      {reduce} = require "./reducer"
 
       flow = ([i, fx...]) -> reduce i, ((i,f) -> f i), fx
 
