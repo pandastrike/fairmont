@@ -10,7 +10,7 @@
   "main": "lib/index.js",
   "scripts": {
     "prepublish": "coffee --nodejs --harmony -o lib/ -c src/*.*coffee",
-    "test": "coffee --nodejs --harmony test/test.litcoffee",
+    "test": "coffee --nodejs --harmony test/index.coffee",
     "watch": "coffee --nodejs --harmony -o lib/ -cw src/*.*coffee",
     "version": "(node_modules/.bin/json -f package.json version > VERSION)",
     "tag": "(cat VERSION | xargs -I version git tag -am version version) && git push --tags"
