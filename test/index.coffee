@@ -1,21 +1,13 @@
-targets = process.argv[2..]
+assert = require "assert"
+Amen = require "amen"
 
-if targets.length == 0
-  targets = [
-    "array"
-    "async"
-    "core"
-    "crypto"
-    "fs"
-    "iterator"
-    "logical"
-    "multimethods"
-    "numeric"
-    "object"
-    "reactive"
-    "string"
-    "type"
-    "util"
-  ]
+Amen.describe "Fairmont (bundled)", (context) ->
 
-(require "./#{target}") for target in targets
+  context.test "Require from each module", ->
+    assert require "fairmont-core"
+    assert require "fairmont-helpers"
+    assert require "fairmont-multimethods"
+    assert require "fairmont-reactive"
+    assert require "fairmont-crypto"
+    assert require "fairmont-process"
+    assert require "fairmont-filesystem"

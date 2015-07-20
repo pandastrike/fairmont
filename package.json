@@ -1,7 +1,7 @@
 {
   "name": "fairmont",
-  "version": "1.0.0-beta-17",
-  "description": "A collection of useful functions and utilities.",
+  "version": "1.0.0-beta-19",
+  "description": "Functional reactive programming for JavaScript and CoffeeScript.",
   "files": [
     "src/",
     "lib/",
@@ -25,8 +25,7 @@
     "utility"
   ],
   "authors": [
-    "Dan Yoder",
-    "Matthew King"
+    "Dan Yoder"
   ],
   "license": "ISC",
   "devDependencies": {
@@ -34,10 +33,13 @@
     "json": "^9.0.3"
   },
   "dependencies": {
-    "byline": "^4.2.1",
-    "coffee-script": "~1.9.3",
-    "minimatch": "^2.0.8",
-    "when": "^3.7.2"
+    "fairmont-core": "^1.0.0-beta-19",
+    "fairmont-helpers": "^1.0.0-beta-18",
+    "fairmont-multimethods": "^1.0.0-beta-18",
+    "fairmont-reactive": "^1.0.0-beta-18",
+    "fairmont-crypto": "^1.0.0-beta-18",
+    "fairmont-process": "^1.0.0-beta-18",
+    "fairmont-filesystem": "^1.0.0-beta-18"
   },
   "engine": "node >= 0.12.x"
 }
