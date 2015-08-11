@@ -10,29 +10,96 @@ Inspired by libraries like [Underscore](http://underscorejs.org/) and many other
 * bridge functions for integrating with OOP-based libraries
 * common file and stream based operations
 * streams and event emitters modeled as asynchronous iterators
-* seamless integration between synchronous and asynchronous operations
-* … and more!
+* observers for reacting to changes in state
+* unifies synchronous and asynchronous programming models
 
-## Components
+## Example
 
-This is the main library for Fairmont.
-It includes/requires several others:
+Here's a simple reactive Web app implementing a counter using Fairmont's Reactive programming functions.
 
-* [`fairmont-core`](https://github.com/pandastrike/fairmont-core) - [support functions for currying, partial application, function composition, and helper functions](https://github.com/pandastrike/fairmont-core/blob/master/src/index.litcoffee)
-* [`fairmont-reactive`](https://github.com/pandastrike/fairmont-reactive) - [Reducer functions](https://github.com/pandastrike/fairmont-reactive/blob/master/src/reducer.litcoffee), [iterator functions](https://github.com/pandastrike/fairmont-reactive/blob/master/src/iterator.litcoffee), and [functional reactive programming](https://github.com/pandastrike/fairmont-reactive/blob/master/src/reactive.litcoffee)
-* [`fairmont-multimethods`](https://github.com/pandastrike/fairmont-multimethods/) - [CLOS-style multimethods in CoffeeScript](https://github.com/pandastrike/fairmont-multimethods/blob/master/src/index.litcoffee) (more detail on our [blog](https://www.pandastrike.com/posts/20150616-multimethods))
-* [`fairmont-filesystem`](https://github.com/pandastrike/fairmont-filesystem/) - [filesystem functions](https://github.com/pandastrike/fairmont-filesystem/blob/master/src/index.litcoffee)
-* [`fairmont-process`](https://github.com/pandastrike/fairmont-process/) - [functions for Unix processes](https://github.com/pandastrike/fairmont-process/blob/master/src/index.litcoffee)
-* [`fairmont-crypto`](https://github.com/pandastrike/fairmont-crypto/) - [basic cryptographic functions](https://github.com/pandastrike/fairmont-crypto/blob/master/src/index.litcoffee)
-* [`fairmont-helpers`](https://github.com/pandastrike/fairmont-helpers/) - a range of functions which make it easier to work with arrays, strings, types, and other fundamental building blocks
+In JavaScript:
 
-## Examples
+```javascript
+var $ = require("jquery"),
+  F = require("fairmont");
 
-You can get a feel for what Fairmont can do for you by [checking out the examples](https://github.com/pandastrike/fairmont-reactive/tree/master/examples).
+$(function() {
 
-## Reference
+  var data = { counter: 0 };
 
-Fairmont uses [literate programming](http://www.coffeescriptlove.com/2013/02/literate-coffeescript.html), so each source file doubles as documentation. Please see the [source directory](./src/index.litcoffee) for more.
+  F.start(F.flow([
+    F.events("click", $("a[href='#increment']")),
+    F.map(function() { data.counter++; })
+  ]));
+
+  F.start(F.flow([
+    F.events("change", F.observe(data)),
+    F.map(function() {
+      $("p.counter")
+        .html(data.counter);
+    })
+  ]));
+});
+
+```
+
+In CoffeeScript:
+
+```coffeescript
+{start, flow, events, map, observe} = require "fairmont-reactive"
+
+$ = require "jquery"
+
+$ ->
+
+  data = counter: 0
+
+  start flow [
+    events "click", $("a[href='#increment']")
+    map -> data.counter++
+  ]
+
+  start flow [
+    events "change", observe data
+    map ->
+      $("p.counter")
+      .html data.counter
+  ]
+```
+
+Check out our other reactive examples:
+
+- an [echo server][]
+- a [Web server][]
+- a [file watcher][]
+
+[echo server]:https://github.com/pandastrike/fairmont-reactive/blob/master/examples/echo-server.litcoffee
+[Web server]:https://github.com/pandastrike/fairmont-reactive/blob/master/examples/web-server.litcoffee
+[file watcher]:https://github.com/pandastrike/fairmont-reactive/blob/master/examples/file-watcher.litcoffee
+
+## Installation
+
+You can simply install Fairmont as a whole:
+
+`npm install fairmont`
+
+Or you can simply install the components you need.
+
+Example:
+
+`npm install fairmont-core`
+
+Learn more about the individual Fairmont components by clicking on the links below:
+
+- [fairmont-core][]
+- [fairmont-reactive][]
+- [fairmont-multimethods][]
+- [fairmont-helpers][]
+- [fairmont-crypto][]
+- [fairmont-process][]
+- [fairmont-filesystem][]
+
+The [API Reference] provides documentation on each component and its corresponding functions.
 
 ## Status
 
@@ -40,7 +107,15 @@ Fairmont is still under heavy development and is `beta` quality, meaning you sho
 
 ## Roadmap
 
-You can get an idea of what we're planning by looking at the [issues list][200]. If you want something that isn't there, and you think it would be a good addition, please open a ticket.
+You can get an idea of what we're planning by looking at the [tickets][]. If you want something that isn't there, and you think it would be a good addition, please open a ticket.
 
-[200]:https://github.com/pandastrike/fairmont/issues
-
+[tickets]:https://github.com/pandastrike/fairmont/issues
+[fairmont]:https://github.com/pandastrike/fairmont
+[fairmont-core]:https://github.com/pandastrike/fairmont-core
+[fairmont-reactive]:https://github.com/pandastrike/fairmont-reactive
+[fairmont-multimethods]:https://github.com/pandastrike/fairmont-multimethods
+[fairmont-helpers]:https://github.com/pandastrike/fairmont-helpers
+[fairmont-crypto]:https://github.com/pandastrike/fairmont-crypto
+[fairmont-process]:https://github.com/pandastrike/fairmont-process
+[fairmont-filesystem]:https://github.com/pandastrike/fairmont-filesystem
+[API Reference]:https://github.com/pandastrike/fairmont/wiki/API-Reference
