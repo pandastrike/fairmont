@@ -1,6 +1,6 @@
 {
   "name": "fairmont",
-  "version": "1.0.0-beta-25",
+  "version": "1.0.0-beta-26",
   "description": "Functional reactive programming for JavaScript and CoffeeScript.",
   "files": [
     "src/",
