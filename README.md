@@ -13,7 +13,7 @@ Inspired by libraries like [Underscore](http://underscorejs.org/) and many other
 * observers for reacting to changes in state
 * unifies synchronous and asynchronous programming models
 
-## Example
+## Examples
 
 Here's a simple reactive Web app implementing a counter using Fairmont's Reactive programming functions.
 
@@ -27,18 +27,18 @@ $(function() {
 
   var data = { counter: 0 };
 
-  F.start(F.flow([
+  F.go([
     F.events("click", $("a[href='#increment']")),
     F.map(function() { data.counter++; })
-  ]));
+  ]);
 
-  F.start(F.flow([
+  F.go([
     F.events("change", F.observe(data)),
     F.map(function() {
       $("p.counter")
         .html(data.counter);
     })
-  ]));
+  ]);
 });
 
 ```
@@ -54,12 +54,12 @@ $ ->
 
   data = counter: 0
 
-  start flow [
+  go [
     events "click", $("a[href='#increment']")
     map -> data.counter++
   ]
 
-  start flow [
+  go [
     events "change", observe data
     map ->
       $("p.counter")
@@ -67,12 +67,15 @@ $ ->
   ]
 ```
 
-Check out our other reactive examples:
+You can run [this example][] or look at our other reactive examples:
 
+- a [todo-list][]
 - an [echo server][]
 - a [Web server][]
 - a [file watcher][]
 
+[this example]:https://github.com/pandastrike/fairmont-reactive/blob/master/examples/web-apps/counter
+[todo-list]:https://github.com/pandastrike/fairmont-reactive/blob/master/examples/web-apps/todo-list
 [echo server]:https://github.com/pandastrike/fairmont-reactive/blob/master/examples/echo-server.litcoffee
 [Web server]:https://github.com/pandastrike/fairmont-reactive/blob/master/examples/web-server.litcoffee
 [file watcher]:https://github.com/pandastrike/fairmont-reactive/blob/master/examples/file-watcher.litcoffee
