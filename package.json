@@ -1,18 +1,19 @@
 {
   "name": "fairmont",
-  "version": "1.0.0-beta-32",
+  "version": "1.0.0-beta-33",
   "description": "Functional reactive programming for JavaScript and CoffeeScript.",
   "files": [
     "lib/",
+    "src/",
     "README.md",
     "LICENSE",
     "VERSION"
   ],
   "main": "lib/index.js",
   "scripts": {
-    "prepublish": "coffee --nodejs --harmony -o lib/ -c src/*.*coffee",
-    "test": "coffee --nodejs --harmony test/index.coffee",
-    "watch": "coffee --nodejs --harmony -o lib/ -cw src/*.*coffee",
+    "prepublish": "coffee -o lib/ -c src/*.*coffee",
+    "test": "coffee test/index.coffee",
+    "watch": "coffee -o lib/ -cw src/*.*coffee",
     "version": "(node_modules/.bin/json -f package.json version > VERSION)",
     "tag": "(cat VERSION | xargs -I version git tag -am version version) && git push --tags"
   },
@@ -31,16 +32,16 @@
   "license": "ISC",
   "devDependencies": {
     "amen": "^1.0.0-alpha-03",
+    "coffee-script": "^1.10.0",
     "json": "^9.0.3"
   },
   "dependencies": {
-    "fairmont-core": "^1.0.0-beta-21",
-    "fairmont-helpers": "^1.0.0-beta-22",
-    "fairmont-multimethods": "^1.0.0-beta-19",
-    "fairmont-reactive": "^1.0.0-beta-33",
-    "fairmont-crypto": "^1.0.0-beta-19",
+    "fairmont-core": "^1.0.0-beta-23",
+    "fairmont-helpers": "^1.0.0-beta-24",
+    "fairmont-multimethods": "^1.0.0-beta-20",
+    "fairmont-reactive": "^1.0.0-beta-34",
     "fairmont-process": "^1.0.0-beta-19",
-    "fairmont-filesystem": "^1.0.0-beta-20"
+    "fairmont-filesystem": "^1.0.0-beta-21"
   },
-  "engine": "node >= 0.12.x"
+  "engine": "node >= 4.0.x"
 }

@@ -8,6 +8,5 @@ Amen.describe "Fairmont (bundled)", (context) ->
     assert require "fairmont-helpers"
     assert require "fairmont-multimethods"
     assert require "fairmont-reactive"
-    assert require "fairmont-crypto"
     assert require "fairmont-process"
     assert require "fairmont-filesystem"
