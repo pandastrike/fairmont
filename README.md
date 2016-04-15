@@ -106,7 +106,9 @@ The [API Reference] provides documentation on each component and its correspondi
 
 ## Status
 
-Fairmont is still under heavy development and is `beta` quality, meaning you should probably not use it in your production code.
+Fairmont is available for production use.
+We use Fairmont is wide-variety of development projects.
+We welcome contributors!
 
 ## Roadmap
 
