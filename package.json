@@ -1,6 +1,6 @@
 {
   "name": "fairmont",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Functional reactive programming for JavaScript and CoffeeScript.",
   "files": [
     "lib/",
@@ -36,11 +36,11 @@
   },
   "dependencies": {
     "fairmont-core": "1.0.x",
-    "fairmont-helpers": "1.0.x",
+    "fairmont-helpers": "1.1.x",
     "fairmont-multimethods": "1.0.x",
     "fairmont-reactive": "^1.0.x",
     "fairmont-process": "^1.0.x",
     "fairmont-filesystem": "^1.0.x"
   },
-  "engine": "node >= 4.0.x"
+  "engine": "node >= 6.0.0"
 }
