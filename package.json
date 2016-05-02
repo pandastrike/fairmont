@@ -30,7 +30,7 @@
   ],
   "license": "ISC",
   "devDependencies": {
-    "amen": "^1.0.0-alpha-03",
+    "amen": "1.0.x",
     "coffee-script": "^1.10.0",
     "json": "^9.0.3"
   },
@@ -38,9 +38,9 @@
     "fairmont-core": "1.0.x",
     "fairmont-helpers": "1.1.x",
     "fairmont-multimethods": "1.0.x",
-    "fairmont-reactive": "^1.0.x",
-    "fairmont-process": "^1.0.x",
-    "fairmont-filesystem": "^1.0.x"
+    "fairmont-reactive": "1.1.x",
+    "fairmont-process": "1.0.x",
+    "fairmont-filesystem": "1.0.x"
   },
   "engine": "node >= 6.0.0"
 }
