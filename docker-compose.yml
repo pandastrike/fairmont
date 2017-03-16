@@ -1,0 +1,21 @@
+# `docker-compose run node npm install` => install npm modules
+# `docker-compose up` => run npm test
+# `docker-compose run node npm login` => login to npm
+# `docker-compose run node npm publish` => publish to npm
+version: '2'
+services:
+  node:
+    image: "node:6"
+    command: npm test
+    environment:
+      - npm_config_userconfig=/root/.npm/.npmrc
+      - npm_config_unsafe_perm=true
+      - PATH=/usr/src/app/node_modules/.bin:$PATH
+    volumes:
+      - ./:/usr/src/app
+      - ~/.npm:/root/.npm
+      - node_modules:/usr/src/app/node_modules
+    working_dir: /usr/src/app
+
+volumes:
+  node_modules:
